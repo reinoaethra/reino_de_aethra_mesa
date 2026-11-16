@@ -1,6 +1,6 @@
 # Guia da primeira aventura — Ecos na Estrada de Eldoria
 
-**Reino de Aethra v0.6**
+**Reino de Aethra v0.7**
 
 Este guia ajuda um mestre iniciante a conduzir a primeira sessão. Não é necessário improvisar tudo: use as cenas preparadas, leia a narração, apresente os NPCs e atualize os objetivos no painel **Jornada e missões**.
 

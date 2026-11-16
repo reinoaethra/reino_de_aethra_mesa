@@ -1,4 +1,4 @@
-# Guia do GitHub Pages do zero — Reino de Aethra v0.6
+# Guia do GitHub Pages do zero — Reino de Aethra v0.7
 
 Este guia ensina a colocar Reino de Aethra na internet usando o GitHub Pages. Foi escrito para quem nunca publicou um site.
 
@@ -40,7 +40,7 @@ O repositório público significa que qualquer pessoa poderá ver os arquivos do
 
 ## PARTE 3 — Extrair o ZIP no computador
 
-1. Baixe `reino-de-aethra-v0.6.zip`.
+1. Baixe `reino-de-aethra-v0.7.zip`.
 2. Abra a pasta Downloads.
 3. Clique com o botão direito no ZIP.
 4. Selecione **Extrair tudo**.
@@ -63,7 +63,7 @@ Antes de enviar, confirme que o `config.js` contém a Project URL e Publishable 
 6. Arraste-os para a área de upload do GitHub ou use o seletor de arquivos.
 7. Confira a lista de arquivos antes de confirmar.
 8. Na parte inferior, encontre **Commit changes**.
-9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.6`.
+9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.7`.
 10. Clique em **Commit changes**.
 
 ### Conferir a posição dos arquivos
@@ -81,6 +81,7 @@ reino-de-aethra/
 ├── supabase-migration-v0.4.sql  (atualização histórica)
 ├── supabase-migration-v0.5.sql  (banco que já estava na v0.4)
 ├── supabase-migration-v0.6.sql  (banco que já estava na v0.5)
+├── supabase-migration-v0.7.sql  (banco que já estava na v0.6)
 ├── GUIA-DA-PRIMEIRA-AVENTURA.md
 ├── README.md
 └── ...documentação adicional
@@ -192,3 +193,24 @@ Sim. Para entrar numa campanha, eles precisam do código ou link de convite daqu
 
 **Mudei o arquivo `config.js`, mas não conectou.**  
 Confira se publicou o arquivo atualizado, se o conteúdo tem a URL e Publishable key corretas e se o navegador não está usando uma versão antiga em cache. Veja `SOLUCAO-DE-PROBLEMAS.md`.
+
+
+---
+
+## Endereço de retorno para login e confirmação (v0.7)
+
+Depois que o site estiver publicado, copie o endereço completo do GitHub Pages. Por exemplo:
+
+```text
+https://meu-usuario.github.io/reino-de-aethra/
+```
+
+No painel do Supabase, abra **Authentication → URL Configuration** e:
+
+1. Cole esse endereço no campo **Site URL**.
+2. Adicione o mesmo endereço na lista **Redirect URLs**.
+3. Salve.
+
+Use o endereço real do seu projeto, não o exemplo. O caminho do repositório faz parte do endereço: não remova `/reino-de-aethra/` se esse for o nome do repositório.
+
+Esta configuração é necessária para que os links de confirmação de e-mail e recuperação de senha retornem ao site certo. Veja também o `GUIA-LOGIN-E-PROGRESSO.md`.

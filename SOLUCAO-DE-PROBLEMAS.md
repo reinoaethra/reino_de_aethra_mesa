@@ -1,4 +1,4 @@
-# Solução de problemas — Reino de Aethra v0.6
+# Solução de problemas — Reino de Aethra v0.7
 
 Este guia reúne erros comuns e o que fazer. Antes de mudar qualquer configuração, leia a mensagem com calma.
 
@@ -38,16 +38,16 @@ Veja também `GUIA-SUPABASE-DO-ZERO.md`, Parte 4.
 O banco ainda não recebeu o esquema correto.
 
 - Em projeto novo: execute `supabase-schema.sql`.
-- Em banco v0.5: execute `supabase-migration-v0.6.sql`.
-- Em banco v0.4: execute `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`.
-- Em banco v0.3: execute `supabase-migration-v0.4.sql`, depois `supabase-migration-v0.5.sql` e por último `supabase-migration-v0.6.sql`.
-- Em banco v0.2: execute `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`, nessa ordem.
+- Em banco v0.6: execute `supabase-migration-v0.7.sql`.
+- Em banco v0.5: execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`.
+- Em banco v0.4: execute `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`, nessa ordem.
+- Em banco v0.3 ou v0.2: siga toda a sequência de migrações até v0.7 indicada no README.
 
 Não execute migrações aleatórias. Consulte a seção “Qual arquivo SQL devo executar?” do README.
 
 ## 4. “Function award_encounter_xp does not exist”
 
-O site v0.6 está conectado a um banco que ainda não recebeu a migração de combate e XP introduzida na v0.4.
+O site v0.7 está conectado a um banco que ainda não recebeu uma ou mais migrações históricas. Compare o estado do banco com a tabela do README e aplique as migrações da menor para a maior, sem pular versões.
 
 1. Confira a versão atual do banco.
 2. Se estava na v0.3, execute `supabase-migration-v0.4.sql`.
@@ -167,7 +167,7 @@ Ao pedir suporte, informe:
 3. Abra uma campanha e entre na sala ativa; o quadro de missões aparece abaixo da narração.
 4. Os NPCs só aparecem aos jogadores depois que o mestre os revela no painel **Jornada e missões**.
 5. Se o botão de gerenciamento não aparece, confirme que entrou com a conta que criou a campanha e que essa conta está como mestre.
-6. A migração v0.5 é necessária para bancos que já estavam na v0.4; ela só altera o estado inicial de campanhas novas. Para habilitar os pedidos de movimento do mapa, execute também a migração v0.6. Se surgir um erro de banco, envie a mensagem completa, sem chaves nem senhas.
+6. A migração v0.5 é necessária para bancos que já estavam na v0.4; ela só altera o estado inicial de campanhas novas. Para habilitar os pedidos de movimento do mapa, execute também a migração v0.6; para portas e altares, execute a migração v0.7. Se surgir um erro de banco, envie a mensagem completa, sem chaves nem senhas.
 
 ## O mestre não consegue salvar uma cena ou objetivo
 
@@ -181,8 +181,39 @@ Ao pedir suporte, informe:
 
 **O jogador não consegue solicitar movimento:** confirme que o Supabase está conectado, a campanha está com sessão ativa e que `supabase-migration-v0.6.sql` foi executado. A conta do jogador precisa ser membro com papel `player`.
 
+**A porta/altar não aceita interação:** confirme que o banco recebeu o schema v0.7 ou a migração `supabase-migration-v0.7.sql`.
+
 **O mapa não troca:** somente o mestre ativo pode trocar o mapa. Peça ao mestre para selecionar a nova localidade.
 
 **Uma peça não se move:** confira se a casa está livre, se não há árvore/água/casa/muro/coluna no caminho e se a peça está no turno correto. Durante o combate, o limite é de quatro casas por turno, com movimento ortogonal.
 
 **O baú ou a armadilha não aparece para jogadores:** os marcadores ficam ocultos até serem acionados. A névoa de guerra também pode esconder casas; o mestre pode usar `Revelar área`.
+
+
+---
+
+## Problemas de login e troca de dispositivo (v0.7)
+
+### O botão “Salvar progresso” diz que Manual Linking está desativado
+
+No Supabase, abra Authentication → Configuration / General Configuration, ative **Allow manual linking**, salve e tente novamente. O vínculo precisa ser permitido para preservar o identificador do acesso visitante.
+
+### O e-mail de confirmação não retorna ao jogo
+
+Confira Authentication → URL Configuration. O Site URL e a Redirect URL precisam conter o endereço exato do GitHub Pages, incluindo o nome do repositório. Consulte `GUIA-LOGIN-E-PROGRESSO.md`.
+
+### Confirmei o e-mail, mas a tela de senha não apareceu
+
+Volte à aba original do jogo, no mesmo navegador/perfil em que clicou em **Salvar progresso**. Atualize a página uma vez se necessário. Não saia do acesso visitante enquanto o vínculo não terminar.
+
+### A campanha não aparece no celular
+
+Confirme que no celular você entrou com o mesmo e-mail e senha usados no computador. Se a campanha foi criada no modo local, ela não está no Supabase e não aparece em outro dispositivo. Campanhas do modo local não são automaticamente convertidas para a nuvem.
+
+### Entrei em uma conta errada ou criei um visitante no segundo aparelho
+
+Não crie mais personagens nem campanhas nesse aparelho. Saia da conta errada e entre com a conta correta. Se o visitante desse aparelho já estiver associado a uma campanha, a versão atual impede a troca automática para evitar misturar duas identidades; será necessário preservar esse progresso separadamente.
+
+### Perdi acesso ao navegador original antes de vincular e-mail
+
+Um usuário visitante não tem credenciais para recuperar sua identidade em outro aparelho. Se os dados locais do navegador foram apagados ou o aparelho foi perdido antes de vincular um e-mail, o acesso visitante pode não ser recuperável. Entre em contato com o mestre para verificar se há outros registros/backup da campanha.

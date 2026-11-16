@@ -1,4 +1,4 @@
-# Roteiro de teste multiplayer — Reino de Aethra v0.6
+# Roteiro de teste multiplayer — Reino de Aethra v0.7
 
 Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo entre dois ou mais navegadores. Não é necessário instalar um servidor local.
 
@@ -6,7 +6,7 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 
 - Site publicado por HTTPS no GitHub Pages.
 - Projeto Supabase ativo e conectado pelo `config.js`.
-- Banco para v0.6: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.5, faça backup e execute `supabase-migration-v0.6.sql`. Se estiver na v0.4 ou anterior, siga a sequência completa de migrações descrita no README e no guia do Supabase.
+- Banco para v0.7: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.6, faça backup e execute `supabase-migration-v0.7.sql`. Se estiver na v0.4 ou anterior, siga a sequência completa de migrações descrita no README e no guia do Supabase.
 - Anonymous Sign-Ins habilitado.
 - Um navegador/perfil para o mestre e pelo menos um perfil diferente para jogador.
 - Para o teste real, não utilize a mesma sessão autenticada em dois perfis que compartilham o mesmo armazenamento.
@@ -184,3 +184,20 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 9. Salve e encerre a sessão, abra novamente a campanha e confira se o mapa, posições, marcadores descobertos, ouro e HP foram preservados.
 
 Esses testes exigem a função SQL `request_map_move` da v0.6. Em um banco que já estava na v0.5, execute `supabase-migration-v0.6.sql` antes de testar o pedido de movimento feito pelo jogador.
+
+
+### Testes adicionais de objetos e miniaturas (v0.7)
+
+- [ ] O mestre usa a ferramenta **Porta** para colocar uma porta em uma casa livre.
+- [ ] O mestre consegue abrir e fechar a porta clicando nela.
+- [ ] Uma porta fechada bloqueia o caminho das peças.
+- [ ] Um jogador próximo solicita abrir a porta e o pedido aparece para o mestre.
+- [ ] O mestre aprova a solicitação e todos veem a porta aberta.
+- [ ] O mestre coloca um altar em uma casa livre.
+- [ ] Um jogador próximo solicita examinar o altar e o mestre aprova.
+- [ ] O altar é revelado e uma descoberta aparece no diário.
+- [ ] O mestre remove um objeto com a ferramenta **Remover objeto**.
+- [ ] As peças dos personagens exibem símbolo e iniciais, e a criatura tem destaque visual.
+- [ ] Salvo e retomado o jogo, portas, altares, estado de descoberta e posições continuam iguais.
+
+Essas interações compartilhadas exigem a função `request_map_interaction` da v0.7. Um banco que já estava na v0.6 precisa receber `supabase-migration-v0.7.sql`.

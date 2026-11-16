@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 0.6**  
+**Versão do jogo: 0.7**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -16,18 +16,19 @@ Este projeto foi preparado para quem não quer contratar um servidor VPS nem dei
 
 Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o Supabase, **não tente adivinhar os passos**. Siga os guias na ordem abaixo:
 
-1. **[GUIA-SUPABASE-DO-ZERO.md](GUIA-SUPABASE-DO-ZERO.md)** — criar a conta, criar o projeto, preparar o banco de dados, habilitar o acesso anônimo e configurar a chave pública.
+1. **[GUIA-SUPABASE-DO-ZERO.md](GUIA-SUPABASE-DO-ZERO.md)** — criar a conta, criar o projeto, preparar o banco, habilitar acesso visitante e configurar a chave pública.
 2. **[GUIA-GITHUB-PAGES-DO-ZERO.md](GUIA-GITHUB-PAGES-DO-ZERO.md)** — criar um repositório e publicar o jogo gratuitamente.
-3. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
-4. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
-5. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
-6. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-7. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-8. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+3. **[GUIA-LOGIN-E-PROGRESSO.md](GUIA-LOGIN-E-PROGRESSO.md)** — configurar confirmação de e-mail e transformar o acesso visitante em conta para continuar em outro dispositivo.
+4. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
+5. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
+6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
+7. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+8. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+9. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 0.6
+## 2. O que está incluído na versão 0.7
 
 ### Campanhas e jogadores
 
@@ -79,7 +80,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Dados narrativos guardados no campo `game_state` JSONB já existente.
 
 
-### Exploração tática e mapas (v0.6)
+### Exploração tática e mapas (v0.7)
 
 - Quatro mapas 2D em grade: Estrada de Eldoria, Vila de Brumafolha, Torre dos Vigias e Santuário das Raízes.
 - Grade de 10 × 8 casas, com terreno livre, trilhas, água, árvores, casas, rochas, colunas e muros.
@@ -95,21 +96,45 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Posições, mapas e marcadores salvos em `campaigns.game_state`.
 - Nova função RPC `request_map_move`, que permite ao jogador solicitar somente o movimento da própria peça.
 
+### Conta, login e progresso entre dispositivos (v0.7)
+
+- O jogo cria um acesso visitante automaticamente quando o Supabase está conectado.
+- O botão **Salvar progresso** permite vincular um e-mail à identidade visitante atual e definir uma senha depois da confirmação do endereço.
+- O vínculo preserva o mesmo `auth.uid()` do visitante; por isso, os vínculos de campanhas, fichas e eventos associados a esse identificador continuam ligados à mesma pessoa.
+- Login por e-mail e senha em computador, celular ou tablet.
+- Recuperação de senha por e-mail.
+- Alteração de senha após entrar.
+- Ao entrar em outro dispositivo, a lista de campanhas ligadas à conta é carregada do Supabase.
+- A autenticação é administrada pelo Supabase Auth; não há senha armazenada manualmente nas tabelas do jogo.
+
+**Limites importantes:** a conta só sincroniza campanhas criadas/participadas no Supabase. Campanhas criadas anteriormente no modo local (`localStorage`) não são enviadas automaticamente à nuvem. Uma sessão visitante não pode ser recuperada em outro dispositivo até que o jogador conclua o vínculo do e-mail e defina uma senha. No novo dispositivo, entre na conta antes de criar um personagem ou entrar em uma campanha como visitante.
+
+### Exploração visual (v0.7)
+
+- Miniaturas visuais estilizadas por classe para os aventureiros, com iniciais e símbolos.
+- Animação suave de ociosidade e destaque da criatura no mapa.
+- Portas que o mestre pode posicionar e abrir/fechar.
+- Jogadores próximos podem solicitar abertura de portas; o mestre aprova ou recusa.
+- Altares que podem ser examinados mediante pedido e aprovação do mestre.
+- Descobertas aprovadas são registradas no diário da campanha.
+- Portas fechadas bloqueiam caminhos e casas.
+- Ações de interação com mapa são validadas por uma função RPC do Supabase.
+
 ### Biblioteca
 
 A interface apresenta a estrutura inicial dos sete livros: Livro do Mestre, Bestiário, Grandes Chefes, Atlas dos Cinco Reinos, Grimório, Arsenal e Manual do Aventureiro. **Os capítulos completos, ilustrações editoriais e PDFs ainda serão produzidos em uma etapa posterior.** Não interprete os títulos dos livros como se todo o conteúdo já estivesse escrito.
 
 ## 3. O que ainda não está pronto
 
-A versão 0.6 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
+A versão 0.7 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
 
-- A campanha completa ainda está em produção. A versão 0.6 mantém o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
+- A campanha completa ainda está em produção. A versão 0.7 mantém o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
 - Livros completos e PDFs diagramados.
 - Bestiário extenso, chefes com várias fases e inteligência avançada dos monstros.
-- Mapas com artes próprias em alta resolução, miniaturas animadas, áreas de efeito, linhas de visão e ferramentas avançadas de batalha.
+- Mapas com artes próprias em alta resolução, miniaturas 3D/ilustradas, áreas de efeito, linhas de visão e ferramentas avançadas de batalha.
 - Condições de estado completas (veneno, sangramento, congelamento etc.).
 - Troca de equipamentos por uma interface de inventário completa.
-- Sistema de login permanente com e-mail ou outro método e recuperação entre dispositivos.
+- Login social (Google/Discord), passkeys e autenticação multifator ainda não estão implementados.
 - Chat privado, voz e música compartilhada.
 - WebRTC/P2P direto entre jogadores.
 - Testes de carga e segurança para uma publicação pública de grande escala.
@@ -121,7 +146,7 @@ O livro do mestre na interface contém somente uma estrutura inicial. **Não col
 | Componente | Para que serve |
 |---|---|
 | GitHub Pages | Entrega a página, os estilos e os arquivos JavaScript. |
-| Supabase Auth | Cria e mantém a identidade dos participantes. |
+| Supabase Auth | Cria identidades visitantes e contas permanentes por e-mail/senha; permite login em mais de um dispositivo. |
 | Supabase Database | Guarda campanhas, participantes, personagens, estado e histórico. |
 | Supabase Realtime | Notifica os navegadores sobre mudanças e eventos da sala. |
 | Navegador do mestre | É a autoridade lógica da mesa durante a sessão; calcula resultados e atualiza o estado oficial. |
@@ -129,7 +154,7 @@ O livro do mestre na interface contém somente uma estrutura inicial. **Não col
 
 **Importante: não há um servidor VPS mantido por você.** O Supabase é um serviço hospedado na nuvem e precisa estar disponível para que a campanha online funcione. O computador do mestre só precisa ficar ligado e conectado durante a partida. Entre sessões, o mestre pode desligá-lo: os dados confirmados permanecem no banco.
 
-A versão 0.6 usa a comunicação Realtime do Supabase. **Ela ainda não usa conexão direta WebRTC/P2P.** Portanto, não é correto dizer que o computador do mestre está recebendo conexões de internet diretamente dos jogadores. O mestre é a autoridade da lógica de jogo; o Supabase transporta as atualizações e armazena os dados.
+A versão 0.7 usa a comunicação Realtime do Supabase. **Ela ainda não usa conexão direta WebRTC/P2P.** Portanto, não é correto dizer que o computador do mestre está recebendo conexões de internet diretamente dos jogadores. O mestre é a autoridade da lógica de jogo; o Supabase transporta as atualizações e armazena os dados.
 
 ## 5. Instalação pela primeira vez
 
@@ -147,6 +172,8 @@ Abra [GUIA-SUPABASE-DO-ZERO.md](GUIA-SUPABASE-DO-ZERO.md). O guia explica como:
 - Copiar a Project URL e a Publishable key.
 - Preencher `config.js` sem expor uma chave secreta.
 
+Depois de publicar o site, abra também [GUIA-LOGIN-E-PROGRESSO.md](GUIA-LOGIN-E-PROGRESSO.md) para configurar login, confirmação de e-mail e URLs de retorno. **Faça o vínculo do e-mail no dispositivo original antes de tentar continuar em outro aparelho.**
+
 ### Passo B — GitHub Pages
 
 Abra [GUIA-GITHUB-PAGES-DO-ZERO.md](GUIA-GITHUB-PAGES-DO-ZERO.md). O guia explica como criar um repositório, enviar os arquivos para a raiz e ativar Pages.
@@ -161,14 +188,15 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 
 | Situação | O que executar |
 |---|---|
-| Nunca criou as tabelas de Aethra / projeto Supabase novo | Execute todo o `supabase-schema.sql` uma vez. |
-| Banco já está na versão 0.5 | Faça backup e execute `supabase-migration-v0.6.sql` uma vez. |
-| O banco já está na versão 0.4 | Execute `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`; atualize os arquivos do site. |
-| O banco já está na versão 0.3 | Faça backup e execute, nesta ordem, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`. |
-| O banco está na versão 0.2 | Faça backup e execute, nesta ordem, `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`. |
-| O banco é da versão 0.1 ou de uma estrutura modificada manualmente | Não execute migrações às cegas. Crie um projeto Supabase de teste ou peça ajuda para identificar o esquema atual antes de alterar o banco. |
+| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.7. |
+| Banco já na v0.6 | Faça backup e execute `supabase-migration-v0.7.sql` uma vez. |
+| Banco já na v0.5 | Execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`. |
+| Banco já na v0.4 | Execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
+| Banco já na v0.3 | Execute, nesta ordem, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
+| Banco já na v0.2 | Execute, nesta ordem, `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
+| Banco v0.1 ou estrutura alterada manualmente | Não execute migrações às cegas. Faça uma cópia de segurança e peça ajuda para identificar a estrutura antes de atualizar. |
 
-Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. A v0.5 atualiza o estado inicial de campanhas novas e a v0.6 adiciona a função `request_map_move`. Os mapas, as posições, a névoa e os marcadores ficam no campo JSONB `campaigns.game_state`; não são necessárias tabelas adicionais. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
+Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. A v0.5 atualiza o estado inicial de campanhas novas, a v0.6 adiciona a função `request_map_move` e a v0.7 adiciona a função `request_map_interaction` para portas e altares. A autenticação por e-mail/senha é administrada pelo Supabase Auth e não exige uma tabela ou migração de senha própria. Os mapas, as posições, a névoa e os marcadores ficam no campo JSONB `campaigns.game_state`; não são necessárias tabelas adicionais. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
 
 ## 7. Configuração do `config.js`
 
@@ -214,12 +242,14 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco em um projeto novo. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7 em um projeto novo. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
-| `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos quatro mapas, movimentos, névoa, baús e armadilhas. |
+| `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
+| `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
+| `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
 | `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura, usar o painel narrativo e consultar as limitações atuais. |
 | `CHANGELOG.md` | Histórico das versões. |
 | `REGRAS-DE-COMBATE.md` | Regras implementadas na versão 0.4. |
@@ -246,4 +276,4 @@ Antes de usar uma campanha importante, siga o roteiro de teste e confirme os res
 
 ---
 
-**Reino de Aethra v0.6 — A primeira jornada agora pode ser explorada em mapas táticos compartilhados, com movimento validado pelo mestre.**
+**Reino de Aethra v0.7 — Os aventureiros podem vincular suas fichas a uma conta e continuar a crônica em outros dispositivos.**

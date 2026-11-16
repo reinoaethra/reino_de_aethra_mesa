@@ -1,4 +1,4 @@
-# Guia do Supabase do zero — Reino de Aethra v0.6
+# Guia do Supabase do zero — Reino de Aethra v0.7
 
 Este tutorial foi escrito para quem **nunca usou Supabase, nunca criou um banco de dados e não sabe programar**. Leia uma etapa de cada vez. Você não precisa instalar o Supabase no computador: tudo será feito pelo navegador.
 
@@ -92,7 +92,7 @@ Esta é a etapa em que você instala a estrutura de dados do jogo. Parece técni
 
 ### 3.1 Encontrar o arquivo certo no ZIP
 
-1. Baixe o pacote ZIP do Reino de Aethra v0.6.
+1. Baixe o pacote ZIP do Reino de Aethra v0.7.
 2. No computador, encontre o arquivo ZIP baixado.
 3. Clique nele com o botão direito e escolha **Extrair tudo** (Windows) ou use o aplicativo de extração disponível.
 4. Abra a pasta resultante.
@@ -402,7 +402,7 @@ Quando pedir ajuda, envie o nome do arquivo e a mensagem de erro completa. **Nun
 
 ## PARTE FINAL — Atualizar o banco para a versão 0.5
 
-Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.6, o padrão novo já está incluído.
+Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.7, o padrão novo já está incluído.
 
 ### O que esta migração faz?
 
@@ -434,7 +434,7 @@ Crie uma campanha de teste. O capítulo inicial deverá aparecer como **Capítul
 
 ## Atualização para mapas táticos — versão 0.6
 
-Esta etapa só é necessária se o seu banco já estava funcionando na versão 0.5. Se você criou um projeto Supabase agora e executou o arquivo `supabase-schema.sql` que veio no pacote v0.6, a função de movimento já está incluída e você não precisa executar esta migração.
+Esta etapa só é necessária se o seu banco já estava funcionando na versão 0.5. Se você criou um projeto Supabase agora e executou o arquivo `supabase-schema.sql` que veio no pacote v0.7, a função de movimento já está incluída e você não precisa executar esta migração.
 
 A migração `supabase-migration-v0.6.sql` cria a função `request_map_move`. Ela permite que um jogador envie um pedido de movimento para a própria peça. O mestre recebe o pedido, confere obstáculos, distância e turno e aprova ou recusa. A migração não apaga campanhas, personagens, eventos ou inventários.
 
@@ -451,13 +451,89 @@ A migração `supabase-migration-v0.6.sql` cria a função `request_map_move`. E
 9. Confira se o texto começa com `-- Reino de Aethra v0.6`.
 10. Clique em **Run** (Executar).
 11. Aguarde a mensagem de sucesso. Se aparecer erro, não execute repetidamente: copie a mensagem completa sem incluir senhas nem chaves e peça ajuda.
-12. Depois de confirmar a migração, publique os arquivos do site v0.6 no GitHub Pages, preservando seu `config.js` configurado.
+12. Se estiver atualizando para a versão atual, continue com a migração v0.7 descrita na seção seguinte. Execute todas as migrações necessárias antes de publicar o pacote v0.7 no GitHub Pages, preservando seu `config.js` configurado.
 
 ### Qual arquivo SQL usar?
 
-- **Projeto novo:** execute apenas `supabase-schema.sql` do pacote v0.6.
-- **Banco na v0.5:** execute `supabase-migration-v0.6.sql` uma vez.
-- **Banco na v0.4:** execute primeiro `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`.
-- **Banco na v0.3 ou v0.2:** faça backup e siga a sequência completa de migrações descrita no README: v0.2 → v0.3 → v0.4 → v0.5 → v0.6.
+- **Projeto novo:** execute apenas `supabase-schema.sql` do pacote v0.7.
+- **Banco na v0.6:** execute `supabase-migration-v0.7.sql`.
+- **Banco na v0.5:** execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`.
+- **Banco na v0.4:** execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`.
+- **Banco na v0.3 ou v0.2:** faça backup e siga a sequência completa de migrações descrita no README, sem pular versões.
+
+Depois de todas as migrações, publique o pacote mais recente (v0.7) uma única vez. Não é necessário publicar versões intermediárias.
 
 Não execute o esquema completo por cima de um banco existente.
+
+
+---
+
+## Atualização do banco para mapas interativos — versão 0.7
+
+Leia esta seção somente se o banco já estava funcionando na v0.6. Se criou um projeto novo e executou o `supabase-schema.sql` da v0.7, esta função já está incluída e não é necessário executar a migração separada.
+
+A migração `supabase-migration-v0.7.sql` adiciona a função segura `request_map_interaction`, usada para que um jogador solicite a abertura de uma porta ou a inspeção de um altar. O mestre recebe o pedido e aprova ou recusa. A migração não apaga campanhas, personagens, eventos ou fichas.
+
+### Como executar a migração v0.7
+
+1. Abra <https://supabase.com/dashboard> e entre na conta.
+2. Selecione a organização e o projeto que já contém o banco v0.6 de Aethra.
+3. Antes de executar SQL, faça backup usando o procedimento de backup explicado neste guia.
+4. Abra **SQL Editor** no menu lateral.
+5. Clique em **New query**.
+6. Na pasta extraída do ZIP v0.7, encontre `supabase-migration-v0.7.sql`.
+7. Abra o arquivo com o Bloco de Notas (não use Word).
+8. Pressione `Ctrl + A` e depois `Ctrl + C`.
+9. Volte ao SQL Editor, clique na área de consulta e pressione `Ctrl + V`.
+10. Confira se o início do arquivo menciona v0.7 e interações com portas/altares.
+11. Clique em **Run**.
+12. Aguarde a mensagem de sucesso. Se aparecer erro, pare e copie a mensagem completa, sem enviar senhas ou chaves.
+13. Publique os arquivos da v0.7 no GitHub Pages.
+
+### Sequência resumida das atualizações
+
+- Projeto novo: `supabase-schema.sql` da v0.7.
+- Banco v0.6: `supabase-migration-v0.7.sql`.
+- Banco v0.5: migrações v0.6 e v0.7, nessa ordem.
+- Banco v0.4: migrações v0.5, v0.6 e v0.7, nessa ordem.
+- Bancos v0.3 ou v0.2: siga todas as migrações históricas, da menor para a maior, sem pular versões.
+
+A conta por e-mail/senha descrita na seção seguinte não exige SQL adicional: ela usa o serviço Supabase Auth.
+
+---
+
+## Configurar login permanente (v0.7)
+
+Esta parte permite que um jogador salve o acesso visitante com e-mail e senha para continuar em outros dispositivos. Ela é adicional às etapas anteriores deste guia.
+
+1. No painel Supabase, abra **Authentication → Sign In / Providers** e habilite o provedor **Email**.
+2. Permita novos cadastros e mantenha a confirmação do e-mail habilitada.
+3. Em Authentication, ative **Anonymous Sign-Ins** (o jogo usa esse acesso visitante na primeira abertura).
+4. Em **Authentication → Configuration / General Configuration**, ative **Allow manual linking**. Essa opção é necessária para vincular o e-mail ao visitante sem trocar seu identificador.
+5. Em **Authentication → URL Configuration**, defina **Site URL** com o endereço público exato do jogo no GitHub Pages.
+6. Na lista **Redirect URLs**, adicione também o endereço exato do jogo, incluindo o caminho do repositório e a barra final quando houver.
+7. Salve as alterações.
+8. No dispositivo onde a ficha já existe, abra o jogo e use **Salvar progresso**. Confirme o e-mail no mesmo navegador e volte ao jogo para definir a senha.
+9. No celular/tablet, abra o jogo e entre com o mesmo e-mail e senha antes de criar ou entrar como visitante em outra campanha.
+
+Exemplo fictício de URL de um projeto GitHub Pages:
+
+```text
+https://meu-usuario.github.io/reino-de-aethra/
+```
+
+Troque os nomes do exemplo pelo seu endereço real. A URL configurada no Supabase precisa corresponder ao endereço publicado. A documentação do Supabase explica essas opções e pode ter alterações de rótulos na interface:
+
+- <https://supabase.com/docs/guides/auth/auth-anonymous>
+- <https://supabase.com/docs/guides/auth/general-configuration>
+- <https://supabase.com/docs/guides/auth/redirect-urls>
+
+**Não execute SQL adicional para criar usuários.** O Supabase Auth administra as contas. A autenticação não exige uma migração de tabelas para a v0.7.
+
+### Limitações que você precisa conhecer
+
+- O acesso visitante original não pode ser recuperado em outro dispositivo até que o jogador conclua o vínculo do e-mail e defina uma senha.
+- O jogador deve confirmar o e-mail no mesmo navegador/perfil em que iniciou o vínculo.
+- Campanhas feitas em modo local não são automaticamente transferidas para o Supabase.
+- Em um aparelho novo, faça login antes de entrar em uma campanha como visitante.
+- O computador do mestre continua necessário apenas durante a sessão ao vivo; o Supabase mantém os dados salvos entre sessões.

@@ -1,4 +1,4 @@
-/* Reino de Aethra v0.6 — mapas táticos, exploração compartilhada e campanha narrativa.
+/* Reino de Aethra v0.7 — contas sincronizadas, miniaturas, portas e interações no mapa.
  * Modo local funciona sem backend. Para salas reais, configure Supabase e aplique o schema/migration.
  */
 (() => {
@@ -6,7 +6,7 @@
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
   const app = $('#app'), modalRoot = $('#modal-root'), toastRoot = $('#toast-root');
-  const KEYS = { config:'aethra.supabase.config.v1', local:'aethra.local.campaigns.v1', active:'aethra.active.campaign.v1' };
+  const KEYS = { config:'aethra.supabase.config.v1', local:'aethra.local.campaigns.v1', active:'aethra.active.campaign.v1', pendingLinkEmail:'aethra.pending.link.email.v1' };
   const BOOKS = [
     {id:'master',icon:'♛',title:'Livro do Mestre',subtitle:'Guia reservado',desc:'A campanha completa, segredos, capítulos, NPCs, revelações, encontros e orientações para conduzir a narrativa.',access:'Mestre'},
     {id:'bestiary',icon:'♞',title:'Bestiário de Aethra',subtitle:'Criaturas e monstros',desc:'Criaturas comuns, monstros mágicos, mortos-vivos, demônios, atributos, comportamentos e habilidades.',access:'Todos'},
@@ -133,15 +133,23 @@
   }
   function defaultTokenPosition(userId,mapId){return defaultPartyPositions(mapId).get(userId)||{x:1,y:6}}
   function mapTokenPosition(tokenId,record,mapId){if(record.tokens[tokenId])return record.tokens[tokenId];if(tokenId==='monster')return {x:7,y:3};return defaultTokenPosition(tokenId,mapId)}
+  function characterMiniatureClass(character){return ({Guerreiro:'warrior',Arcano:'arcane',Patrulheiro:'ranger',Paladino:'paladin',Assassino:'assassin',Clérigo:'cleric',Druida:'druid',Invocador:'summoner'})[character?.class]||'warrior'}
+  function characterSigil(character){return ({Guerreiro:'⚔',Arcano:'✧',Patrulheiro:'➶',Paladino:'✥',Assassino:'☾',Clérigo:'✚',Druida:'❧',Invocador:'◈'})[character?.class]||'✦'}
+  function tokenInitials(name){return String(name||'A').trim().split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase()||'A'}
   function mapTokens(record,gs=state.campaign?.game_state||defaultGameState()){
     const mapId=explorationData(gs).mapId,defaults=defaultPartyPositions(mapId);
-    const list=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({id:m.user_id,name:m.character.name||m.display_name||'Aventureiro',kind:'player',emoji:({Guerreiro:'🛡️',Arcano:'🔮',Patrulheiro:'🏹',Paladino:'✨',Assassino:'🗡️',Clérigo:'✚',Druida:'🌿',Invocador:'◈'})[m.character.class]||'⚔️',position:record.tokens[m.user_id]||defaults.get(m.user_id)||{x:1,y:6}}));
-    if(gs.encounter&&!gs.encounter.defeated)list.push({id:'monster',name:gs.encounter.name||'Criatura',kind:'monster',emoji:gs.encounter.emoji||'🐉',position:mapTokenPosition('monster',record,mapId)});
+    const list=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({id:m.user_id,name:m.character.name||m.display_name||'Aventureiro',kind:'player',className:characterMiniatureClass(m.character),sigil:characterSigil(m.character),initials:tokenInitials(m.character.name||m.display_name),position:record.tokens[m.user_id]||defaults.get(m.user_id)||{x:1,y:6}}));
+    if(gs.encounter&&!gs.encounter.defeated)list.push({id:'monster',name:gs.encounter.name||'Criatura',kind:'monster',className:'monster',sigil:gs.encounter.emoji||'🐉',initials:'',position:mapTokenPosition('monster',record,mapId)});
     return list;
   }
+  function mapCellBlocked(mapId,x,y,record=null){
+    if(mapTileInfo(mapTile(mapId,x,y)).blocked)return true;
+    return !!record?.markers?.some(marker=>marker.type==='door'&&!marker.open&&marker.x===x&&marker.y===y);
+  }
   function mapCellVisible(x,y,record,gs,tokens=mapTokens(record,gs)){if(isMaster()||!record.fogEnabled)return true;const key=mapCellKey(x,y);if(record.revealedCells.includes(key))return true;return tokens.filter(t=>t.kind==='player').some(t=>Math.max(Math.abs(t.position.x-x),Math.abs(t.position.y-y))<=1)}
-  function mapPathDistance(mapId,start,end,occupied=[]){const key=(x,y)=>`${x},${y}`,blocked=new Set(occupied.map(p=>key(p.x,p.y)));const queue=[[start.x,start.y,0]],seen=new Set([key(start.x,start.y)]);while(queue.length){const [x,y,d]=queue.shift();if(x===end.x&&y===end.y)return d;for(const [nx,ny] of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){if(nx<0||ny<0||nx>=MAP_WIDTH||ny>=MAP_HEIGHT||mapTileInfo(mapTile(mapId,nx,ny)).blocked||blocked.has(key(nx,ny)))continue;const k=key(nx,ny);if(!seen.has(k)){seen.add(k);queue.push([nx,ny,d+1])}}}return Infinity}
+  function mapPathDistance(mapId,start,end,occupied=[],record=null){const key=(x,y)=>`${x},${y}`,blocked=new Set(occupied.map(p=>key(p.x,p.y)));const queue=[[start.x,start.y,0]],seen=new Set([key(start.x,start.y)]);while(queue.length){const [x,y,d]=queue.shift();if(x===end.x&&y===end.y)return d;for(const [nx,ny] of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){if(nx<0||ny<0||nx>=MAP_WIDTH||ny>=MAP_HEIGHT||mapCellBlocked(mapId,nx,ny,record)||blocked.has(key(nx,ny)))continue;const k=key(nx,ny);if(!seen.has(k)){seen.add(k);queue.push([nx,ny,d+1])}}}return Infinity}
   function pendingMapMovesFrom(events){const resolved=new Set(events.filter(e=>e.event_type==='session_note'&&e.payload?.kind==='map'&&e.payload?.request_id).map(e=>e.payload.request_id));return events.filter(e=>e.event_type==='map_move_request'&&!resolved.has(e.id))}
+  function pendingMapInteractionsFrom(events){const resolved=new Set(events.filter(e=>e.event_type==='session_note'&&e.payload?.kind==='map-interaction'&&e.payload?.request_id).map(e=>e.payload.request_id));return events.filter(e=>e.event_type==='map_interaction_request'&&!resolved.has(e.id))}
   function questProgress(quest){const objectives=quest.objectives||[];const done=objectives.filter(o=>o.completed).length;return {done,total:objectives.length,percent:objectives.length?Math.round(done/objectives.length*100):0}}
   function markObjective(quests,questId,objectiveId){
     const next=cloneData(quests);const quest=next.find(q=>q.id===questId);if(!quest||quest.status==='available'||quest.status==='completed')return {quests:next,changed:false,completed:false};
@@ -215,11 +223,11 @@
   }
   const state = {
     view:'home', modal:null, backend:null, user:null, backendReady:false, realtimeStatus:'disconnected',
-    campaign:null, member:null, members:[], events:[], pendingDamage:[], pendingMapMoves:[], channel:null, channelPresence:[], processed:new Set(),
+    campaign:null, member:null, members:[], events:[], pendingDamage:[], pendingMapMoves:[], pendingMapInteractions:[], channel:null, channelPresence:[], authSubscription:null, processed:new Set(),
     charStep:0, charDraft:null, monsterDraft:85, toastTimer:null, diceOverlayTimer:null, cloudCampaigns:[], prefillJoinCode:null,
     selectedMapToken:null, selectedMapTool:'move',
     instanceId:null, lastSyncAt:null, rollQueue:Promise.resolve(), combatQueue:Promise.resolve(), isRefreshing:false,
-    localCampaigns:readLocalCampaigns(), currentBook:null
+    localCampaigns:readLocalCampaigns(), currentBook:null, accountMode:'home'
   };
   function readLocalCampaigns(){try{return JSON.parse(localStorage.getItem(KEYS.local)||'[]')}catch{return []}}
   function writeLocalCampaigns(){localStorage.setItem(KEYS.local,JSON.stringify(state.localCampaigns))}
@@ -232,6 +240,77 @@
     if(state.realtimeStatus==='connecting'){setConnection('Conectando à sala',false);return}
     if(state.realtimeStatus==='CHANNEL_ERROR'||state.realtimeStatus==='TIMED_OUT'||state.realtimeStatus==='CLOSED'){setConnection('Reconectando sala',false);return}
     setConnection('Supabase conectado',true);
+  }
+  function isAnonymousUser(user=state.user){return !!user?.is_anonymous}
+  function isPermanentUser(user=state.user){return !!user&&!isAnonymousUser(user)}
+  function pendingLinkEmail(){return (localStorage.getItem(KEYS.pendingLinkEmail)||'').trim().toLowerCase()}
+  function pendingLinkConfirmed(){
+    const pending=pendingLinkEmail();
+    if(!pending||!state.user?.email)return false;
+    const confirmed=state.user.email_confirmed_at||state.user.confirmed_at;
+    return state.user.email.toLowerCase()===pending&&!!confirmed&&!isAnonymousUser();
+  }
+  function refreshAccountButton(){
+    const label=$('#account-label'),button=$('#account-button');if(!label||!button)return;
+    if(!state.backendReady){label.textContent='Conta';button.title='Configure o Supabase para criar uma conta sincronizada';return}
+    if(isAnonymousUser()){label.textContent='Salvar progresso';button.title='Vincule um e-mail e senha para continuar em outros dispositivos';}
+    else{label.textContent='Conta ✓';button.title=state.user?.email||'Conta sincronizada';}
+  }
+  function authRedirectUrl(){return `${location.origin}${location.pathname}`}
+  function clearCampaignContext(){
+    if(state.channel&&state.backend)state.backend.removeChannel(state.channel);
+    state.channel=null;state.channelPresence=[];state.campaign=null;state.member=null;state.members=[];state.events=[];
+    state.pendingDamage=[];state.pendingMapMoves=[];state.pendingMapInteractions=[];state.processed=new Set();state.cloudCampaigns=[];
+    localStorage.removeItem(KEYS.active);state.view='campaigns';
+  }
+  function handleAuthStateChange(event,session){
+    const oldId=state.user?.id;const nextUser=session?.user||null;
+    state.user=nextUser;
+    if(oldId&&nextUser&&oldId!==nextUser.id){clearCampaignContext();Promise.resolve().then(()=>loadCloudCampaigns());}
+    if(event==='PASSWORD_RECOVERY'){state.accountMode='recovery-password';state.modal='account';setTimeout(render,0);}
+    if(pendingLinkConfirmed()&&state.accountMode!=='set-password'){state.accountMode='set-password';state.modal='account';setTimeout(render,0);}
+    refreshAccountButton();
+  }
+  async function linkGuestAccount(email){
+    if(!state.backendReady||!state.user)throw new Error('Conecte o Supabase antes de criar uma conta.');
+    if(!isAnonymousUser())throw new Error('Esta sessão já possui uma conta permanente.');
+    if(state.member?.campaign_id)toast('A identidade será vinculada à mesma ficha e às mesmas campanhas. Não feche esta aba até confirmar o e-mail.');
+    const normalized=email.trim().toLowerCase();
+    if(!normalized||!normalized.includes('@'))throw new Error('Informe um endereço de e-mail válido.');
+    localStorage.setItem(KEYS.pendingLinkEmail,normalized);
+    const {error}=await state.backend.auth.updateUser({email:normalized},{emailRedirectTo:authRedirectUrl()});
+    if(error){localStorage.removeItem(KEYS.pendingLinkEmail);if(/manual.*link|link.*disabled/i.test(error.message||''))throw new Error('Ative Manual Linking em Authentication → Configuration no Supabase e tente novamente.');throw error;}
+    state.accountMode='await-email';render();toast('E-mail de confirmação solicitado. Abra a mensagem e confirme usando este mesmo navegador.');
+  }
+  async function finishAccountPassword(password,confirmPassword){
+    if(!pendingLinkConfirmed())throw new Error('Primeiro confirme o endereço de e-mail pelo link enviado pelo Supabase.');
+    if(password.length<8)throw new Error('Use uma senha com pelo menos 8 caracteres.');
+    if(password!==confirmPassword)throw new Error('As duas senhas não coincidem.');
+    const {data,error}=await state.backend.auth.updateUser({password});if(error)throw error;
+    state.user=data.user||state.user;localStorage.removeItem(KEYS.pendingLinkEmail);state.accountMode='profile';render();toast('Conta criada! A mesma ficha agora pode ser acessada em outros dispositivos.');
+  }
+  async function signInExistingAccount(email,password){
+    if(state.user?.is_anonymous&&state.member?.campaign_id)throw new Error('Esta sessão visitante já está ligada a uma campanha neste dispositivo. Volte e escolha “Salvar progresso” para vincular o e-mail sem perder a ficha.');
+    const {data,error}=await state.backend.auth.signInWithPassword({email:email.trim().toLowerCase(),password});if(error)throw error;
+    state.user=data.user;clearCampaignContext();state.modal=null;state.view='campaigns';await loadCloudCampaigns();render();toast('Login realizado. Suas campanhas vinculadas à conta foram carregadas.');
+  }
+  async function sendPasswordReset(email){
+    const normalized=email.trim().toLowerCase();if(!normalized.includes('@'))throw new Error('Informe um e-mail válido.');
+    const {error}=await state.backend.auth.resetPasswordForEmail(normalized,{redirectTo:authRedirectUrl()});if(error)throw error;
+    state.accountMode='reset-sent';render();toast('Se o e-mail estiver cadastrado, o Supabase enviará as instruções de recuperação.');
+  }
+  async function updateSignedInPassword(password,confirmPassword){
+    if(password.length<8)throw new Error('Use uma senha com pelo menos 8 caracteres.');
+    if(password!==confirmPassword)throw new Error('As duas senhas não coincidem.');
+    const {data,error}=await state.backend.auth.updateUser({password});if(error)throw error;
+    state.user=data.user||state.user;state.accountMode='profile';state.modal='account';render();toast('Senha atualizada com sucesso.');
+  }
+  async function signOutAccount(){
+    if(!state.backendReady)throw new Error('Supabase não está conectado.');
+    await state.backend.auth.signOut();
+    localStorage.removeItem(KEYS.pendingLinkEmail);
+    const {data,error}=await state.backend.auth.signInAnonymously();if(error)throw error;
+    clearCampaignContext();state.user=data.user;state.accountMode='home';state.modal=null;render();toast('Você saiu da conta neste dispositivo.');
   }
   function isMaster(){return state.member?.role==='master'}
   function isMasterController(){
@@ -258,7 +337,9 @@
       if(found){state.campaign=found;state.member=found.members.find(m=>m.user_id==='local-user')||found.members[0]||null;state.members=found.members;state.events=found.events||[]}
       else if(state.backendReady){try{await openCloudCampaign(active)}catch(e){console.warn('Não foi possível restaurar a última campanha',e)}}
     }
-    render();
+    if(state.backendReady&&pendingLinkConfirmed()){state.accountMode='set-password';state.modal='account';}
+    if(state.backendReady&&new URLSearchParams(location.hash.replace(/^#/, '')).get('type')==='recovery'){state.accountMode='recovery-password';state.modal='account';}
+    render();refreshAccountButton();
     if(state.backendReady)loadCloudCampaigns();
     const invite=new URLSearchParams(location.search).get('join');
     if(invite){state.prefillJoinCode=invite.toUpperCase();openModal('join');}
@@ -269,19 +350,22 @@
     const client=window.supabase.createClient(url.trim(),key.trim(),{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     let {data:{session}}=await client.auth.getSession();
     if(!session){const result=await client.auth.signInAnonymously();if(result.error)throw result.error;session=result.data.session}
-    // Testa se o esquema já foi instalado antes de habilitar o modo compartilhado.
     const schemaCheck=await client.from('campaigns').select('id').limit(1);
-    if(schemaCheck.error){
-      const detail=schemaCheck.error.message||'tabela campaigns indisponível';
-      throw new Error(`A autenticação funcionou, mas o banco de Aethra ainda não está pronto (${detail}). Execute o arquivo supabase-schema.sql no SQL Editor do Supabase e tente novamente.`);
-    }
+    if(schemaCheck.error){const detail=schemaCheck.error.message||'tabela campaigns indisponível';throw new Error(`A autenticação funcionou, mas o banco de Aethra ainda não está pronto (${detail}). Execute o arquivo supabase-schema.sql no SQL Editor do Supabase e tente novamente.`)}
     state.backend=client;state.user=session.user;state.backendReady=true;state.realtimeStatus='disconnected';
+    if(state.authSubscription?.unsubscribe)state.authSubscription.unsubscribe();
+    const {data:{subscription}}=client.auth.onAuthStateChange((event,nextSession)=>handleAuthStateChange(event,nextSession));
+    state.authSubscription=subscription;
     localStorage.setItem(KEYS.config,JSON.stringify({url:url.trim(),key:key.trim()}));
-    refreshConnectionLabel();
-    if(!silent)toast('Supabase conectado e esquema de campanhas localizado.');
+    refreshConnectionLabel();refreshAccountButton();
+    if(!silent)toast('Supabase conectado. Entre com sua conta ou salve o progresso do visitante.');
     return true;
   }
-  function disconnectSupabase(){if(state.channel&&state.backend)state.backend.removeChannel(state.channel);state.channel=null;state.channelPresence=[];state.backend=null;state.user=null;state.backendReady=false;state.realtimeStatus='disconnected';state.modal=null;localStorage.removeItem(KEYS.config);setConnection('Modo local',false);toast('Configuração do Supabase removida.');render()}
+  function disconnectSupabase(){
+    if(state.channel&&state.backend)state.backend.removeChannel(state.channel);
+    if(state.authSubscription?.unsubscribe)state.authSubscription.unsubscribe();
+    state.channel=null;state.channelPresence=[];state.authSubscription=null;state.backend=null;state.user=null;state.backendReady=false;state.realtimeStatus='disconnected';state.modal=null;localStorage.removeItem(KEYS.config);setConnection('Modo local',false);refreshAccountButton();toast('Configuração do Supabase removida.');render();
+  }
 
   function render(){
     if(state.view==='home')renderHome();
@@ -297,6 +381,8 @@
     if(state.modal==='character')renderCharacterModal();
     if(state.modal==='book')renderBookModal();
     if(state.modal==='rollPrompt')renderRollPromptModal();
+    if(state.modal==='account')renderAccountModal();
+    refreshAccountButton();
     const chatBox=$('.chat-messages');if(chatBox)chatBox.scrollTop=chatBox.scrollHeight;
   }
   function renderHome(){
@@ -366,7 +452,7 @@
     if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);return}
     const c=state.localCampaigns.find(x=>x.code.toUpperCase()===code.toUpperCase());if(!c)throw new Error('Código não encontrado no modo local. Para convidar pessoas de outros computadores, conecte o Supabase.');
     let m=c.members.find(x=>x.user_id==='local-user');if(!m){m={id:'local-player-'+Date.now(),campaign_id:c.id,user_id:'local-user',display_name:displayName,role:'player',character:null,status:'online'};c.members.push(m)}else m.display_name=displayName;
-    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';state.modal=null;render();toast('Você entrou na campanha.');
+    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';state.modal=null;render();toast('Você entrou na campanha.');
   }
   function pendingDamageFrom(events){const resolved=new Set(events.filter(e=>['damage_applied','damage_rejected'].includes(e.event_type)).map(e=>e.payload?.request_id).filter(Boolean));return events.filter(e=>e.event_type==='damage_request'&&!resolved.has(e.id))}
   async function openCloudCampaign(id){
@@ -376,7 +462,7 @@
       state.backend.from('campaign_events').select('*').eq('campaign_id',id).order('created_at',{ascending:false}).limit(500)
     ]);
     if(ce)throw ce;if(me)throw me;if(ee)throw ee;
-    state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
+    state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
     if(!state.member)throw new Error('Sua conta não está registrada como participante desta campanha. Entre novamente usando o código de convite.');
     localStorage.setItem(KEYS.active,id);state.view=c.status==='active'?'session':'lobby';state.modal=null;subscribeCampaign();render();
   }
@@ -393,7 +479,7 @@
       if(campaignRes.error)throw campaignRes.error;if(membersRes.error)throw membersRes.error;if(eventsRes.error)throw eventsRes.error;
       if(campaignRes.data)state.campaign=campaignRes.data;
       if(membersRes.data)state.members=membersRes.data;
-      if(eventsRes.data){state.events=eventsRes.data.reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id))}
+      if(eventsRes.data){state.events=eventsRes.data.reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id))}
       state.member=state.members.find(m=>m.user_id===state.user.id)||state.member;
       state.lastSyncAt=new Date().toISOString();
       render();
@@ -445,6 +531,9 @@
     if(ev.event_type==='damage_applied'||ev.event_type==='damage_rejected')state.pendingDamage=state.pendingDamage.filter(item=>item.id!==ev.payload?.request_id);
     if(ev.event_type==='map_move_request'){if(!state.pendingMapMoves.some(item=>item.id===ev.id))state.pendingMapMoves.push(ev);if(isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} solicitou movimento no mapa.`)}
     if(ev.event_type==='session_note'&&ev.payload?.kind==='map'&&ev.payload?.request_id)state.pendingMapMoves=state.pendingMapMoves.filter(item=>item.id!==ev.payload.request_id);
+    if(ev.event_type==='map_interaction_request'){if(!state.pendingMapInteractions.some(item=>item.id===ev.id))state.pendingMapInteractions.push(ev);if(isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} deseja interagir com um objeto do mapa.`)}
+    if(ev.event_type==='session_note'&&ev.payload?.kind==='map-interaction'&&ev.payload?.request_id)state.pendingMapInteractions=state.pendingMapInteractions.filter(item=>item.id!==ev.payload.request_id);
+    if(ev.event_type==='map_interaction_result'&&ev.payload?.accepted===false)toast(ev.payload.text||'Interação recusada.','error');
     if(ev.event_type==='dice_prompt'&&ev.payload?.target_user_ids?.includes(currentUserId()))toast(`O mestre solicitou um D20: ${ev.payload.reason||'Realize seu teste.'}`);
     if(ev.event_type==='dice_result')showDice(ev.payload?.result,ev.payload?.player_name||'Aventureiro');
     if(ev.event_type==='combat_action_result'&&Number.isInteger(ev.payload?.natural))showDice(ev.payload.natural,ev.payload?.player_name||'Aventureiro');
@@ -609,21 +698,22 @@
   function renderTacticalMap(gs){
     const exploration=explorationData(gs),record=activeMapRecord(gs),template=mapTemplate(exploration.mapId),tokens=mapTokens(record,gs);
     if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id|| (gs.encounter?'monster':null);
-    const selected=state.selectedMapToken||currentUserId();
-    const markers=record.markers||[];
-    const cells=[];
+    const selected=state.selectedMapToken||currentUserId(),markers=record.markers||[],cells=[];
     for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
-      const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y),marker=markers.find(m=>m.x===x&&m.y===y&&(isMaster()||m.discovered));
-      const tokenHtml=cellTokens.map(t=>`<span class="map-token ${t.kind==='monster'?'monster-token':'player-token'}" title="${esc(t.name)}">${t.emoji}</span>`).join('');
-      const markerHtml=marker?`<span class="map-marker" title="${esc(marker.type==='treasure'?'Baú':'Armadilha')}">${marker.type==='treasure'?'🧰':'⚠️'}</span>`:'';
-      const fogged=!visible;
-      cells.push(`<button class="map-cell tile-${info.cls} ${fogged?'fogged':''} ${cellTokens.some(t=>t.id===selected)?'token-selected':''} ${info.blocked?'blocked':''}" data-action="map-cell" data-x="${x}" data-y="${y}" ${fogged&&!isMaster()?'disabled':''} aria-label="Casa ${x+1}, linha ${y+1}: ${fogged?'não explorada':info.name}">${fogged?'?':`${info.glyph?`<span class="terrain-glyph">${info.glyph}</span>`:''}${markerHtml}${tokenHtml}`}</button>`);
+      const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y);
+      const marker=markers.find(m=>m.x===x&&m.y===y&&(isMaster()||((m.type==='door'||m.type==='altar')&&visible)||m.discovered));
+      const tokenHtml=cellTokens.map(t=>`<span class="map-token miniature ${t.kind==='monster'?'monster-token':'player-token mini-'+t.className} ${t.id===selected?'token-selected':''}" title="${esc(t.name)}"><span class="miniature-sigil">${esc(t.sigil)}</span>${t.kind==='player'?`<span class="miniature-name">${esc(t.initials)}</span>`:''}</span>`).join('');
+      const markerIcon=marker?(marker.type==='treasure'?'🧰':marker.type==='trap'?'⚠️':marker.type==='door'?(marker.open?'🚪':'🔒'):(marker.discovered?'✧':'◇')):'';
+      const markerHtml=marker?`<span class="map-marker marker-${marker.type} ${marker.open?'marker-open':''}" title="${esc(marker.type==='treasure'?'Baú':marker.type==='trap'?'Armadilha':marker.type==='door'?(marker.open?'Porta aberta':'Porta fechada'):'Altar antigo')}">${markerIcon}</span>`:'';
+      const fogged=!visible,doorBlocked=marker?.type==='door'&&!marker.open,blocked=mapCellBlocked(template.id,x,y,record);
+      cells.push(`<button class="map-cell tile-${info.cls} ${fogged?'fogged':''} ${cellTokens.some(t=>t.id===selected)?'token-selected':''} ${blocked?'blocked':''} ${doorBlocked?'door-closed':''} ${marker?.type==='altar'?'altar-cell':''}" data-action="map-cell" data-x="${x}" data-y="${y}" ${fogged&&!isMaster()?'disabled':''} aria-label="Casa ${x+1}, linha ${y+1}: ${fogged?'não explorada':marker?.type==='door'?(marker.open?'porta aberta':'porta fechada'):marker?.type==='altar'?'altar':info.name}">${fogged?'?':`${info.glyph?`<span class="terrain-glyph">${info.glyph}</span>`:''}${markerHtml}${tokenHtml}`}</button>`);
     }
     const options=tokens.map(t=>`<option value="${esc(t.id)}" ${selected===t.id?'selected':''}>${esc(t.name)}${t.kind==='monster'?' · Monstro':' · Aventureiro'}</option>`).join('');
     const presets=MAP_TEMPLATES.map(m=>`<button class="map-preset ${m.id===template.id?'active':''}" data-action="map-change" data-map-id="${m.id}" ${isMaster()?'':'disabled'}>${m.name}</button>`).join('');
-    const tools=isMaster()?`<div class="map-admin-tools"><label class="map-tool-select">Peça selecionada<select class="select" id="map-token-select">${options||'<option value="">Sem peças</option>'}</select></label><div class="map-tool-buttons"><button class="btn ${state.selectedMapTool==='move'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="move">Mover peça</button><button class="btn ${state.selectedMapTool==='reveal'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="reveal">Revelar área</button><button class="btn ${state.selectedMapTool==='treasure'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="treasure">Colocar baú</button><button class="btn ${state.selectedMapTool==='trap'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="trap">Colocar armadilha</button><button class="btn btn-quiet btn-small" data-action="toggle-map-fog">${record.fogEnabled?'Desativar névoa':'Ativar névoa'}</button></div></div>`:`<div class="notice map-player-help">Clique em uma casa explorada para solicitar o movimento de seu personagem. O mestre aprovará o deslocamento. ${record.fogEnabled?'As áreas ainda não descobertas permanecem ocultas.':'O mapa está totalmente visível.'}</div>`;
-    const pending=isMaster()&&state.pendingMapMoves.length?`<div class="map-pending"><div class="small-caps">Solicitações de movimento</div>${state.pendingMapMoves.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>Casa ${Number(ev.payload?.x)+1}, linha ${Number(ev.payload?.y)+1}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-move" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-move" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
-    return `<section class="panel tactical-map-panel"><div class="row between"><div><div class="small-caps">Exploração compartilhada</div><h3 style="margin:5px 0 0">Mapa tático</h3><p class="panel-subtitle" style="margin:5px 0 0">${esc(template.subtitle)} · ${MAP_WIDTH} × ${MAP_HEIGHT} casas</p></div><span class="tag gold">${tokens.length} peça(s)</span></div><div class="map-presets">${presets}</div>${tools}<div class="map-board-wrap"><div class="map-board map-${template.theme}" style="--map-cols:${MAP_WIDTH}">${cells.join('')}</div><div class="map-axis map-axis-bottom">${Array.from({length:MAP_WIDTH},(_,i)=>`<span>${i+1}</span>`).join('')}</div></div><div class="map-legend"><span><i class="legend-token">🛡️</i> Aventureiro</span><span><i class="legend-token">🐉</i> Criatura</span><span>🌳 Obstáculo</span><span>💧 Água</span><span>🧰 Baú</span><span>⚠️ Armadilha</span></div>${isMaster()?pending:''}<p class="map-footnote">Movimento: até 4 casas por turno em combate. Obstáculos e outras peças bloqueiam o caminho. O mestre valida os pedidos dos jogadores.</p></section>`;
+    const tools=isMaster()?`<div class="map-admin-tools"><label class="map-tool-select">Peça selecionada<select class="select" id="map-token-select">${options||'<option value="">Sem peças</option>'}</select></label><div class="map-tool-buttons"><button class="btn ${state.selectedMapTool==='move'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="move">Mover peça</button><button class="btn ${state.selectedMapTool==='reveal'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="reveal">Revelar área</button><button class="btn ${state.selectedMapTool==='treasure'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="treasure">Colocar baú</button><button class="btn ${state.selectedMapTool==='trap'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="trap">Colocar armadilha</button><button class="btn ${state.selectedMapTool==='door'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="door">Porta</button><button class="btn ${state.selectedMapTool==='altar'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="altar">Altar</button><button class="btn ${state.selectedMapTool==='erase'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="erase">Remover objeto</button><button class="btn btn-quiet btn-small" data-action="toggle-map-fog">${record.fogEnabled?'Desativar névoa':'Ativar névoa'}</button></div><p class="map-tool-hint">Selecione uma ferramenta e clique em uma casa livre. Com Porta, clique novamente para abrir/fechar a porta. Altar pode ser examinado pelos jogadores ao se aproximarem.</p></div>`:`<div class="notice map-player-help">Clique em uma casa explorada para mover seu personagem. Portas fechadas e altares podem ser examinados ao se aproximar; o mestre valida as interações. ${record.fogEnabled?'As áreas ainda não descobertas permanecem ocultas.':'O mapa está totalmente visível.'}</div>`;
+    const pendingMoves=isMaster()&&state.pendingMapMoves.length?`<div class="map-pending"><div class="small-caps">Solicitações de movimento</div>${state.pendingMapMoves.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>Casa ${Number(ev.payload?.x)+1}, linha ${Number(ev.payload?.y)+1}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-move" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-move" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
+    const pendingInteractions=isMaster()&&state.pendingMapInteractions.length?`<div class="map-pending"><div class="small-caps">Interações aguardando aprovação</div>${state.pendingMapInteractions.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>${ev.payload?.action==='open_door'?'Deseja abrir uma porta':'Deseja examinar um altar'}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-interaction" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-interaction" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
+    return `<section class="panel tactical-map-panel"><div class="row between"><div><div class="small-caps">Exploração compartilhada</div><h3 style="margin:5px 0 0">Mapa tático</h3><p class="panel-subtitle" style="margin:5px 0 0">${esc(template.subtitle)} · ${MAP_WIDTH} × ${MAP_HEIGHT} casas</p></div><span class="tag gold">${tokens.length} peça(s)</span></div><div class="map-presets">${presets}</div>${tools}<div class="map-board-wrap"><div class="map-board map-${template.theme}" style="--map-cols:${MAP_WIDTH}">${cells.join('')}</div><div class="map-axis map-axis-bottom">${Array.from({length:MAP_WIDTH},(_,i)=>`<span>${i+1}</span>`).join('')}</div></div><div class="map-legend"><span><i class="legend-token">⚔</i> Aventureiro</span><span><i class="legend-token">🐉</i> Criatura</span><span>🌳 Obstáculo</span><span>💧 Água</span><span>🔒 Porta fechada</span><span>✧ Altar</span><span>🧰 Baú</span><span>⚠️ Armadilha</span></div>${pendingMoves}${pendingInteractions}<p class="map-footnote">Movimento: até 4 casas por turno em combate. Obstáculos, portas fechadas e outras peças bloqueiam o caminho. O mestre valida os pedidos dos jogadores.</p></section>`;
   }
   function mapCellOccupied(record,gs,x,y,exceptId){return mapTokens(record,gs).some(t=>t.id!==exceptId&&t.position.x===x&&t.position.y===y)}
   function mapVisibleReveal(record,x,y){addRevealedAround(record,x,y,1)}
@@ -631,7 +721,7 @@
     if(!state.backendReady)throw new Error('Para solicitar movimento de outro jogador, conecte esta campanha ao Supabase. No modo local, apenas o mestre controla o mapa.');
     const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tile=mapTile(ex.mapId,x,y);
     if(!mapCellVisible(x,y,rec,gs))throw new Error('Esta casa ainda não foi explorada.');
-    if(mapTileInfo(tile).blocked)throw new Error('Há um obstáculo nesta casa.');
+    if(mapCellBlocked(ex.mapId,x,y,rec))throw new Error('Há um obstáculo ou uma porta fechada nesta casa.');
     if(mapTokenPosition(currentUserId(),rec,ex.mapId).x===x&&mapTokenPosition(currentUserId(),rec,ex.mapId).y===y)throw new Error('Seu personagem já está nesta casa.');
     if(mapCellOccupied(rec,gs,x,y,currentUserId()))throw new Error('Outra peça já ocupa esta casa.');
     if(gs.encounter){const turn=activeCombatTurn(gs.encounter);if(turn?.kind!=='player'||turn.user_id!==currentUserId())throw new Error('Durante o combate, você só pode solicitar movimento no seu turno.');}
@@ -644,9 +734,9 @@
     if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=MAP_WIDTH||y>=MAP_HEIGHT)throw new Error('Casa do mapa inválida.');
     const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tile=mapTile(ex.mapId,x,y),info=mapTileInfo(tile);
     if(requestMapId&&requestMapId!==ex.mapId)throw new Error('O mapa mudou antes da aprovação. Solicite novamente no mapa atual.');
-    if(info.blocked)throw new Error('Não é possível mover uma peça para um obstáculo.');
+    if(mapCellBlocked(ex.mapId,x,y,rec))throw new Error('Não é possível mover uma peça para um obstáculo ou porta fechada.');
     if(mapCellOccupied(rec,gs,x,y,tokenId))throw new Error('Outra peça já ocupa esta casa.');
-    const start=mapTokenPosition(tokenId,rec,ex.mapId),occupied=mapTokens(rec,gs).filter(t=>t.id!==tokenId).map(t=>t.position),distance=mapPathDistance(ex.mapId,start,{x,y},occupied);
+    const start=mapTokenPosition(tokenId,rec,ex.mapId),occupied=mapTokens(rec,gs).filter(t=>t.id!==tokenId).map(t=>t.position),distance=mapPathDistance(ex.mapId,start,{x,y},occupied,rec);
     if(!Number.isFinite(distance))throw new Error('Não existe um caminho livre até essa casa.');
     if(distance===0)throw new Error('A peça já está nesta casa.');
     let encounter=gs.encounter?cloneData(gs.encounter):null;
@@ -660,7 +750,7 @@
     const tokens={...rec.tokens,[tokenId]:{x,y}},nextRecord={...rec,tokens};mapVisibleReveal(nextRecord,x,y);
     const partyState={...(gs.partyState||{})};let markerText='';
     if(tokenId!=='monster'){
-      const marker=nextRecord.markers.find(m=>m.x===x&&m.y===y&&!m.discovered);
+      const marker=nextRecord.markers.find(m=>m.x===x&&m.y===y&&!m.discovered&&!['door','altar'].includes(m.type));
       if(marker){marker.discovered=true;marker.triggeredBy=tokenId;const member=state.members.find(m=>m.user_id===tokenId);const character=member?.character?normalizeCharacter(member.character):null;
         if(marker.type==='treasure'){
           if(character){const vitals=currentPartyVitals(tokenId,character);partyState[tokenId]={...vitals,coins:vitals.coins+Number(marker.gold||15)};markerText=`${character.name} encontrou um baú e recebeu ${Number(marker.gold||15)} moedas de ouro.`;}
@@ -681,17 +771,51 @@
     if(markerText){const data=narrativeState({...gs,exploration});const entries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text:markerText,kind:'discovery',createdAt:new Date().toISOString()}].slice(-50);await updateGameState({journalEntries:entries});}
     toast(markerText||movementText);
   }
+  async function requestMapInteraction(action,marker){
+    if(!state.backendReady)throw new Error('Interações compartilhadas exigem uma campanha conectada ao Supabase.');
+    if(!['open_door','inspect_altar'].includes(action))throw new Error('Interação não reconhecida.');
+    const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);
+    const {data,error}=await state.backend.rpc('request_map_interaction',{p_campaign_id:state.campaign.id,p_map_id:ex.mapId,p_marker_id:marker.id,p_action:action});if(error)throw error;
+    if(data?.id&&!state.processed.has(data.id)){state.processed.add(data.id);state.events.push(data);if(!state.pendingMapInteractions.some(item=>item.id===data.id))state.pendingMapInteractions.push(data);render()}
+    toast('Pedido de interação enviado ao mestre.');
+  }
+  async function resolveMapInteraction(ev,accepted){
+    if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode validar interações do mapa.');
+    const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),marker=rec.markers.find(m=>m.id===ev.payload?.marker_id);
+    const player=mapTokenPosition(ev.actor_id,rec,ex.mapId),dx=Math.abs(player.x-(marker?.x??99)),dy=Math.abs(player.y-(marker?.y??99));
+    if(!marker||!Number.isFinite(dx)||Math.max(dx,dy)>1)accepted=false;
+    let text='';
+    if(accepted&&ev.payload.action==='open_door'&&marker.type==='door'&&!marker.open){marker.open=true;text=`${ev.payload.player_name||'Um aventureiro'} abriu uma porta antiga.`}
+    else if(accepted&&ev.payload.action==='inspect_altar'&&marker.type==='altar'&&!marker.discovered){marker.discovered=true;addRevealedAround(rec,marker.x,marker.y,2);text=`${ev.payload.player_name||'Um aventureiro'} examinou um altar antigo. Runas dos Cinco Reinos começaram a brilhar.`}
+    else accepted=false;
+    if(!accepted)text='O mestre recusou a interação ou ela não pode mais ser realizada.';
+    if(accepted){const data=narrativeState(gs);data.journalEntries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text,kind:'discovery',createdAt:new Date().toISOString()}].slice(-50);await updateGameState({exploration:setActiveMapRecord(ex,rec),journalEntries:data.journalEntries});}
+    await createEvent('session_note',{kind:'map-interaction',request_id:ev.id,accepted,text});
+    state.pendingMapInteractions=state.pendingMapInteractions.filter(item=>item.id!==ev.id);render();toast(text,accepted?'ok':'error');
+  }
   async function handleMapCellClick(btn){
     const x=Number(btn.dataset.x),y=Number(btn.dataset.y);if(!Number.isInteger(x)||!Number.isInteger(y))return;
     const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tool=state.selectedMapTool||'move';
-    if(!isMaster())return requestMapMove(x,y);
+    if(!isMaster()){
+      const targetMarker=rec.markers.find(m=>m.x===x&&m.y===y&&((m.type==='door'&&!m.open)||(m.type==='altar'&&!m.discovered)));
+      if(targetMarker?.type==='door')return requestMapInteraction('open_door',targetMarker);
+      if(targetMarker?.type==='altar')return requestMapInteraction('inspect_altar',targetMarker);
+      return requestMapMove(x,y);
+    }
     if(tool==='move'){if(!state.selectedMapToken)throw new Error('Selecione uma peça antes de movê-la.');return moveMapToken(state.selectedMapToken,x,y)}
     if(tool==='reveal'){mapVisibleReveal(rec,x,y);await updateGameState({exploration:setActiveMapRecord(ex,rec)});await createEvent('session_note',{kind:'map',text:`O mestre revelou uma área do mapa de ${mapTemplate(ex.mapId).name}.`});toast('Área revelada aos aventureiros.');return}
-    if(tool==='treasure'||tool==='trap'){
-      if(mapTileInfo(mapTile(ex.mapId,x,y)).blocked)throw new Error('Coloque o marcador em uma casa livre.');
-      if(rec.markers.some(m=>m.x===x&&m.y===y))throw new Error('Já existe um marcador nesta casa.');
-      if(mapCellOccupied(rec,gs,x,y,null))throw new Error('Não coloque marcadores embaixo de uma peça.');
-      const marker={id:crypto.randomUUID?crypto.randomUUID():`marker-${Date.now()}`,type:tool,x,y,discovered:false,gold:15,damage:5};rec.markers.push(marker);await updateGameState({exploration:setActiveMapRecord(ex,rec)});toast(tool==='treasure'?'Baú secreto colocado.':'Armadilha escondida colocada.');return;
+    if(tool==='door'){
+      const existingDoor=rec.markers.find(m=>m.x===x&&m.y===y&&m.type==='door');
+      if(existingDoor){existingDoor.open=!existingDoor.open;await updateGameState({exploration:setActiveMapRecord(ex,rec)});render();toast(existingDoor.open?'Porta aberta.':'Porta fechada.');return;}
+    }
+    if(['treasure','trap','door','altar'].includes(tool)){
+      if(mapTileInfo(mapTile(ex.mapId,x,y)).blocked)throw new Error('Coloque o objeto em uma casa livre.');
+      if(rec.markers.some(m=>m.x===x&&m.y===y))throw new Error('Já existe um objeto nesta casa.');
+      if(mapCellOccupied(rec,gs,x,y,null))throw new Error('Não coloque objetos embaixo de uma peça.');
+      const marker={id:crypto.randomUUID?crypto.randomUUID():`marker-${Date.now()}`,type:tool,x,y,discovered:false,gold:15,damage:5,open:false};rec.markers.push(marker);await updateGameState({exploration:setActiveMapRecord(ex,rec)});toast(({treasure:'Baú secreto colocado.',trap:'Armadilha escondida colocada.',door:'Porta fechada colocada.',altar:'Altar antigo colocado.'})[tool]);render();return;
+    }
+    if(tool==='erase'){
+      const index=rec.markers.findIndex(m=>m.x===x&&m.y===y);if(index<0)throw new Error('Não há objeto nesta casa.');rec.markers.splice(index,1);await updateGameState({exploration:setActiveMapRecord(ex,rec)});render();toast('Objeto removido do mapa.');return;
     }
   }
   async function appendJournalEntry(text,kind='story'){
@@ -768,7 +892,7 @@
     const c=state.campaign,gs=c?.game_state||defaultGameState();
     modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Apenas o mestre</div><h2>Central do Mestre</h2><p>Ferramentas rápidas para conduzir a sessão e consultar a crônica.</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="stat-grid"><div class="stat-card"><small>Participantes</small><strong>${state.members.length}</strong></div><div class="stat-card"><small>Estado</small><strong style="font-size:15px">${c.status==='active'?'Ao vivo':'Pausada'}</strong></div><div class="stat-card"><small>Eventos registrados</small><strong>${state.events.length}</strong></div></div><div class="divider"></div><h3>Preparação da aventura</h3><div class="member-list"><div class="member-row"><div class="avatar">✦</div><div><strong>${esc(gs.chapter||'Prólogo')}</strong><small>Capítulo atual</small></div><span class="spacer"></span><span class="tag gold">Crônica</span></div><div class="member-row"><div class="avatar">⌖</div><div><strong>${esc(gs.location||'Local desconhecido')}</strong><small>Localização atual</small></div></div></div><div class="divider"></div><h3>Ações rápidas</h3><div class="hero-actions"><button class="btn btn-secondary" data-action="request-dice">Solicitar D20</button><button class="btn btn-secondary" data-action="start-encounter">Iniciar encontro</button><button class="btn btn-secondary" data-action="open-narration">Publicar narração</button><button class="btn btn-quiet" data-action="open-book" data-book="master">Livro do Mestre</button></div><div class="divider"></div><div class="notice"><strong>Lembrete:</strong> segredos, estatísticas ocultas e revelações devem permanecer na biblioteca do mestre. O que for narrado na sala será compartilhado com todos.</div></section></div>`;
   }
-  function renderSettingsModal(){const cfg=loadConfig()||{};modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><h2 id="modal-title">Conexão e armazenamento</h2><p>Configure seu projeto Supabase para ativar campanhas compartilhadas entre computadores.</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">×</button></div><div class="notice"><strong>Importante:</strong> use a URL do projeto e a Publishable key (sb_publishable_...). Nunca coloque a Secret/service_role key neste site.</div><form id="settings-form" style="margin-top:18px"><div class="field"><label for="sb-url">SUPABASE PROJECT URL</label><input class="input" id="sb-url" type="url" placeholder="https://seu-projeto.supabase.co" value="${esc(cfg.url||'')}" required><span class="hint">Encontre no Connect dialog ou em Project Settings → API Keys.</span></div><div class="field"><label for="sb-key">PUBLISHABLE KEY (CHAVE PÚBLICA)</label><textarea class="textarea" id="sb-key" rows="3" placeholder="Cole aqui a chave pública do projeto" required>${esc(cfg.key||'')}</textarea><span class="hint">A Publishable key pode ser usada no navegador quando as políticas RLS estiverem configuradas corretamente. Não use uma Secret key.</span></div><div class="notice">Antes de conectar: execute <strong>supabase-schema.sql</strong> no SQL Editor e habilite Anonymous Sign-Ins em Authentication → Providers.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="disconnect-backend">Usar modo local</button><button type="submit" class="btn btn-primary">Conectar Supabase</button></div></form></section></div>`}
+  function renderSettingsModal(){const cfg=loadConfig()||{};modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><h2 id="modal-title">Conexão e armazenamento</h2><p>Configure seu projeto Supabase para ativar campanhas compartilhadas entre computadores.</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">×</button></div><div class="notice"><strong>Importante:</strong> use a URL do projeto e a Publishable key (sb_publishable_...). Nunca coloque a Secret/service_role key neste site.</div><form id="settings-form" style="margin-top:18px"><div class="field"><label for="sb-url">SUPABASE PROJECT URL</label><input class="input" id="sb-url" type="url" placeholder="https://seu-projeto.supabase.co" value="${esc(cfg.url||'')}" required><span class="hint">Encontre no Connect dialog ou em Project Settings → API Keys.</span></div><div class="field"><label for="sb-key">PUBLISHABLE KEY (CHAVE PÚBLICA)</label><textarea class="textarea" id="sb-key" rows="3" placeholder="Cole aqui a chave pública do projeto" required>${esc(cfg.key||'')}</textarea><span class="hint">A Publishable key pode ser usada no navegador quando as políticas RLS estiverem configuradas corretamente. Não use uma Secret key.</span></div><div class="notice">Antes de conectar: execute <strong>supabase-schema.sql</strong>, habilite Anonymous Sign-Ins e Email provider e ative Manual Linking em Authentication → Configuration. Veja o guia Supabase do zero.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="disconnect-backend">Usar modo local</button><button type="submit" class="btn btn-primary">Conectar Supabase</button></div></form></section></div>`}
   async function startEncounter(template){
     if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode iniciar encontros.');
     const participants=state.members.filter(m=>m.role==='player'&&m.character);
@@ -803,6 +927,37 @@
   function newCharacterDraft(){return{name:'',age:'',personality:'',realm:'Eldoria',race:'Humano',class:'Guerreiro',level:1,xp:0,attributes:{forca:5,destreza:4,constituicao:5,inteligencia:3,sabedoria:4,carisma:3}}}
   function renderBookModal(){const b=BOOKS.find(x=>x.id===state.currentBook);if(!b){state.modal=null;return}const chapters={master:['A verdade sobre a Guerra da Ruptura','Elyndra e Vharzun','Os cinco chamados','Segredos dos reinos','Estrutura da campanha'],bestiary:['Como ler uma criatura','Criaturas das florestas','Monstros corrompidos','Criaturas das sombras'],bosses:['Chefes e fases de combate','Generais de Vharzun','Dragões ancestrais'],atlas:['A origem de Aethra','Eldoria','Drakmor','Nivéria','Thalassor','Solária'],grimoire:['Princípios da magia','Escolas arcanas','Magias de combate','Magias de suporte'],arsenal:['Raridade e qualidade','Armas','Armaduras','Poções e relíquias'],adventurer:['Criando seu herói','Atributos e testes','Combate e turnos','Interpretação e exploração']}[b.id]||[];modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Biblioteca de Aethra · ${b.access}</div><h2>${b.title}</h2><p>${b.desc}</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="notice">Este é o sumário estrutural da primeira versão. O conteúdo completo será escrito e diagramado em uma etapa editorial própria.</div><div class="divider"></div><h3>Sumário previsto</h3><div class="member-list">${chapters.map((c,i)=>`<div class="member-row"><div class="avatar">${String(i+1).padStart(2,'0')}</div><div><strong>${c}</strong><small>Capítulo em preparação</small></div><span class="spacer"></span><span class="tag">Em breve</span></div>`).join('')}</div></section></div>`}
 
+  function renderAccountModal(){
+    const anonymous=isAnonymousUser(),pending=pendingLinkEmail(),confirmed=pendingLinkConfirmed();
+    let title='Conta de Aethra',description='Acesse suas campanhas em qualquer dispositivo.',body='';
+    if(!state.backendReady){title='Conectar conta';description='Configure o Supabase primeiro para ativar contas e sincronização.';body=`<div class="notice">A conta é armazenada pelo Supabase. Abra Configurações, informe a URL e a Publishable key do projeto e conecte o banco antes de criar um login.</div><div class="modal-actions"><button class="btn btn-primary" data-action="open-settings">Abrir configurações</button></div>`;}
+    else if(confirmed||state.accountMode==='set-password'){
+      title='Definir senha';description='Seu e-mail foi confirmado. Crie uma senha para acessar esta mesma ficha em outros dispositivos.';
+      body=`<form id="account-set-password-form"><div class="notice">A identidade desta sessão visitante foi vinculada ao e-mail <strong>${esc(state.user?.email||pending)}</strong>. Personagem, campanhas e histórico mantêm o mesmo identificador.</div><div class="field"><label for="account-password">NOVA SENHA</label><input class="input" id="account-password" type="password" minlength="8" autocomplete="new-password" required placeholder="Pelo menos 8 caracteres"></div><div class="field"><label for="account-password-confirm">CONFIRMAR SENHA</label><input class="input" id="account-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div><div class="modal-actions"><button class="btn btn-primary" type="submit">Salvar senha</button></div></form>`;
+    }else if(state.accountMode==='await-email'){
+      title='Confirme seu e-mail';description='A etapa de confirmação mantém sua ficha ligada ao mesmo acesso.';
+      body=`<div class="notice">Enviamos uma mensagem para <strong>${esc(pending||state.user?.new_email||'o endereço informado')}</strong>. Abra o link de confirmação usando o mesmo navegador onde iniciou a criação da conta. Depois de confirmar, volte ao Reino de Aethra; a tela para definir a senha aparecerá automaticamente.</div><div class="notice">Não saia da conta visitante e não limpe os dados do navegador enquanto aguarda a confirmação.</div><div class="modal-actions"><button class="btn btn-secondary" data-action="close-modal">Entendi</button></div>`;
+    }else if(state.accountMode==='recovery-password'){
+      title='Criar nova senha';description='Defina uma nova senha para sua conta.';
+      body=`<form id="account-recovery-password-form"><div class="field"><label for="account-password">NOVA SENHA</label><input class="input" id="account-password" type="password" minlength="8" autocomplete="new-password" required></div><div class="field"><label for="account-password-confirm">CONFIRMAR SENHA</label><input class="input" id="account-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div><div class="modal-actions"><button class="btn btn-primary" type="submit">Atualizar senha</button></div></form>`;
+    }else if(state.accountMode==='login'){
+      title='Entrar na conta';description='Use o mesmo e-mail e senha em computador, celular ou tablet.';
+      body=`<form id="account-login-form"><div class="field"><label for="account-email">E-MAIL</label><input class="input" id="account-email" type="email" autocomplete="username" required></div><div class="field"><label for="account-login-password">SENHA</label><input class="input" id="account-login-password" type="password" autocomplete="current-password" required></div><div class="row between"><button type="button" class="text-button" data-action="account-mode" data-mode="reset">Esqueci minha senha</button><button type="button" class="text-button" data-action="account-mode" data-mode="home">Voltar</button></div><div class="notice">Entre com a conta que foi criada ao salvar o progresso no dispositivo original. O personagem e as campanhas acompanham o mesmo e-mail.</div><div class="modal-actions"><button class="btn btn-primary" type="submit">Entrar</button></div></form>`;
+    }else if(state.accountMode==='reset'){
+      title='Recuperar senha';description='Enviaremos instruções ao endereço informado.';
+      body=`<form id="account-reset-form"><div class="field"><label for="account-email">E-MAIL DA CONTA</label><input class="input" id="account-email" type="email" autocomplete="email" required></div><div class="notice">O link de recuperação retornará para esta página do Reino de Aethra. Verifique também a caixa de spam.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="account-mode" data-mode="login">Voltar</button><button class="btn btn-primary" type="submit">Enviar recuperação</button></div></form>`;
+    }else if(state.accountMode==='reset-sent'){
+      title='Verifique seu e-mail';description='O pedido de recuperação foi enviado.';
+      body=`<div class="notice">Se existir uma conta com esse endereço, o Supabase enviará uma mensagem. Abra o link no mesmo navegador onde deseja trocar a senha.</div><div class="modal-actions"><button class="btn btn-secondary" data-action="account-mode" data-mode="login">Voltar ao login</button></div>`;
+    }else if(anonymous){
+      title='Salvar seu progresso';description='Transforme o acesso visitante em uma conta que funciona em todos os seus dispositivos.';
+      body=`<div class="notice"><strong>Importante:</strong> você está usando um acesso visitante deste navegador. Vincule agora um e-mail antes de trocar de computador ou limpar os dados do navegador. O vínculo mantém o mesmo identificador e, portanto, não separa suas campanhas.</div>${pending?`<div class="notice">Aguardando confirmação de <strong>${esc(pending)}</strong>. Abra a mensagem enviada pelo Supabase usando este mesmo navegador. Depois volte aqui para definir sua senha.</div>`:''}<form id="account-link-form"><div class="field"><label for="account-email">SEU E-MAIL</label><input class="input" id="account-email" type="email" autocomplete="email" required placeholder="voce@exemplo.com"></div><div class="modal-actions"><button class="btn btn-primary" type="submit">Enviar confirmação</button></div></form><div class="divider"></div><button class="btn btn-secondary" data-action="account-mode" data-mode="login">Já tenho uma conta</button>`;
+    }else{
+      title='Conta sincronizada';description='Seu acesso está vinculado e pode ser usado em outros dispositivos.';
+      body=`<div class="account-profile"><span class="account-profile-mark">✦</span><div><strong>${esc(state.user?.email||'Conta de Aethra')}</strong><small>Conta permanente · progresso sincronizado</small></div></div><form id="account-change-password-form"><div class="field"><label for="account-password">ALTERAR SENHA</label><input class="input" id="account-password" type="password" minlength="8" autocomplete="new-password" required placeholder="Nova senha (8 caracteres ou mais)"></div><div class="field"><label for="account-password-confirm">CONFIRMAR SENHA</label><input class="input" id="account-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div><div class="modal-actions"><button class="btn btn-primary" type="submit">Atualizar senha</button></div></form><div class="divider"></div><button class="btn btn-quiet" data-action="account-sign-out">Sair desta conta neste dispositivo</button>`;
+    }
+    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Reino de Aethra · Identidade</div><h2>${title}</h2><p>${description}</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">×</button></div>${body}</section></div>`;
+  }
   function openModal(which){state.modal=which;if(which==='character'){state.charStep=0;state.charDraft=state.member?.character?JSON.parse(JSON.stringify(state.member.character)):newCharacterDraft()}render()}
   function closeModal(){state.modal=null;state.currentBook=null;modalRoot.innerHTML=''}
   function showDice(result,player){
@@ -819,13 +974,16 @@
       else if(action==='open-library'){state.view='library';closeModal();render()}
       else if(action==='my-campaigns'){state.view='campaigns';closeModal();render();loadCloudCampaigns()}
       else if(action==='open-settings')openModal('settings')
+      else if(action==='open-account'){state.accountMode='home';openModal('account')}
+      else if(action==='account-mode'){state.accountMode=btn.dataset.mode||'home';render()}
+      else if(action==='account-sign-out'){await signOutAccount()}
       else if(action==='create-campaign')openModal('create')
       else if(action==='join-campaign')openModal('join')
       else if(action==='close-modal')closeModal()
       else if(action==='disconnect-backend')disconnectSupabase()
       else if(action==='open-book'){state.currentBook=btn.dataset.book;state.modal='book';render()}
       else if(action==='open-cloud-campaign'){await openCloudCampaign(btn.dataset.id)}
-      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);localStorage.setItem(KEYS.active,c.id);state.view=c.status==='active'?'session':'lobby';render()}}
+      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);state.view=c.status==='active'?'session':'lobby';render()}}
       else if(action==='copy-code'){await navigator.clipboard?.writeText(state.campaign.code);toast('Código copiado.');}
       else if(action==='copy-invite'){const link=location.href.split('?')[0]+'?join='+encodeURIComponent(state.campaign.code);await navigator.clipboard?.writeText(link);toast('Link de convite copiado.');}
       else if(action==='create-character')openModal('character')
@@ -874,6 +1032,8 @@
       else if(action==='map-cell'){await handleMapCellClick(btn)}
       else if(action==='approve-map-move'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode aprovar movimentos.');const ev=state.pendingMapMoves.find(x=>x.id===btn.dataset.id);if(!ev)throw new Error('Solicitação não encontrada.');try{await moveMapToken(ev.actor_id,Number(ev.payload.x),Number(ev.payload.y),ev.id,ev.payload.map_id)}catch(err){await createEvent('session_note',{kind:'map',request_id:ev.id,accepted:false,text:`Movimento recusado: ${err.message}`});state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);throw err}state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);render()}
       else if(action==='reject-map-move'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode recusar movimentos.');const ev=state.pendingMapMoves.find(x=>x.id===btn.dataset.id);if(ev){await createEvent('session_note',{kind:'map',request_id:ev.id,accepted:false,text:`O mestre recusou o movimento de ${ev.payload?.player_name||'um aventureiro'}.`});state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);render()}}
+      else if(action==='approve-map-interaction'){const ev=state.pendingMapInteractions.find(x=>x.id===btn.dataset.id);if(!ev)throw new Error('Interação não encontrada.');await resolveMapInteraction(ev,true)}
+      else if(action==='reject-map-interaction'){const ev=state.pendingMapInteractions.find(x=>x.id===btn.dataset.id);if(ev)await resolveMapInteraction(ev,false)}
       else if(action==='open-adventure-manager'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode gerenciar a jornada.');renderAdventureManagerModal()}
       else if(action==='open-npc'){renderNPCModal(btn.dataset.npcId)}
       else if(action==='accept-quest'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode apresentar missões.');const gs=state.campaign.game_state||defaultGameState();const data=narrativeState(gs);const q=data.quests.find(x=>x.id===btn.dataset.questId);if(!q||q.status!=='available')throw new Error('Esta missão não está disponível.');q.status='active';let text=`A companhia aceitou a missão: ${q.title}.`;if(q.id==='side-01'&&data.revealedNpcIds.includes('tovin')){const result=markObjective(data.quests,'side-01','meet-tovin');data.quests=result.quests;if(result.changed)text+=' O grupo já havia conhecido Tovin; esse objetivo foi reconhecido automaticamente.'}data.journalEntries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text,kind:'quest',createdAt:new Date().toISOString()}].slice(-50);await updateGameState({quests:data.quests,journalEntries:data.journalEntries});await createEvent('session_note',{kind:'quest',text});renderAdventureManagerModal();toast('Missão apresentada à companhia.')}
@@ -907,6 +1067,11 @@
     e.preventDefault();const form=e.target;
     try{
       if(form.id==='settings-form'){const url=$('#sb-url').value,key=$('#sb-key').value;await connectSupabase(url,key);closeModal();render()}
+      else if(form.id==='account-link-form'){await linkGuestAccount($('#account-email').value)}
+      else if(form.id==='account-login-form'){await signInExistingAccount($('#account-email').value,$('#account-login-password').value)}
+      else if(form.id==='account-reset-form'){await sendPasswordReset($('#account-email').value)}
+      else if(form.id==='account-set-password-form'){await finishAccountPassword($('#account-password').value,$('#account-password-confirm').value)}
+      else if(form.id==='account-recovery-password-form'||form.id==='account-change-password-form'){await updateSignedInPassword($('#account-password').value,$('#account-password-confirm').value)}
       else if(form.id==='create-form'){const name=$('#campaign-name').value.trim(),desc=$('#campaign-desc').value.trim();if(!name)throw new Error('Informe o nome da campanha.');await createCampaign(name,desc)}
       else if(form.id==='join-form'){const code=$('#join-code').value.trim().toUpperCase(),name=$('#join-name').value.trim();state.prefillJoinCode=null;await joinCampaign(code,name)}
       else if(form.id==='damage-form'){const amount=Number($('#damage-amount').value),note=$('#damage-note').value.trim(),encounter=state.campaign.game_state?.encounter;if(!encounter?.id)throw new Error('Não existe um encontro ativo.');if(!amount||amount<1)throw new Error('Informe um valor de dano válido.');await createEvent('damage_request',{amount,note,encounter_id:encounter.id,player_name:state.member?.display_name||'Aventureiro'});closeModal();toast('Ataque enviado. O mestre validará o dano.')}

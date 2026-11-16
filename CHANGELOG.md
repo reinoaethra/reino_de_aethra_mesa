@@ -1,3 +1,21 @@
+## v0.7 — Conta e continuidade entre dispositivos
+
+- Adicionado painel de conta no cabeçalho.
+- Acesso visitante convertido em conta permanente por vínculo de e-mail e senha, preservando a identidade do jogador.
+- Login por e-mail e senha em outro dispositivo.
+- Fluxo de confirmação de e-mail, criação de senha, alteração de senha e recuperação por e-mail.
+- Limpeza de contexto ao trocar de identidade para evitar misturar campanhas de usuários diferentes.
+- Miniaturas de personagens estilizadas por classe no mapa.
+- Animação de ociosidade das miniaturas e destaque visual de monstros.
+- Portas e altares interativos no mapa, com solicitação do jogador e validação do mestre.
+- Novas instruções completas para Supabase Auth, manual linking, Site URL e Redirect URLs.
+- Novo guia de login e progresso entre dispositivos e testes específicos de computador/celular.
+- Migração v0.7 do banco mantém o modelo de dados anterior e adiciona apenas a RPC de interação com portas/altares quando o banco está na v0.6.
+
+### Observação de teste
+
+A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer um projeto Supabase configurado, Manual Linking habilitado e URLs de retorno válidas; não foi possível validar a entrega real de e-mails nesta cópia local.
+
 ## v0.6 — Mapas táticos e exploração compartilhada
 
 - Quatro mapas 2D em grade: Estrada de Eldoria, Vila de Brumafolha, Torre dos Vigias e Santuário das Raízes.
@@ -72,3 +90,22 @@
 
 - Identidade visual inicial.
 - Navegação, campanhas locais, personagens e estrutura da biblioteca.
+
+
+## v0.7 — Conta e continuidade entre dispositivos
+
+- Adicionado painel de conta no cabeçalho.
+- Acesso visitante convertido em conta permanente por vínculo de e-mail e senha, preservando a identidade do jogador.
+- Login por e-mail e senha em outro dispositivo.
+- Fluxo de confirmação de e-mail, criação de senha, alteração de senha e recuperação por e-mail.
+- Limpeza de contexto ao trocar de identidade para evitar misturar campanhas de usuários diferentes.
+- Miniaturas de personagens estilizadas por classe no mapa.
+- Animação de ociosidade das miniaturas e destaque visual de monstros.
+- Portas e altares interativos no mapa, com solicitação do jogador e validação do mestre.
+- Novas instruções completas para Supabase Auth, manual linking, Site URL e Redirect URLs.
+- Novo guia de login e progresso entre dispositivos e testes específicos de computador/celular.
+- Migração v0.7 do banco mantém o modelo de dados anterior e adiciona apenas a RPC de interação com portas/altares quando o banco está na v0.6.
+
+### Observação de teste
+
+A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer um projeto Supabase configurado, Manual Linking habilitado e URLs de retorno válidas; não foi possível validar a entrega real de e-mails nesta cópia local.

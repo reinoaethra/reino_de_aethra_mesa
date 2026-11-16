@@ -124,3 +124,42 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .map-request-row>span:first-child{display:grid;gap:4px}.map-request-row strong{font:600 11px var(--serif);color:#e6d6b8}.map-request-row small{font-size:8px;color:#91a0b3}.map-request-actions{display:flex;gap:6px;flex-wrap:wrap}
 .map-axis-bottom{display:grid;grid-template-columns:repeat(10,1fr);max-width:850px;min-width:390px;margin:5px auto 0;text-align:center;color:#728195;font-size:8px}
 @media(max-width:620px){.map-board-wrap{padding:7px}.map-board{min-width:360px}.map-presets{display:grid;grid-template-columns:1fr 1fr}.map-preset{min-height:34px}.map-request-row{align-items:flex-start;flex-direction:column}.map-request-actions{width:100%}.map-request-actions .btn{flex:1}}
+
+
+/* v0.7 — contas, miniaturas e objetos interativos */
+.account-button{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(212,177,109,.28);background:rgba(212,177,109,.08);color:#e8d7b5;border-radius:9px;padding:8px 11px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;transition:.18s}
+.account-button:hover{border-color:rgba(212,177,109,.65);background:rgba(212,177,109,.14)}
+.account-button-icon{font-size:14px;color:#d7b878}
+.account-profile{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid rgba(212,177,109,.2);border-radius:12px;background:rgba(212,177,109,.06);margin-bottom:14px}
+.account-profile-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#e5ce96,#98713d);color:#20180e;font-size:20px}
+.account-profile strong,.account-profile small{display:block}.account-profile strong{color:#ead9b9;font-size:11px}.account-profile small{color:#8f9caf;font-size:9px;margin-top:4px}
+.text-button{border:0;background:transparent;color:#d6b779;font-size:9px;font-weight:700;padding:6px 0;cursor:pointer}
+.text-button:hover{text-decoration:underline}
+.map-tool-hint{color:#8e9cae;font-size:9px;line-height:1.6;margin:0}
+.map-token.miniature{width:82%;height:82%;border-radius:35% 35% 45% 45%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:2px;position:relative;transform:translateZ(0);animation:miniatureIdle 3.2s ease-in-out infinite}
+.map-token.miniature .miniature-sigil{font-size:clamp(10px,1.35vw,19px);line-height:1.05;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.map-token.miniature .miniature-name{position:absolute;bottom:-4px;right:-4px;min-width:14px;height:14px;padding:0 2px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.72);border-radius:5px;background:#172231;color:#fff;font:800 7px Manrope,sans-serif;box-shadow:0 2px 3px rgba(0,0,0,.5)}
+.map-token.mini-warrior{background:radial-gradient(circle at 35% 20%,#f0d7a2,#93602f 72%);border:2px solid #e9cb8c}
+.map-token.mini-arcane{background:radial-gradient(circle at 35% 20%,#d5c5ff,#57488c 72%);border:2px solid #b6a3ff}
+.map-token.mini-ranger{background:radial-gradient(circle at 35% 20%,#c3e5b3,#376a45 72%);border:2px solid #a2d89a}
+.map-token.mini-paladin{background:radial-gradient(circle at 35% 20%,#fff0ae,#98742a 72%);border:2px solid #ffe19a}
+.map-token.mini-assassin{background:radial-gradient(circle at 35% 20%,#c0c7d6,#333a54 72%);border:2px solid #a7b0c7}
+.map-token.mini-cleric{background:radial-gradient(circle at 35% 20%,#f1e9ce,#7f794f 72%);border:2px solid #e3d6a5}
+.map-token.mini-druid{background:radial-gradient(circle at 35% 20%,#c5e6aa,#496d34 72%);border:2px solid #b5d889}
+.map-token.mini-summoner{background:radial-gradient(circle at 35% 20%,#d2b9ee,#694b8b 72%);border:2px solid #c6a5ea}
+.map-token.monster-token{border-radius:48% 48% 38% 38%;width:88%;height:88%;background:radial-gradient(circle at 35% 22%,#ed9c7c,#762e30 72%);border:2px solid #eea28a;animation:monsterBreath 2.4s ease-in-out infinite}
+.map-token.token-selected{outline:2px solid #f7df9e;outline-offset:2px;box-shadow:0 0 0 4px rgba(236,194,112,.25),0 0 20px rgba(236,194,112,.55)}
+.map-marker{animation:markerPulse 2.5s ease-in-out infinite}
+.map-marker.marker-door{font-size:clamp(12px,1.6vw,20px);filter:drop-shadow(0 0 6px rgba(225,188,119,.5))}
+.map-marker.marker-altar{color:#e8d7a1;text-shadow:0 0 8px #d8c27d}
+.map-cell.door-closed{box-shadow:inset 0 0 0 2px rgba(214,174,100,.75);background-image:repeating-linear-gradient(90deg,rgba(32,20,12,.4) 0 3px,rgba(146,99,51,.48) 4px 7px)}
+.map-cell.altar-cell:after{content:"";position:absolute;inset:15%;border:1px solid rgba(240,218,153,.35);border-radius:50%;box-shadow:0 0 16px rgba(239,218,143,.16);pointer-events:none}
+.map-cell.tile-tree{background-image:radial-gradient(ellipse at 50% 35%,rgba(98,143,83,.4),transparent 45%),linear-gradient(145deg,#1e4535,#18392f 65%,#2c523b)}
+.map-cell.tile-water{background-size:100% 100%,100% 100%;animation:waterShimmer 6s ease-in-out infinite alternate}
+.map-cell.tile-path{background-image:radial-gradient(circle at 20% 30%,rgba(222,195,139,.18) 0 1px,transparent 2px),linear-gradient(140deg,#92784f,#705b3f 60%,#806b4b);background-size:13px 13px,100% 100%}
+.map-board{box-shadow:0 8px 22px rgba(0,0,0,.24),inset 0 0 28px rgba(0,0,0,.25)}
+@keyframes miniatureIdle{0%,100%{translate:0 0}50%{translate:0 -2px}}
+@keyframes monsterBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes markerPulse{0%,100%{opacity:.88}50%{opacity:1;filter:drop-shadow(0 0 7px rgba(242,205,128,.9))}}
+@keyframes waterShimmer{from{filter:brightness(.94)}to{filter:brightness(1.12)}}
+@media(max-width:620px){.account-button{padding:7px 8px;font-size:8px}.account-button-icon{font-size:12px}.top-actions{gap:6px}.map-token.miniature .miniature-name{font-size:6px;min-width:12px;height:12px}}

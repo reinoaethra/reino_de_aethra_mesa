@@ -1,4 +1,4 @@
-# Checklist da primeira partida — Reino de Aethra v0.6
+# Checklist da primeira partida — Reino de Aethra v0.7
 
 Use esta lista antes de convidar o grupo para uma campanha importante.
 
@@ -8,9 +8,11 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - [ ] Criei o projeto Supabase.
 - [ ] Guardei a senha do banco num lugar seguro.
 - [ ] Executei `supabase-schema.sql` (instalação nova) ou a sequência correta de migrações.
-- [ ] Se meu banco já era v0.4, executei `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`, com backup.
-- [ ] Se meu banco já era v0.5, executei `supabase-migration-v0.6.sql` depois de fazer backup.
+- [ ] Se meu banco já era v0.4, executei `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`, com backup.
+- [ ] Se meu banco já era v0.5, executei `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`, depois de fazer backup.
+- [ ] Se meu banco já era v0.6, executei `supabase-migration-v0.7.sql` depois de fazer backup.
 - [ ] Ativei Anonymous Sign-Ins.
+- [ ] Ativei o provedor Email e Manual Linking, conforme o guia de login.
 - [ ] Copiei a Project URL.
 - [ ] Copiei a Publishable key (`sb_publishable_...`).
 - [ ] Preenchi `config.js` com os dois valores.
@@ -18,6 +20,7 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - [ ] Publiquei os arquivos na raiz do repositório GitHub.
 - [ ] Ativei GitHub Pages usando a branch principal e a pasta `/ (root)`.
 - [ ] O site abriu pelo link HTTPS do GitHub Pages.
+- [ ] Configurei Site URL e Redirect URLs do Supabase com o endereço exato do GitHub Pages.
 - [ ] O indicador do site mostra que o Supabase está conectado.
 
 ## 2. Teste como mestre
@@ -82,7 +85,7 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 **Não use uma campanha importante até concluir os testes básicos com pelo menos dois navegadores.**
 
 
-## 6. Teste da aventura inicial (introduzida na v0.5) e mapas (v0.6)
+## 6. Teste da aventura inicial (v0.5) e mapas (v0.6/v0.7)
 
 - [ ] A missão principal Ecos na Estrada de Eldoria aparece para todos.
 - [ ] O mestre abre o painel Jornada e missões.
@@ -97,7 +100,7 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 Lembre-se: recompensas textuais das missões ainda são entregues manualmente pelo mestre nesta versão.
 
 
-## Verificação de mapas (v0.6)
+## Verificação de mapas e objetos (v0.6/v0.7)
 
 - [ ] O mestre consegue trocar entre os quatro mapas.
 - [ ] O mestre consegue selecionar e mover uma peça.
@@ -106,3 +109,32 @@ Lembre-se: recompensas textuais das missões ainda são entregues manualmente pe
 - [ ] A névoa esconde e revela casas corretamente.
 - [ ] Baús e armadilhas são acionados ao entrar na casa.
 - [ ] Ouro e HP permanecem após salvar e retomar a campanha.
+- [ ] Portas podem ser colocadas, abertas e fechadas pelo mestre.
+- [ ] Jogadores próximos conseguem solicitar abertura de portas.
+- [ ] Altares podem ser examinados com aprovação do mestre.
+- [ ] Descobertas de altares aparecem no diário.
+- [ ] Miniaturas de personagens e monstros aparecem corretamente.
+
+
+---
+
+## Teste de login em outro dispositivo (v0.7)
+
+Faça este teste depois de configurar Email, Anonymous Sign-Ins, Manual Linking e URL Configuration no Supabase.
+
+- [ ] No computador principal, abra Aethra conectado ao Supabase.
+- [ ] Crie ou abra uma campanha na nuvem e crie um personagem de teste.
+- [ ] Clique em **Salvar progresso** e informe um e-mail que você consiga acessar.
+- [ ] Abra o e-mail de confirmação no mesmo navegador/perfil e confirme o endereço.
+- [ ] Volte ao jogo e defina uma senha com 8 ou mais caracteres.
+- [ ] Confirme que a interface mostra **Conta ✓**.
+- [ ] Em outro aparelho ou janela privada, abra o mesmo site.
+- [ ] Antes de criar personagem ou entrar como visitante em uma campanha, abra **Conta** → **Já tenho uma conta**.
+- [ ] Entre com o mesmo e-mail e senha.
+- [ ] Abra **Campanhas** e confira se a mesma campanha aparece.
+- [ ] Abra a campanha e compare personagem, classe, nível, HP e inventário.
+- [ ] Faça uma mudança simples permitida e confira se ela aparece no outro navegador após sincronizar.
+
+**Aprovado:** a mesma campanha e ficha aparecem com o mesmo progresso nos dois dispositivos. Não crie uma segunda campanha se a primeira não aparecer; confira se a conta usada é exatamente a mesma.
+
+**Atenção:** uma conta visitante ainda não vinculada não pode ser recuperada em outro aparelho. Vincule o e-mail no dispositivo original primeiro.
