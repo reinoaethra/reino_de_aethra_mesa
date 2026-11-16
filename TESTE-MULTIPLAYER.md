@@ -1,4 +1,4 @@
-# Roteiro de teste multiplayer — Reino de Aethra v0.4
+# Roteiro de teste multiplayer — Reino de Aethra v0.5
 
 Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo entre dois ou mais navegadores. Não é necessário instalar um servidor local.
 
@@ -6,7 +6,7 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 
 - Site publicado por HTTPS no GitHub Pages.
 - Projeto Supabase ativo e conectado pelo `config.js`.
-- Banco em v0.4: `supabase-schema.sql` para instalação nova ou `supabase-migration-v0.4.sql` após v0.3.
+- Banco para v0.5: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.4, faça backup e execute `supabase-migration-v0.5.sql`. Se estiver na v0.3 ou anterior, siga a sequência de migrações descrita no README e no guia do Supabase.
 - Anonymous Sign-Ins habilitado.
 - Um navegador/perfil para o mestre e pelo menos um perfil diferente para jogador.
 - Para o teste real, não utilize a mesma sessão autenticada em dois perfis que compartilham o mesmo armazenamento.
@@ -151,3 +151,21 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 - Etapas aprovadas:
 - Etapas com problema:
 - Mensagem do console ou do Supabase (retire chaves e tokens):
+
+
+## 7. Teste da jornada narrativa v0.5
+
+- [ ] Na sala, o quadro **Missões da companhia** aparece para mestre e jogadores.
+- [ ] O mestre abre **Jornada e missões**.
+- [ ] O mestre publica uma cena preparada (por exemplo, Vila de Brumafolha).
+- [ ] Mestre e jogadores veem o mesmo capítulo, local e texto de narração.
+- [ ] O mestre revela Ilyra Avelorn.
+- [ ] Todos veem Ilyra em **Personagens encontrados** e conseguem abrir sua ficha pública.
+- [ ] O objetivo de conhecer Ilyra aparece como concluído.
+- [ ] O mestre marca manualmente o objetivo de investigar os rastros.
+- [ ] O mestre inicia um encontro com Goblin das Cinzas e a companhia o derrota.
+- [ ] O objetivo de derrotar os goblins é marcado automaticamente.
+- [ ] O mestre registra uma descoberta no diário e todos veem a anotação.
+- [ ] O mestre encerra a sessão e, depois, reabre a campanha: missões, NPCs revelados, cena e diário permanecem.
+
+**Importante:** recompensas textuais das missões são orientações narrativas nesta versão. Elas não creditam automaticamente ouro, itens ou XP. O mestre deve entregar essas recompensas manualmente até a implementação da economia e do gerenciador de recompensas.

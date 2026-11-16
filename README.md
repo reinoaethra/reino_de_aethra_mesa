@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 0.4**  
+**Versão do jogo: 0.5**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -20,12 +20,13 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 2. **[GUIA-GITHUB-PAGES-DO-ZERO.md](GUIA-GITHUB-PAGES-DO-ZERO.md)** — criar um repositório e publicar o jogo gratuitamente.
 3. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
 4. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
-5. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras que estão implementadas na versão 0.4.
-6. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+5. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
+6. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+7. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 0.4
+## 2. O que está incluído na versão 0.5
 
 ### Campanhas e jogadores
 
@@ -62,15 +63,29 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - A cada nível conquistado: +5 HP máximo e +1 no atributo principal da classe (até 12).
 - Proteção contra ações de combate fora do turno, respostas duplicadas e recompensa de XP repetida.
 
+
+### Jornada narrativa e primeira aventura
+
+- Primeiro capítulo jogável: **Ecos na Estrada de Eldoria**.
+- Quadro compartilhado de missões principais e secundárias.
+- Objetivos individuais com progresso e conclusão controlados pelo mestre.
+- Conclusão automática do objetivo de derrotar os Goblins das Cinzas quando esse encontro é vencido.
+- Apresentação de NPCs para todos os jogadores pelo mestre.
+- Fichas públicas de Ilyra Avelorn, Tovin Ferromar e Irmão Cael após serem revelados.
+- Cinco cenas preparadas: estrada, vila, oficina, torre e santuário.
+- Publicação de capítulo, local e narração para toda a companhia.
+- Diário da campanha com descobertas, mudanças de cena e progresso de missões.
+- Dados narrativos guardados no campo `game_state` JSONB já existente.
+
 ### Biblioteca
 
 A interface apresenta a estrutura inicial dos sete livros: Livro do Mestre, Bestiário, Grandes Chefes, Atlas dos Cinco Reinos, Grimório, Arsenal e Manual do Aventureiro. **Os capítulos completos, ilustrações editoriais e PDFs ainda serão produzidos em uma etapa posterior.** Não interprete os títulos dos livros como se todo o conteúdo já estivesse escrito.
 
 ## 3. O que ainda não está pronto
 
-A versão 0.4 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
+A versão 0.5 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
 
-- Campanha narrativa integral, com capítulos, escolhas e missões completas.
+- A campanha completa ainda está em produção. A versão 0.5 entrega o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
 - Livros completos e PDFs diagramados.
 - Bestiário extenso, chefes com várias fases e inteligência avançada dos monstros.
 - Mapas táticos com miniaturas, casas, obstáculos e áreas de efeito.
@@ -129,11 +144,12 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 | Situação | O que executar |
 |---|---|
 | Nunca criou as tabelas de Aethra / projeto Supabase novo | Execute todo o `supabase-schema.sql` uma vez. |
-| O banco já está na versão 0.3 | Faça a cópia dos dados descrita na Parte 8 do `GUIA-SUPABASE-DO-ZERO.md` e execute somente `supabase-migration-v0.4.sql`. |
-| O banco está na versão 0.2 | Faça a cópia dos dados descrita na Parte 8 do `GUIA-SUPABASE-DO-ZERO.md`; execute primeiro `supabase-migration-v0.3.sql` e depois `supabase-migration-v0.4.sql`. |
+| O banco já está na versão 0.4 | Execute `supabase-migration-v0.5.sql` para atualizar o estado inicial de novas campanhas; depois atualize os arquivos do site. |
+| O banco já está na versão 0.3 | Faça backup e execute, nesta ordem, `supabase-migration-v0.4.sql` e `supabase-migration-v0.5.sql`. |
+| O banco está na versão 0.2 | Faça backup e execute, nesta ordem, `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql` e `supabase-migration-v0.5.sql`. |
 | O banco é da versão 0.1 ou de uma estrutura modificada manualmente | Não execute migrações às cegas. Crie um projeto Supabase de teste ou peça ajuda para identificar o esquema atual antes de alterar o banco. |
 
-Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
+Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. A v0.5 não cria tabelas novas. Missões, NPCs revelados, cenas e diário ficam no campo JSONB `campaigns.game_state`. A migração v0.5 só atualiza o valor padrão utilizado por campanhas novas; ela não altera campanhas existentes. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
 
 ## 7. Configuração do `config.js`
 
@@ -182,6 +198,8 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `supabase-schema.sql` | Instalação completa do banco em um projeto novo. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
+| `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
+| `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura e usar o painel narrativo v0.5. |
 | `CHANGELOG.md` | Histórico das versões. |
 | `REGRAS-DE-COMBATE.md` | Regras implementadas na versão 0.4. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
@@ -207,4 +225,4 @@ Antes de usar uma campanha importante, siga o roteiro de teste e confirme os res
 
 ---
 
-**Reino de Aethra v0.4 — A crônica está pronta para os primeiros testes de combate e progressão.**
+**Reino de Aethra v0.5 — A primeira jornada possui missões, NPCs, cenas e diário compartilhado.**

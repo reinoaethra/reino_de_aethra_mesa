@@ -1,4 +1,4 @@
-# Checklist da primeira partida — Reino de Aethra v0.4
+# Checklist da primeira partida — Reino de Aethra v0.5
 
 Use esta lista antes de convidar o grupo para uma campanha importante.
 
@@ -7,7 +7,8 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - [ ] Criei minha conta Supabase.
 - [ ] Criei o projeto Supabase.
 - [ ] Guardei a senha do banco num lugar seguro.
-- [ ] Executei `supabase-schema.sql` (ou a migração correta para meu banco existente).
+- [ ] Executei `supabase-schema.sql` (instalação nova) ou a sequência correta de migrações.
+- [ ] Se meu banco já era v0.4, executei `supabase-migration-v0.5.sql` depois de fazer backup.
 - [ ] Ativei Anonymous Sign-Ins.
 - [ ] Copiei a Project URL.
 - [ ] Copiei a Publishable key (`sb_publishable_...`).
@@ -78,3 +79,18 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - Mensagem exata do erro (sem senhas e sem chaves):
 
 **Não use uma campanha importante até concluir os testes básicos com pelo menos dois navegadores.**
+
+
+## 6. Teste da aventura inicial v0.5
+
+- [ ] A missão principal Ecos na Estrada de Eldoria aparece para todos.
+- [ ] O mestre abre o painel Jornada e missões.
+- [ ] O mestre apresenta a missão secundária A Carga Perdida de Tovin.
+- [ ] O mestre publica uma das cenas preparadas e confirma que os jogadores recebem a narração.
+- [ ] O mestre revela um NPC e o jogador consegue abrir sua apresentação.
+- [ ] Um objetivo é marcado como concluído e o progresso é atualizado em todos os navegadores.
+- [ ] A vitória contra Goblins das Cinzas conclui automaticamente o objetivo correspondente.
+- [ ] O mestre escreve uma anotação e confere se ela aparece no diário compartilhado.
+- [ ] A campanha é encerrada e retomada; missões, NPCs revelados, localização e diário continuam salvos.
+
+Lembre-se: recompensas textuais das missões ainda são entregues manualmente pelo mestre nesta versão.

@@ -1,4 +1,4 @@
-# Solução de problemas — Reino de Aethra v0.4
+# Solução de problemas — Reino de Aethra v0.5
 
 Este guia reúne erros comuns e o que fazer. Antes de mudar qualquer configuração, leia a mensagem com calma.
 
@@ -39,13 +39,14 @@ O banco ainda não recebeu o esquema correto.
 
 - Em projeto novo: execute `supabase-schema.sql`.
 - Em banco v0.3: execute `supabase-migration-v0.4.sql` (o banco já deve ter recebido o esquema anterior).
-- Em banco v0.2: execute a migração v0.3 e depois a v0.4.
+- Em banco v0.2: execute as migrações v0.3, v0.4 e v0.5, nesta ordem.
+- Em banco v0.4: execute `supabase-migration-v0.5.sql` para atualizar o estado inicial de campanhas novas.
 
 Não execute migrações aleatórias. Consulte a seção “Qual arquivo SQL devo executar?” do README.
 
 ## 4. “Function award_encounter_xp does not exist”
 
-O site v0.4 está conectado a um banco que ainda não recebeu a migração de combate e XP.
+O site v0.5 está conectado a um banco que ainda não recebeu a migração de combate e XP da v0.4.
 
 1. Confira a versão atual do banco.
 2. Se estava na v0.3, execute `supabase-migration-v0.4.sql`.
@@ -84,7 +85,7 @@ A presença online pode levar um momento para aparecer. Use o botão Sincronizar
 6. Atualize a página com `Ctrl + F5`.
 7. Use **Sincronizar** na sala.
 
-O esquema v0.4 tenta adicionar as tabelas à publicação durante a instalação. A conferência manual é útil se o script tiver sido interrompido ou se a configuração foi alterada depois.
+O esquema da v0.4 (mantido na v0.5) tenta adicionar as tabelas à publicação durante a instalação. A conferência manual é útil se o script tiver sido interrompido ou se a configuração foi alterada depois.
 
 ## 8. O jogo mostra “Ainda não é seu turno”
 
@@ -117,7 +118,7 @@ A documentação atual está em [Project Pausing](https://supabase.com/docs/guid
 
 ## 11. Um jogador perdeu o personagem depois de trocar de navegador
 
-A versão 0.4 usa identidade anônima. Se o jogador limpar os dados de navegação, sair da conta ou trocar de dispositivo, o Supabase não consegue recuperar automaticamente a identidade anônima antiga.
+As versões 0.4 e 0.5 usam identidade anônima. Se o jogador limpar os dados de navegação, sair da conta ou trocar de dispositivo, o Supabase não consegue recuperar automaticamente a identidade anônima antiga.
 
 Por enquanto, mantenha o mesmo perfil de navegador e não limpe os dados do site. A vinculação de contas será adicionada futuramente.
 
@@ -156,3 +157,20 @@ Ao pedir suporte, informe:
 - navegador usado e se era mestre ou jogador.
 
 **Nunca envie:** senha do banco, Secret key, `service_role`, token de acesso ou qualquer credencial administrativa.
+
+
+## Missões ou personagens da história não aparecem (v0.5)
+
+1. Confirme que os arquivos `app.js` e `styles.css` foram atualizados para a v0.5 junto com `index.html`.
+2. Faça uma atualização forçada do navegador com `Ctrl + F5`.
+3. Abra uma campanha e entre na sala ativa; o quadro de missões aparece abaixo da narração.
+4. Os NPCs só aparecem aos jogadores depois que o mestre os revela no painel **Jornada e missões**.
+5. Se o botão de gerenciamento não aparece, confirme que entrou com a conta que criou a campanha e que essa conta está como mestre.
+6. A migração v0.5 é recomendada para bancos que já estavam na v0.4, mas só altera o estado inicial de campanhas novas. Se surgir um erro de banco, envie a mensagem completa, sem chaves nem senhas.
+
+## O mestre não consegue salvar uma cena ou objetivo
+
+- Confirme que está na aba do mestre que foi eleita como controladora ativa.
+- Se tiver duas abas abertas com a mesma conta de mestre, feche uma e tente novamente.
+- Confirme que a sessão Supabase está conectada e que o usuário é membro com papel `master`.
+- Não altere manualmente a coluna `game_state` pelo painel do banco enquanto a partida estiver ativa.

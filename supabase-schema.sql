@@ -1,4 +1,4 @@
--- REINO DE AETHRA — esquema Supabase v0.4
+-- REINO DE AETHRA — esquema Supabase v0.5
 -- Execute este arquivo no SQL Editor do seu projeto Supabase.
 -- Pode ser executado novamente: funções e políticas serão atualizadas.
 -- A aplicação usa somente Publishable key + RLS; nunca exponha Secret/service_role.
@@ -12,7 +12,7 @@ create table if not exists public.campaigns (
   description text not null default '',
   owner_id uuid not null references auth.users(id) on delete cascade,
   status text not null default 'paused' check (status in ('paused','active','archived')),
-  game_state jsonb not null default '{"chapter":"Prólogo — A Guerra da Ruptura Celestial","location":"A estrada esquecida de Eldoria","narration":"A primeira crônica de Aethra está prestes a começar.","encounter":null,"started":false,"turn":1,"notes":[],"activeRollPrompt":null,"partyState":{}}'::jsonb,
+  game_state jsonb not null default '{"chapter":"Capítulo I — Ecos na Estrada","location":"Estrada Esquecida de Eldoria","narration":"A chuva fina desenha linhas na poeira da estrada. Pegadas profundas seguem em direção à antiga torre de vigia. Entre as árvores, um sino toca uma única vez — embora a vila esteja distante.","encounter":null,"started":false,"turn":1,"notes":[],"activeRollPrompt":null,"partyState":{},"quests":[],"revealedNpcIds":[],"journalEntries":[]}'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

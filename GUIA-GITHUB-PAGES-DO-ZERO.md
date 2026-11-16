@@ -1,4 +1,4 @@
-# Guia do GitHub Pages do zero — Reino de Aethra v0.4
+# Guia do GitHub Pages do zero — Reino de Aethra v0.5
 
 Este guia ensina a colocar Reino de Aethra na internet usando o GitHub Pages. Foi escrito para quem nunca publicou um site.
 
@@ -40,7 +40,7 @@ O repositório público significa que qualquer pessoa poderá ver os arquivos do
 
 ## PARTE 3 — Extrair o ZIP no computador
 
-1. Baixe `reino-de-aethra-v0.4.zip`.
+1. Baixe `reino-de-aethra-v0.5.zip`.
 2. Abra a pasta Downloads.
 3. Clique com o botão direito no ZIP.
 4. Selecione **Extrair tudo**.
@@ -63,7 +63,7 @@ Antes de enviar, confirme que o `config.js` contém a Project URL e Publishable 
 6. Arraste-os para a área de upload do GitHub ou use o seletor de arquivos.
 7. Confira a lista de arquivos antes de confirmar.
 8. Na parte inferior, encontre **Commit changes**.
-9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.4`.
+9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.5`.
 10. Clique em **Commit changes**.
 
 ### Conferir a posição dos arquivos
@@ -78,7 +78,9 @@ reino-de-aethra/
 ├── config.js
 ├── supabase-schema.sql
 ├── supabase-migration-v0.3.sql
-├── supabase-migration-v0.4.sql
+├── supabase-migration-v0.4.sql  (atualização histórica)
+├── supabase-migration-v0.5.sql  (banco que já estava na v0.4)
+├── GUIA-DA-PRIMEIRA-AVENTURA.md
 ├── README.md
 └── ...documentação adicional
 ```

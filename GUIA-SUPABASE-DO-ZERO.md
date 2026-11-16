@@ -1,4 +1,4 @@
-# Guia do Supabase do zero — Reino de Aethra v0.4
+# Guia do Supabase do zero — Reino de Aethra v0.5
 
 Este tutorial foi escrito para quem **nunca usou Supabase, nunca criou um banco de dados e não sabe programar**. Leia uma etapa de cada vez. Você não precisa instalar o Supabase no computador: tudo será feito pelo navegador.
 
@@ -92,7 +92,7 @@ Esta é a etapa em que você instala a estrutura de dados do jogo. Parece técni
 
 ### 3.1 Encontrar o arquivo certo no ZIP
 
-1. Baixe o pacote ZIP do Reino de Aethra v0.4.
+1. Baixe o pacote ZIP do Reino de Aethra v0.5.
 2. No computador, encontre o arquivo ZIP baixado.
 3. Clique nele com o botão direito e escolha **Extrair tudo** (Windows) ou use o aplicativo de extração disponível.
 4. Abra a pasta resultante.
@@ -396,3 +396,37 @@ Abra `SOLUCAO-DE-PROBLEMAS.md`. Ela explica, em linguagem simples, o que fazer q
 - o GitHub Pages mostra erro 404.
 
 Quando pedir ajuda, envie o nome do arquivo e a mensagem de erro completa. **Nunca envie a senha do banco ou uma Secret key.**
+
+
+
+
+## PARTE FINAL — Atualizar o banco para a versão 0.5
+
+Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.5, o padrão novo já está incluído.
+
+### O que esta migração faz?
+
+A migração `supabase-migration-v0.5.sql` muda somente o texto e os campos iniciais usados quando uma campanha nova é criada. Ela não apaga campanhas, fichas, personagens, mensagens, eventos, XP ou inventários que já existem. Campanhas antigas continuam com o progresso que tinham.
+
+### Como executar a migração v0.5
+
+1. Abra o [Dashboard do Supabase](https://supabase.com/dashboard).
+2. Entre na organização e selecione o projeto que já está usando Aethra v0.4.
+3. Antes de continuar, faça backup seguindo a parte de cópia de segurança deste guia.
+4. Abra **SQL Editor** na barra lateral.
+5. Clique em **New query**.
+6. No computador, abra `supabase-migration-v0.5.sql` com o Bloco de Notas.
+7. Pressione `Ctrl + A` para selecionar todo o conteúdo e `Ctrl + C` para copiar.
+8. Volte ao SQL Editor, clique dentro da área de texto e pressione `Ctrl + V`.
+9. Confira se o começo do texto diz `migração Supabase v0.5`.
+10. Clique em **Run**.
+11. Aguarde a mensagem de sucesso. Se aparecer erro, não tente executar comandos aleatórios; copie a mensagem e peça ajuda.
+12. Atualize os arquivos do site pelo GitHub Pages e preserve seu `config.js`.
+
+### Se seu banco for mais antigo que v0.4
+
+Não execute a migração v0.5 isoladamente em um banco v0.3 ou v0.2. Primeiro atualize o banco pela sequência histórica descrita no README: v0.2 → v0.3 → v0.4 → v0.5. Faça backup entre as etapas.
+
+### Como conferir
+
+Crie uma campanha de teste. O capítulo inicial deverá aparecer como **Capítulo I — Ecos na Estrada**, no local **Estrada Esquecida de Eldoria**. A campanha antiga não deve ter perdido o capítulo, os personagens nem o progresso anterior.

@@ -1,5 +1,19 @@
 # Histórico de versões — Reino de Aethra
 
+## v0.5 — Primeira aventura, missões, NPCs e diário
+
+- Primeiro capítulo estruturado: Ecos na Estrada de Eldoria.
+- Quadro de missões principal e secundária, com objetivos e estados.
+- Painel do mestre para aceitar missões e marcar objetivos concluídos.
+- Objetivo de derrotar Goblins das Cinzas concluído automaticamente após a vitória do encontro.
+- Apresentação de NPCs: Ilyra Avelorn, Tovin Ferromar e Irmão Cael.
+- Fichas públicas de NPCs acessíveis aos jogadores após revelação.
+- Cinco cenas preparadas que preenchem capítulo, local e narração.
+- Diário persistente de descobertas e alterações narrativas.
+- Informações de jornada guardadas no JSONB `campaigns.game_state`; não são criadas tabelas ou funções novas.
+- Migração SQL v0.5 ajusta o estado inicial de campanhas novas em bancos que já estavam na v0.4, sem alterar campanhas existentes.
+- Documentação da primeira aventura e roteiro de testes narrativos.
+
 ## v0.4 — Combate por turnos, itens e progressão inicial
 
 - Atributos aplicados aos cálculos de ataque, HP e Defesa.
