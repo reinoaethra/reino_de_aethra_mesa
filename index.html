@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c1019" />
+  <meta name="description" content="Reino de Aethra — RPG de mesa virtual. Crie campanhas, reúna seus aventureiros e escreva uma nova crônica." />
+  <title>Reino de Aethra — RPG de Mesa Virtual v0.4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="#inicio" data-action="go-home" aria-label="Reino de Aethra, início">
+      <span class="brand-mark">✦</span>
+      <span><strong>REINO DE AETHRA</strong><small>AS CRÔNICAS DOS CINCO REINOS</small></span>
+    </a>
+    <nav class="top-nav" aria-label="Navegação principal">
+      <button class="nav-link active" data-action="go-home">Início</button>
+      <button class="nav-link" data-action="open-library">Biblioteca</button>
+      <button class="nav-link" data-action="my-campaigns">Campanhas</button>
+    </nav>
+    <div class="top-actions">
+      <span id="connection-status" class="connection-pill"><i></i> Modo local</span>
+      <button class="icon-button" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙</button>
+    </div>
+  </header>
+
+  <main id="app" class="app-shell" aria-live="polite">
+    <section class="loading-screen"><div class="loading-rune">✦</div><p>Preparando os pergaminhos de Aethra...</p></section>
+  </main>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root" aria-live="polite"></div>
+  <footer class="site-footer">
+    <span>REINO DE AETHRA</span><span>Uma crônica compartilhada, escrita por seus aventureiros.</span><span>Combate por turnos · v0.4</span>
+  </footer>
+</body>
+</html>
