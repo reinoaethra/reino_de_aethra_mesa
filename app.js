@@ -1,4 +1,4 @@
-/* Reino de Aethra v0.5 — aventura inicial, missões, NPCs, diário e combate por turnos.
+/* Reino de Aethra v0.6 — mapas táticos, exploração compartilhada e campanha narrativa.
  * Modo local funciona sem backend. Para salas reais, configure Supabase e aplique o schema/migration.
  */
 (() => {
@@ -85,10 +85,63 @@
     {id:'watchtower',title:'Torre dos Vigias',chapter:'Capítulo I — Ecos na Estrada',location:'Torre dos Vigias',narration:'A torre está tomada por raízes e marcas escuras. O vento atravessa as frestas das pedras. No alto, um brilho azulado pulsa como se algo estivesse tentando respirar.'},
     {id:'sanctuary',title:'Santuário das Raízes',chapter:'Capítulo I — Ecos na Estrada',location:'Santuário das Raízes',narration:'Pequenas velas iluminam um santuário construído em torno de uma árvore antiga. Símbolos de cinco reinos foram entalhados em suas raízes.'}
   ];
+  // Mapas táticos iniciais (10 colunas x 8 linhas). Os símbolos definem terreno e bloqueios.
+  const MAP_TEMPLATES = [
+    {id:'eldoria-road',name:'Estrada de Eldoria',subtitle:'Trilha, árvores e um riacho raso',theme:'forest',layout:['..tt....t.','...t.pp...','t...pp..t.','..tpp...t.','.wwwpp....','...ppp..t.','t...p.....','.t....t...']},
+    {id:'brumafolha',name:'Vila de Brumafolha',subtitle:'Casas, praça e ruas de pedra',theme:'village',layout:['..h....h..','.h......h.','....p.....','pppppppppp','....p.....','.h..p...h.','..h.p.h...','....p.....']},
+    {id:'watchtower',name:'Torre dos Vigias',subtitle:'Pedra antiga, colunas e entrada ao sul',theme:'tower',layout:['bbbbbbbbbb','b........b','b..c..c..b','b........b','b.c....c.b','b........b','b........b','bbbb..bbbb']},
+    {id:'root-sanctuary',name:'Santuário das Raízes',subtitle:'Raízes antigas cercam um altar',theme:'sanctuary',layout:['..t....t..','.t......t.','....p.....','..pwwwp...','...www....','....p.....','.t......t.','..t....t..']}
+  ];
+  const MAP_WIDTH = 10, MAP_HEIGHT = 8;
   function cloneData(value){return JSON.parse(JSON.stringify(value))}
   function narrativeState(gs=state.campaign?.game_state||defaultGameState()){
     return {quests:Array.isArray(gs.quests)&&gs.quests.length?cloneData(gs.quests):cloneData(STORY_QUESTS),revealedNpcIds:Array.isArray(gs.revealedNpcIds)?gs.revealedNpcIds:[],journalEntries:Array.isArray(gs.journalEntries)?gs.journalEntries:[]};
   }
+  function explorationData(gs=state.campaign?.game_state||defaultGameState()){
+    const source=gs.exploration||{};
+    return {mapId:MAP_TEMPLATES.some(m=>m.id===source.mapId)?source.mapId:'eldoria-road',maps:source.maps&&typeof source.maps==='object'?cloneData(source.maps):{}};
+  }
+  function activeMapRecord(gs=state.campaign?.game_state||defaultGameState()){
+    const exploration=explorationData(gs);const record=exploration.maps[exploration.mapId]||{};
+    return {fogEnabled:!!record.fogEnabled,revealedCells:Array.isArray(record.revealedCells)?[...record.revealedCells]:[],tokens:record.tokens&&typeof record.tokens==='object'?cloneData(record.tokens):{},markers:Array.isArray(record.markers)?cloneData(record.markers):[]};
+  }
+  function setActiveMapRecord(exploration,record){exploration.maps[exploration.mapId]=record;return exploration;}
+  function mapTemplate(id){return MAP_TEMPLATES.find(m=>m.id===id)||MAP_TEMPLATES[0]}
+  function mapTile(id,x,y){const layout=mapTemplate(id).layout;return layout[y]?.[x]||'b'}
+  function mapTileInfo(tile){return ({'.':{name:'Grama',glyph:'',blocked:false,cls:'grass'},p:{name:'Trilha',glyph:'',blocked:false,cls:'path'},t:{name:'Árvore',glyph:'🌳',blocked:true,cls:'tree'},w:{name:'Água',glyph:'💧',blocked:true,cls:'water'},r:{name:'Rocha',glyph:'🪨',blocked:true,cls:'rock'},h:{name:'Casa',glyph:'🏠',blocked:true,cls:'house'},c:{name:'Coluna',glyph:'🏛️',blocked:true,cls:'column'},b:{name:'Muro',glyph:'🧱',blocked:true,cls:'wall'}})[tile]||{name:'Terreno',glyph:'',blocked:false,cls:'grass'};}
+  function mapCellKey(x,y){return `${x},${y}`}
+  function addRevealedAround(record,x,y,radius=1){const cells=new Set(record.revealedCells||[]);for(let yy=Math.max(0,y-radius);yy<=Math.min(MAP_HEIGHT-1,y+radius);yy++)for(let xx=Math.max(0,x-radius);xx<=Math.min(MAP_WIDTH-1,x+radius);xx++)cells.add(mapCellKey(xx,yy));record.revealedCells=[...cells];}
+  const MAP_PARTY_SPAWNS={
+    'eldoria-road':[{x:7,y:5},{x:5,y:4},{x:6,y:4},{x:8,y:4}],
+    brumafolha:[{x:5,y:4},{x:6,y:4},{x:7,y:4},{x:8,y:4}],
+    watchtower:[{x:4,y:4},{x:5,y:4},{x:6,y:4},{x:8,y:4}],
+    'root-sanctuary':[{x:6,y:4},{x:7,y:4},{x:8,y:4},{x:9,y:4}]
+  };
+  function defaultPartyPositions(mapId){
+    const players=state.members.filter(m=>m.role==='player'&&m.character).sort((a,b)=>String(a.joined_at||'').localeCompare(String(b.joined_at||''))||String(a.user_id).localeCompare(String(b.user_id)));
+    const preferred=MAP_PARTY_SPAWNS[mapId]||[],candidates=[...preferred];
+    for(let y=MAP_HEIGHT-1;y>=4;y--)for(let x=0;x<MAP_WIDTH;x++)candidates.push({x,y});
+    const chosen=[],monsterStart={x:7,y:3};
+    for(const candidate of candidates){
+      if(chosen.length>=players.length)break;
+      if(mapTileInfo(mapTile(mapId,candidate.x,candidate.y)).blocked||candidate.x===monsterStart.x&&candidate.y===monsterStart.y||chosen.some(p=>p.x===candidate.x&&p.y===candidate.y))continue;
+      const next=[...chosen,candidate];
+      const allReachable=next.every(position=>Number.isFinite(mapPathDistance(mapId,monsterStart,position,next.filter(other=>other!==position))));
+      if(allReachable)chosen.push(candidate);
+    }
+    return new Map(players.map((member,index)=>[member.user_id,chosen[index]||{x:1+(index%7),y:6}]));
+  }
+  function defaultTokenPosition(userId,mapId){return defaultPartyPositions(mapId).get(userId)||{x:1,y:6}}
+  function mapTokenPosition(tokenId,record,mapId){if(record.tokens[tokenId])return record.tokens[tokenId];if(tokenId==='monster')return {x:7,y:3};return defaultTokenPosition(tokenId,mapId)}
+  function mapTokens(record,gs=state.campaign?.game_state||defaultGameState()){
+    const mapId=explorationData(gs).mapId,defaults=defaultPartyPositions(mapId);
+    const list=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({id:m.user_id,name:m.character.name||m.display_name||'Aventureiro',kind:'player',emoji:({Guerreiro:'🛡️',Arcano:'🔮',Patrulheiro:'🏹',Paladino:'✨',Assassino:'🗡️',Clérigo:'✚',Druida:'🌿',Invocador:'◈'})[m.character.class]||'⚔️',position:record.tokens[m.user_id]||defaults.get(m.user_id)||{x:1,y:6}}));
+    if(gs.encounter&&!gs.encounter.defeated)list.push({id:'monster',name:gs.encounter.name||'Criatura',kind:'monster',emoji:gs.encounter.emoji||'🐉',position:mapTokenPosition('monster',record,mapId)});
+    return list;
+  }
+  function mapCellVisible(x,y,record,gs,tokens=mapTokens(record,gs)){if(isMaster()||!record.fogEnabled)return true;const key=mapCellKey(x,y);if(record.revealedCells.includes(key))return true;return tokens.filter(t=>t.kind==='player').some(t=>Math.max(Math.abs(t.position.x-x),Math.abs(t.position.y-y))<=1)}
+  function mapPathDistance(mapId,start,end,occupied=[]){const key=(x,y)=>`${x},${y}`,blocked=new Set(occupied.map(p=>key(p.x,p.y)));const queue=[[start.x,start.y,0]],seen=new Set([key(start.x,start.y)]);while(queue.length){const [x,y,d]=queue.shift();if(x===end.x&&y===end.y)return d;for(const [nx,ny] of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){if(nx<0||ny<0||nx>=MAP_WIDTH||ny>=MAP_HEIGHT||mapTileInfo(mapTile(mapId,nx,ny)).blocked||blocked.has(key(nx,ny)))continue;const k=key(nx,ny);if(!seen.has(k)){seen.add(k);queue.push([nx,ny,d+1])}}}return Infinity}
+  function pendingMapMovesFrom(events){const resolved=new Set(events.filter(e=>e.event_type==='session_note'&&e.payload?.kind==='map'&&e.payload?.request_id).map(e=>e.payload.request_id));return events.filter(e=>e.event_type==='map_move_request'&&!resolved.has(e.id))}
   function questProgress(quest){const objectives=quest.objectives||[];const done=objectives.filter(o=>o.completed).length;return {done,total:objectives.length,percent:objectives.length?Math.round(done/objectives.length*100):0}}
   function markObjective(quests,questId,objectiveId){
     const next=cloneData(quests);const quest=next.find(q=>q.id===questId);if(!quest||quest.status==='available'||quest.status==='completed')return {quests:next,changed:false,completed:false};
@@ -118,7 +171,7 @@
   }
   function currentPartyVitals(userId,character){
     const c=normalizeCharacter(character);const ps=state.campaign?.game_state?.partyState?.[userId]||{};
-    return {hp:Math.max(0,Math.min(Number(ps.maxHp)||c.maxHp,Number.isFinite(Number(ps.hp))?Number(ps.hp):c.hp)),maxHp:Number(ps.maxHp)||c.maxHp,defense:Number(ps.defense)||c.defense,inventory:Array.isArray(ps.inventory)?ps.inventory:c.inventory,abilityUsed:!!ps.abilityUsed};
+    return {hp:Math.max(0,Math.min(Number(ps.maxHp)||c.maxHp,Number.isFinite(Number(ps.hp))?Number(ps.hp):c.hp)),maxHp:Number(ps.maxHp)||c.maxHp,defense:Number(ps.defense)||c.defense,inventory:Array.isArray(ps.inventory)?ps.inventory:c.inventory,abilityUsed:!!ps.abilityUsed,coins:Math.max(0,Number(ps.coins)||0)};
   }
   function activeCombatTurn(encounter){return encounter?.turnOrder?.[Number(encounter.turnIndex)||0]||null}
   function isPlayersCombatTurn(){const turn=activeCombatTurn(state.campaign?.game_state?.encounter);return !!turn&&turn.kind==='player'&&turn.user_id===currentUserId()}
@@ -162,8 +215,9 @@
   }
   const state = {
     view:'home', modal:null, backend:null, user:null, backendReady:false, realtimeStatus:'disconnected',
-    campaign:null, member:null, members:[], events:[], pendingDamage:[], channel:null, channelPresence:[], processed:new Set(),
+    campaign:null, member:null, members:[], events:[], pendingDamage:[], pendingMapMoves:[], channel:null, channelPresence:[], processed:new Set(),
     charStep:0, charDraft:null, monsterDraft:85, toastTimer:null, diceOverlayTimer:null, cloudCampaigns:[], prefillJoinCode:null,
+    selectedMapToken:null, selectedMapTool:'move',
     instanceId:null, lastSyncAt:null, rollQueue:Promise.resolve(), combatQueue:Promise.resolve(), isRefreshing:false,
     localCampaigns:readLocalCampaigns(), currentBook:null
   };
@@ -188,7 +242,7 @@
   }
   function currentUserId(){return state.user?.id||'local-user'}
   function localCampaignById(id){return state.localCampaigns.find(c=>c.id===id)}
-  function defaultGameState(){return {chapter:'Capítulo I — Ecos na Estrada',location:'Estrada Esquecida de Eldoria',narration:'A chuva fina desenha linhas na poeira da estrada. Pegadas profundas seguem em direção à antiga torre de vigia. Entre as árvores, um sino toca uma única vez — embora a vila esteja distante.',encounter:null,started:false,turn:1,notes:[],activeRollPrompt:null,partyState:{},quests:cloneData(STORY_QUESTS),revealedNpcIds:[],journalEntries:[]}}
+  function defaultGameState(){return {chapter:'Capítulo I — Ecos na Estrada',location:'Estrada Esquecida de Eldoria',narration:'A chuva fina desenha linhas na poeira da estrada. Pegadas profundas seguem em direção à antiga torre de vigia. Entre as árvores, um sino toca uma única vez — embora a vila esteja distante.',encounter:null,started:false,turn:1,notes:[],activeRollPrompt:null,partyState:{},quests:cloneData(STORY_QUESTS),revealedNpcIds:[],journalEntries:[],exploration:{mapId:'eldoria-road',maps:{}}}}
   function activeRollPrompt(){return state.campaign?.game_state?.activeRollPrompt||null}
   function canCurrentPlayerRoll(){const prompt=activeRollPrompt();return !!prompt&&Array.isArray(prompt.target_user_ids)&&prompt.target_user_ids.includes(currentUserId())&&!(prompt.fulfilled_user_ids||[]).includes(currentUserId())}
 
@@ -312,17 +366,17 @@
     if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);return}
     const c=state.localCampaigns.find(x=>x.code.toUpperCase()===code.toUpperCase());if(!c)throw new Error('Código não encontrado no modo local. Para convidar pessoas de outros computadores, conecte o Supabase.');
     let m=c.members.find(x=>x.user_id==='local-user');if(!m){m={id:'local-player-'+Date.now(),campaign_id:c.id,user_id:'local-user',display_name:displayName,role:'player',character:null,status:'online'};c.members.push(m)}else m.display_name=displayName;
-    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';state.modal=null;render();toast('Você entrou na campanha.');
+    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';state.modal=null;render();toast('Você entrou na campanha.');
   }
   function pendingDamageFrom(events){const resolved=new Set(events.filter(e=>['damage_applied','damage_rejected'].includes(e.event_type)).map(e=>e.payload?.request_id).filter(Boolean));return events.filter(e=>e.event_type==='damage_request'&&!resolved.has(e.id))}
   async function openCloudCampaign(id){
     const [{data:c,error:ce},{data:members,error:me},{data:events,error:ee}]=await Promise.all([
       state.backend.from('campaigns').select('*').eq('id',id).single(),
       state.backend.from('campaign_members').select('*').eq('campaign_id',id),
-      state.backend.from('campaign_events').select('*').eq('campaign_id',id).order('created_at',{ascending:false}).limit(100)
+      state.backend.from('campaign_events').select('*').eq('campaign_id',id).order('created_at',{ascending:false}).limit(500)
     ]);
     if(ce)throw ce;if(me)throw me;if(ee)throw ee;
-    state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
+    state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
     if(!state.member)throw new Error('Sua conta não está registrada como participante desta campanha. Entre novamente usando o código de convite.');
     localStorage.setItem(KEYS.active,id);state.view=c.status==='active'?'session':'lobby';state.modal=null;subscribeCampaign();render();
   }
@@ -334,12 +388,12 @@
       const [campaignRes,membersRes,eventsRes]=await Promise.all([
         state.backend.from('campaigns').select('*').eq('id',id).single(),
         state.backend.from('campaign_members').select('*').eq('campaign_id',id),
-        state.backend.from('campaign_events').select('*').eq('campaign_id',id).order('created_at',{ascending:false}).limit(100)
+        state.backend.from('campaign_events').select('*').eq('campaign_id',id).order('created_at',{ascending:false}).limit(500)
       ]);
       if(campaignRes.error)throw campaignRes.error;if(membersRes.error)throw membersRes.error;if(eventsRes.error)throw eventsRes.error;
       if(campaignRes.data)state.campaign=campaignRes.data;
       if(membersRes.data)state.members=membersRes.data;
-      if(eventsRes.data){state.events=eventsRes.data.reverse();state.pendingDamage=pendingDamageFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id))}
+      if(eventsRes.data){state.events=eventsRes.data.reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id))}
       state.member=state.members.find(m=>m.user_id===state.user.id)||state.member;
       state.lastSyncAt=new Date().toISOString();
       render();
@@ -389,6 +443,8 @@
       state.combatQueue=state.combatQueue.then(()=>processCombatAction(ev)).catch(err=>{console.error(err);toast(err.message||'Não foi possível resolver a ação de combate.','error')});
     }
     if(ev.event_type==='damage_applied'||ev.event_type==='damage_rejected')state.pendingDamage=state.pendingDamage.filter(item=>item.id!==ev.payload?.request_id);
+    if(ev.event_type==='map_move_request'){if(!state.pendingMapMoves.some(item=>item.id===ev.id))state.pendingMapMoves.push(ev);if(isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} solicitou movimento no mapa.`)}
+    if(ev.event_type==='session_note'&&ev.payload?.kind==='map'&&ev.payload?.request_id)state.pendingMapMoves=state.pendingMapMoves.filter(item=>item.id!==ev.payload.request_id);
     if(ev.event_type==='dice_prompt'&&ev.payload?.target_user_ids?.includes(currentUserId()))toast(`O mestre solicitou um D20: ${ev.payload.reason||'Realize seu teste.'}`);
     if(ev.event_type==='dice_result')showDice(ev.payload?.result,ev.payload?.player_name||'Aventureiro');
     if(ev.event_type==='combat_action_result'&&Number.isInteger(ev.payload?.natural))showDice(ev.payload.natural,ev.payload?.player_name||'Aventureiro');
@@ -550,6 +606,94 @@
     const entries=narrativeState(gs).journalEntries.slice(-4).reverse();
     return `<section class="panel" style="margin-top:15px"><div class="row between"><h3>Crônica registrada</h3><span class="tag">Diário</span></div>${entries.length?entries.map(item=>`<div class="journal-entry"><time>${new Date(item.createdAt||Date.now()).toLocaleDateString('pt-BR')}</time><p>${esc(item.text)}</p></div>`).join(''):'<p class="panel-subtitle">As descobertas e decisões importantes serão registradas neste diário.</p>'}</section>`;
   }
+  function renderTacticalMap(gs){
+    const exploration=explorationData(gs),record=activeMapRecord(gs),template=mapTemplate(exploration.mapId),tokens=mapTokens(record,gs);
+    if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id|| (gs.encounter?'monster':null);
+    const selected=state.selectedMapToken||currentUserId();
+    const markers=record.markers||[];
+    const cells=[];
+    for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
+      const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y),marker=markers.find(m=>m.x===x&&m.y===y&&(isMaster()||m.discovered));
+      const tokenHtml=cellTokens.map(t=>`<span class="map-token ${t.kind==='monster'?'monster-token':'player-token'}" title="${esc(t.name)}">${t.emoji}</span>`).join('');
+      const markerHtml=marker?`<span class="map-marker" title="${esc(marker.type==='treasure'?'Baú':'Armadilha')}">${marker.type==='treasure'?'🧰':'⚠️'}</span>`:'';
+      const fogged=!visible;
+      cells.push(`<button class="map-cell tile-${info.cls} ${fogged?'fogged':''} ${cellTokens.some(t=>t.id===selected)?'token-selected':''} ${info.blocked?'blocked':''}" data-action="map-cell" data-x="${x}" data-y="${y}" ${fogged&&!isMaster()?'disabled':''} aria-label="Casa ${x+1}, linha ${y+1}: ${fogged?'não explorada':info.name}">${fogged?'?':`${info.glyph?`<span class="terrain-glyph">${info.glyph}</span>`:''}${markerHtml}${tokenHtml}`}</button>`);
+    }
+    const options=tokens.map(t=>`<option value="${esc(t.id)}" ${selected===t.id?'selected':''}>${esc(t.name)}${t.kind==='monster'?' · Monstro':' · Aventureiro'}</option>`).join('');
+    const presets=MAP_TEMPLATES.map(m=>`<button class="map-preset ${m.id===template.id?'active':''}" data-action="map-change" data-map-id="${m.id}" ${isMaster()?'':'disabled'}>${m.name}</button>`).join('');
+    const tools=isMaster()?`<div class="map-admin-tools"><label class="map-tool-select">Peça selecionada<select class="select" id="map-token-select">${options||'<option value="">Sem peças</option>'}</select></label><div class="map-tool-buttons"><button class="btn ${state.selectedMapTool==='move'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="move">Mover peça</button><button class="btn ${state.selectedMapTool==='reveal'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="reveal">Revelar área</button><button class="btn ${state.selectedMapTool==='treasure'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="treasure">Colocar baú</button><button class="btn ${state.selectedMapTool==='trap'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="trap">Colocar armadilha</button><button class="btn btn-quiet btn-small" data-action="toggle-map-fog">${record.fogEnabled?'Desativar névoa':'Ativar névoa'}</button></div></div>`:`<div class="notice map-player-help">Clique em uma casa explorada para solicitar o movimento de seu personagem. O mestre aprovará o deslocamento. ${record.fogEnabled?'As áreas ainda não descobertas permanecem ocultas.':'O mapa está totalmente visível.'}</div>`;
+    const pending=isMaster()&&state.pendingMapMoves.length?`<div class="map-pending"><div class="small-caps">Solicitações de movimento</div>${state.pendingMapMoves.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>Casa ${Number(ev.payload?.x)+1}, linha ${Number(ev.payload?.y)+1}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-move" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-move" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
+    return `<section class="panel tactical-map-panel"><div class="row between"><div><div class="small-caps">Exploração compartilhada</div><h3 style="margin:5px 0 0">Mapa tático</h3><p class="panel-subtitle" style="margin:5px 0 0">${esc(template.subtitle)} · ${MAP_WIDTH} × ${MAP_HEIGHT} casas</p></div><span class="tag gold">${tokens.length} peça(s)</span></div><div class="map-presets">${presets}</div>${tools}<div class="map-board-wrap"><div class="map-board map-${template.theme}" style="--map-cols:${MAP_WIDTH}">${cells.join('')}</div><div class="map-axis map-axis-bottom">${Array.from({length:MAP_WIDTH},(_,i)=>`<span>${i+1}</span>`).join('')}</div></div><div class="map-legend"><span><i class="legend-token">🛡️</i> Aventureiro</span><span><i class="legend-token">🐉</i> Criatura</span><span>🌳 Obstáculo</span><span>💧 Água</span><span>🧰 Baú</span><span>⚠️ Armadilha</span></div>${isMaster()?pending:''}<p class="map-footnote">Movimento: até 4 casas por turno em combate. Obstáculos e outras peças bloqueiam o caminho. O mestre valida os pedidos dos jogadores.</p></section>`;
+  }
+  function mapCellOccupied(record,gs,x,y,exceptId){return mapTokens(record,gs).some(t=>t.id!==exceptId&&t.position.x===x&&t.position.y===y)}
+  function mapVisibleReveal(record,x,y){addRevealedAround(record,x,y,1)}
+  async function requestMapMove(x,y){
+    if(!state.backendReady)throw new Error('Para solicitar movimento de outro jogador, conecte esta campanha ao Supabase. No modo local, apenas o mestre controla o mapa.');
+    const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tile=mapTile(ex.mapId,x,y);
+    if(!mapCellVisible(x,y,rec,gs))throw new Error('Esta casa ainda não foi explorada.');
+    if(mapTileInfo(tile).blocked)throw new Error('Há um obstáculo nesta casa.');
+    if(mapTokenPosition(currentUserId(),rec,ex.mapId).x===x&&mapTokenPosition(currentUserId(),rec,ex.mapId).y===y)throw new Error('Seu personagem já está nesta casa.');
+    if(mapCellOccupied(rec,gs,x,y,currentUserId()))throw new Error('Outra peça já ocupa esta casa.');
+    if(gs.encounter){const turn=activeCombatTurn(gs.encounter);if(turn?.kind!=='player'||turn.user_id!==currentUserId())throw new Error('Durante o combate, você só pode solicitar movimento no seu turno.');}
+    const {data,error}=await state.backend.rpc('request_map_move',{p_campaign_id:state.campaign.id,p_map_id:ex.mapId,p_x:x,p_y:y});if(error)throw error;
+    if(data?.id&&!state.processed.has(data.id)){state.processed.add(data.id);state.events.push(data);if(!state.pendingMapMoves.some(item=>item.id===data.id))state.pendingMapMoves.push(data);render()}
+    toast('Pedido de movimento enviado ao mestre.');
+  }
+  async function moveMapToken(tokenId,x,y,requestId=null,requestMapId=null){
+    if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode validar movimentos.');
+    if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=MAP_WIDTH||y>=MAP_HEIGHT)throw new Error('Casa do mapa inválida.');
+    const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tile=mapTile(ex.mapId,x,y),info=mapTileInfo(tile);
+    if(requestMapId&&requestMapId!==ex.mapId)throw new Error('O mapa mudou antes da aprovação. Solicite novamente no mapa atual.');
+    if(info.blocked)throw new Error('Não é possível mover uma peça para um obstáculo.');
+    if(mapCellOccupied(rec,gs,x,y,tokenId))throw new Error('Outra peça já ocupa esta casa.');
+    const start=mapTokenPosition(tokenId,rec,ex.mapId),occupied=mapTokens(rec,gs).filter(t=>t.id!==tokenId).map(t=>t.position),distance=mapPathDistance(ex.mapId,start,{x,y},occupied);
+    if(!Number.isFinite(distance))throw new Error('Não existe um caminho livre até essa casa.');
+    if(distance===0)throw new Error('A peça já está nesta casa.');
+    let encounter=gs.encounter?cloneData(gs.encounter):null;
+    if(encounter&&!encounter.defeated){
+      const turn=activeCombatTurn(encounter);
+      if(tokenId==='monster'?(turn?.kind!=='monster'):(turn?.kind!=='player'||turn.user_id!==tokenId))throw new Error('Durante o combate, só a peça cujo turno está ativo pode se deslocar.');
+      const usedKey=`${encounter.round||1}:${tokenId}`,used=Number(encounter.movementUsed?.[usedKey]||0),remaining=Math.max(0,4-used);
+      if(distance>remaining)throw new Error(`Movimento excede o limite. Restam ${remaining} casa(s) neste turno.`);
+      encounter.movementUsed={...(encounter.movementUsed||{}),[usedKey]:used+distance};
+    } else if(distance>4)throw new Error('O deslocamento máximo por solicitação é de 4 casas.');
+    const tokens={...rec.tokens,[tokenId]:{x,y}},nextRecord={...rec,tokens};mapVisibleReveal(nextRecord,x,y);
+    const partyState={...(gs.partyState||{})};let markerText='';
+    if(tokenId!=='monster'){
+      const marker=nextRecord.markers.find(m=>m.x===x&&m.y===y&&!m.discovered);
+      if(marker){marker.discovered=true;marker.triggeredBy=tokenId;const member=state.members.find(m=>m.user_id===tokenId);const character=member?.character?normalizeCharacter(member.character):null;
+        if(marker.type==='treasure'){
+          if(character){const vitals=currentPartyVitals(tokenId,character);partyState[tokenId]={...vitals,coins:vitals.coins+Number(marker.gold||15)};markerText=`${character.name} encontrou um baú e recebeu ${Number(marker.gold||15)} moedas de ouro.`;}
+          else markerText='A companhia encontrou um baú de moedas.';
+        } else if(marker.type==='trap'){
+          if(character){const vitals=currentPartyVitals(tokenId,character),damage=Math.min(vitals.hp,Number(marker.damage||5));partyState[tokenId]={...vitals,hp:Math.max(0,vitals.hp-damage)};markerText=`${character.name} acionou uma armadilha e sofreu ${damage} de dano.`;}
+          else markerText='Uma armadilha foi acionada.';
+        }
+      }
+    }
+    const exploration=setActiveMapRecord(ex,nextRecord);
+    const patch={exploration};if(encounter)patch.encounter=encounter;if(Object.keys(partyState).length)patch.partyState=partyState;
+    await updateGameState(patch);
+    const member=state.members.find(m=>m.user_id===tokenId),name=tokenId==='monster'?(gs.encounter?.name||'Criatura'):(member?.character?.name||member?.display_name||'Aventureiro');
+    const movementText=`${name} se deslocou para a casa ${x+1}, linha ${y+1}.`;
+    const fullText=markerText?`${movementText} ${markerText}`:movementText;
+    await createEvent('session_note',{kind:'map',request_id:requestId||undefined,accepted:true,text:fullText});
+    if(markerText){const data=narrativeState({...gs,exploration});const entries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text:markerText,kind:'discovery',createdAt:new Date().toISOString()}].slice(-50);await updateGameState({journalEntries:entries});}
+    toast(markerText||movementText);
+  }
+  async function handleMapCellClick(btn){
+    const x=Number(btn.dataset.x),y=Number(btn.dataset.y);if(!Number.isInteger(x)||!Number.isInteger(y))return;
+    const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs),tool=state.selectedMapTool||'move';
+    if(!isMaster())return requestMapMove(x,y);
+    if(tool==='move'){if(!state.selectedMapToken)throw new Error('Selecione uma peça antes de movê-la.');return moveMapToken(state.selectedMapToken,x,y)}
+    if(tool==='reveal'){mapVisibleReveal(rec,x,y);await updateGameState({exploration:setActiveMapRecord(ex,rec)});await createEvent('session_note',{kind:'map',text:`O mestre revelou uma área do mapa de ${mapTemplate(ex.mapId).name}.`});toast('Área revelada aos aventureiros.');return}
+    if(tool==='treasure'||tool==='trap'){
+      if(mapTileInfo(mapTile(ex.mapId,x,y)).blocked)throw new Error('Coloque o marcador em uma casa livre.');
+      if(rec.markers.some(m=>m.x===x&&m.y===y))throw new Error('Já existe um marcador nesta casa.');
+      if(mapCellOccupied(rec,gs,x,y,null))throw new Error('Não coloque marcadores embaixo de uma peça.');
+      const marker={id:crypto.randomUUID?crypto.randomUUID():`marker-${Date.now()}`,type:tool,x,y,discovered:false,gold:15,damage:5};rec.markers.push(marker);await updateGameState({exploration:setActiveMapRecord(ex,rec)});toast(tool==='treasure'?'Baú secreto colocado.':'Armadilha escondida colocada.');return;
+    }
+  }
   async function appendJournalEntry(text,kind='story'){
     const gs=state.campaign.game_state||defaultGameState();const data=narrativeState(gs);const entries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text:String(text||'').slice(0,600),kind,createdAt:new Date().toISOString()}].slice(-50);
     await updateGameState({journalEntries:entries});
@@ -592,11 +736,12 @@
     <div class="session-grid"><div><section class="narrative-box"><div class="label">✦ NARRAÇÃO DO MESTRE · ${esc(gs.chapter||'A CRÔNICA')}</div><h3>${esc(gs.location||'Aethra')}</h3><p>${esc(gs.narration||'A aventura aguarda a próxima decisão dos heróis.')}</p></section>
       ${isMaster()?`<div class="session-actions"><button class="btn btn-secondary btn-small" data-action="request-dice">⬡ Solicitar teste D20</button><button class="btn btn-secondary btn-small" data-action="start-encounter">⚔ Iniciar encontro</button><button class="btn btn-secondary btn-small" data-action="open-narration">✎ Narrar acontecimento</button><button class="btn btn-secondary btn-small" data-action="open-adventure-manager">✦ Jornada e missões</button><button class="btn btn-quiet btn-small" data-action="open-master-guide">♛ Central do mestre</button></div>`:`<div class="session-actions"><button class="btn btn-primary btn-small" data-action="roll-dice" ${!masterIsOnline()||!playerCanRoll?'disabled':''}>⬡ ${playerCanRoll?'Responder ao D20':'Aguardando solicitação'}</button><button class="btn btn-secondary btn-small" data-action="open-character-sheet">✧ Minha ficha</button><button class="btn btn-secondary btn-small" data-action="open-inventory">🎒 Inventário</button></div>`}
       ${renderQuestPanel(gs)}
+      ${renderTacticalMap(gs)}
       ${enc?renderCombatTracker(enc):''}
       ${enc?renderBattleCard(enc):`<div class="panel" style="margin-top:16px"><div class="small-caps">Exploração</div><h3 style="margin-top:10px">O caminho está aberto</h3><p class="panel-subtitle">Ainda não há um encontro ativo. ${isMaster()?'Quando os aventureiros encontrarem uma criatura, inicie um encontro pela central da sessão.':'Aguarde o mestre apresentar o próximo desafio.'}</p></div>`}
       <div class="panel" style="margin-top:16px"><div class="row between"><h3>Diário da sessão</h3><span class="tag">Últimos acontecimentos</span></div><div class="event-feed">${events.length?events.map(formatEvent).join(''):'<div class="empty-state"><strong>A crônica ainda será escrita</strong><p>Rolagens, combates e narrações aparecerão aqui.</p></div>'}</div></div>
       <div class="panel chat-panel" style="margin-top:16px"><div class="row between"><h3>Chat da companhia</h3><span class="tag">Ao vivo</span></div><div class="chat-messages">${chatEvents.length?chatEvents.map(formatChatMessage).join(''):'<div class="empty-state"><strong>O silêncio acompanha a jornada</strong><p>Envie a primeira mensagem para seus companheiros.</p></div>'}</div><form id="chat-form" class="chat-compose"><input class="input" id="chat-input" maxlength="500" placeholder="Escreva uma mensagem para o grupo..." autocomplete="off" required><button class="btn btn-primary btn-small" type="submit">Enviar</button></form></div>
-    </div><aside>${ownChar?`<div class="panel"><div class="row between"><h3>${esc(ownChar.name)}</h3><span class="tag gold">Nível ${ownChar.level}</span></div><div class="hp-row"><strong>HP</strong><strong>${ownVitals.hp} / ${ownVitals.maxHp}</strong></div><div class="hp-track"><div class="hp-fill" style="width:${Math.max(0,ownVitals.hp/ownVitals.maxHp*100)}%"></div></div><div class="stat-grid"><div class="stat-card"><small>Defesa</small><strong>${ownVitals.defense}</strong></div><div class="stat-card"><small>XP</small><strong>${ownChar.xp||0}</strong></div></div><p class="panel-subtitle">${esc(ownChar.class)} · ${esc(ownChar.race)} · ${esc(ownChar.realm)}</p><button class="btn btn-secondary btn-small" style="width:100%" data-action="open-inventory">Ver equipamento e mochila</button></div>`:''}${renderRevealedNpcs(gs)}${renderJourneyLog(gs)}<div class="panel" style="margin-top:15px"><div class="row between"><h3>Participantes</h3><span class="tag green">${state.members.length} na crônica</span></div><div class="member-list">${state.members.map(m=>{const v=m.character?currentPartyVitals(m.user_id,m.character):null;return `<div class="member-row"><div class="avatar">${m.role==='master'?'♛':'✦'}</div><div><strong>${esc(m.display_name||'Aventureiro')}</strong><small>${m.role==='master'?'Mestre':esc(m.character?.class||'Aventureiro')}${v?` · ${v.hp}/${v.maxHp} HP · DEF ${v.defense}`:''} · ${memberIsOnline(m)?'Online':'Offline'}</small></div></div>`}).join('')}</div></div><div class="panel" style="margin-top:15px"><h3>Rolagem de dados</h3><div class="dice-panel"><div class="dice-mini">20</div><div><strong>Dado de vinte faces</strong><small>Testes, ataques e salvaguardas</small></div></div>${isMaster()?`<button class="btn btn-primary" style="width:100%;margin-top:12px" data-action="request-dice">Solicitar rolagem</button><button class="btn btn-secondary" style="width:100%;margin-top:8px" data-action="roll-dice">Rolagem do mestre</button>${prompt?`<div class="notice" style="margin-top:10px">Solicitação ativa: ${esc(prompt.reason)} · ${prompt.fulfilled_user_ids?.length||0}/${prompt.target_user_ids?.length||0} respostas <button class="btn btn-quiet btn-small" style="margin-top:8px" data-action="cancel-roll-prompt">Cancelar</button></div>`:''}`:`<button class="btn btn-primary" style="width:100%;margin-top:12px" data-action="roll-dice" ${!masterIsOnline()||!playerCanRoll?'disabled':''}>${playerCanRoll?'Responder ao D20':'Aguardando solicitação'}</button>${prompt&&!playerCanRoll?`<p class="panel-subtitle">O mestre solicitou: ${esc(prompt.reason)}</p>`:''}`}<p class="panel-subtitle" style="margin:10px 0 0">Os resultados ficam registrados no diário e são exibidos aos participantes.</p></div><div class="panel" style="margin-top:15px"><h3>Capítulo atual</h3><p class="panel-subtitle">${esc(gs.chapter||'Prólogo')}</p><span class="tag gold">${esc(gs.location||'Aethra')}</span></div></aside></div>`;
+    </div><aside>${ownChar?`<div class="panel"><div class="row between"><h3>${esc(ownChar.name)}</h3><span class="tag gold">Nível ${ownChar.level}</span></div><div class="hp-row"><strong>HP</strong><strong>${ownVitals.hp} / ${ownVitals.maxHp}</strong></div><div class="hp-track"><div class="hp-fill" style="width:${Math.max(0,ownVitals.hp/ownVitals.maxHp*100)}%"></div></div><div class="stat-grid"><div class="stat-card"><small>Defesa</small><strong>${ownVitals.defense}</strong></div><div class="stat-card"><small>XP</small><strong>${ownChar.xp||0}</strong></div><div class="stat-card"><small>Ouro</small><strong>${ownVitals.coins} PO</strong></div></div><p class="panel-subtitle">${esc(ownChar.class)} · ${esc(ownChar.race)} · ${esc(ownChar.realm)}</p><button class="btn btn-secondary btn-small" style="width:100%" data-action="open-inventory">Ver equipamento e mochila</button></div>`:''}${renderRevealedNpcs(gs)}${renderJourneyLog(gs)}<div class="panel" style="margin-top:15px"><div class="row between"><h3>Participantes</h3><span class="tag green">${state.members.length} na crônica</span></div><div class="member-list">${state.members.map(m=>{const v=m.character?currentPartyVitals(m.user_id,m.character):null;return `<div class="member-row"><div class="avatar">${m.role==='master'?'♛':'✦'}</div><div><strong>${esc(m.display_name||'Aventureiro')}</strong><small>${m.role==='master'?'Mestre':esc(m.character?.class||'Aventureiro')}${v?` · ${v.hp}/${v.maxHp} HP · DEF ${v.defense}`:''} · ${memberIsOnline(m)?'Online':'Offline'}</small></div></div>`}).join('')}</div></div><div class="panel" style="margin-top:15px"><h3>Rolagem de dados</h3><div class="dice-panel"><div class="dice-mini">20</div><div><strong>Dado de vinte faces</strong><small>Testes, ataques e salvaguardas</small></div></div>${isMaster()?`<button class="btn btn-primary" style="width:100%;margin-top:12px" data-action="request-dice">Solicitar rolagem</button><button class="btn btn-secondary" style="width:100%;margin-top:8px" data-action="roll-dice">Rolagem do mestre</button>${prompt?`<div class="notice" style="margin-top:10px">Solicitação ativa: ${esc(prompt.reason)} · ${prompt.fulfilled_user_ids?.length||0}/${prompt.target_user_ids?.length||0} respostas <button class="btn btn-quiet btn-small" style="margin-top:8px" data-action="cancel-roll-prompt">Cancelar</button></div>`:''}`:`<button class="btn btn-primary" style="width:100%;margin-top:12px" data-action="roll-dice" ${!masterIsOnline()||!playerCanRoll?'disabled':''}>${playerCanRoll?'Responder ao D20':'Aguardando solicitação'}</button>${prompt&&!playerCanRoll?`<p class="panel-subtitle">O mestre solicitou: ${esc(prompt.reason)}</p>`:''}`}<p class="panel-subtitle" style="margin:10px 0 0">Os resultados ficam registrados no diário e são exibidos aos participantes.</p></div><div class="panel" style="margin-top:15px"><h3>Capítulo atual</h3><p class="panel-subtitle">${esc(gs.chapter||'Prólogo')}</p><span class="tag gold">${esc(gs.location||'Aethra')}</span></div></aside></div>`;
   }
   function renderCombatTracker(enc){
     const turn=activeCombatTurn(enc);const order=enc.turnOrder||[];
@@ -613,9 +758,9 @@
   function renderInventoryModal(){
     const ch=state.member?.character?normalizeCharacter(state.member.character):null;if(!ch){toast('Crie um personagem para consultar o inventário.','error');return}
     const vitals=currentPartyVitals(currentUserId(),ch);const eq=ch.equipment||{};
-    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Pertences do aventureiro</div><h2>Equipamentos e mochila</h2><p>${esc(ch.name)} · ${esc(ch.class)} · Nível ${ch.level}</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="stat-grid"><div class="stat-card"><small>HP atual</small><strong>${vitals.hp}/${vitals.maxHp}</strong></div><div class="stat-card"><small>Defesa</small><strong>${vitals.defense}</strong></div></div><h3>Equipado</h3><div class="member-list">${[['Arma',eq.weapon],['Armadura',eq.armor],['Escudo',eq.shield]].filter(x=>x[1]).map(x=>`<div class="member-row"><div class="avatar">${x[0]==='Arma'?'⚔':'🛡'}</div><div><strong>${esc(x[1].name)}</strong><small>${esc(x[0])} · ${esc(x[1].description||'')}</small></div><span class="spacer"></span><span class="tag">${x[0]==='Arma'?`1d${x[1].damageDie||6}`:`+${x[1].defense||0} DEF`}</span></div>`).join('')||'<p>Nenhum equipamento.</p>'}</div><div class="divider"></div><h3>Mochila</h3><div class="member-list">${vitals.inventory.map(item=>`<div class="member-row"><div class="avatar">${item.kind==='consumable'?'🧪':'🎒'}</div><div><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></div><span class="spacer"></span><span class="tag">x${item.qty||0}</span></div>`).join('')}</div><div class="notice">Poções e consumíveis são utilizados durante o turno do personagem. Os itens consumidos ficam registrados na campanha.</div></section></div>`;
+    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Pertences do aventureiro</div><h2>Equipamentos e mochila</h2><p>${esc(ch.name)} · ${esc(ch.class)} · Nível ${ch.level}</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="stat-grid"><div class="stat-card"><small>HP atual</small><strong>${vitals.hp}/${vitals.maxHp}</strong></div><div class="stat-card"><small>Defesa</small><strong>${vitals.defense}</strong></div><div class="stat-card"><small>Ouro</small><strong>${vitals.coins} PO</strong></div></div><h3>Equipado</h3><div class="member-list">${[['Arma',eq.weapon],['Armadura',eq.armor],['Escudo',eq.shield]].filter(x=>x[1]).map(x=>`<div class="member-row"><div class="avatar">${x[0]==='Arma'?'⚔':'🛡'}</div><div><strong>${esc(x[1].name)}</strong><small>${esc(x[0])} · ${esc(x[1].description||'')}</small></div><span class="spacer"></span><span class="tag">${x[0]==='Arma'?`1d${x[1].damageDie||6}`:`+${x[1].defense||0} DEF`}</span></div>`).join('')||'<p>Nenhum equipamento.</p>'}</div><div class="divider"></div><h3>Mochila</h3><div class="member-list">${vitals.inventory.map(item=>`<div class="member-row"><div class="avatar">${item.kind==='consumable'?'🧪':'🎒'}</div><div><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></div><span class="spacer"></span><span class="tag">x${item.qty||0}</span></div>`).join('')}</div><div class="notice">Poções e consumíveis são utilizados durante o turno do personagem. Os itens consumidos ficam registrados na campanha.</div></section></div>`;
   }
-  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Resultado: ${p.result}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'session_note':title=p.kind==='quest'?'Progresso de missão':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
+  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Resultado: ${p.result}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'map_move_request':title='Pedido de movimento';desc=`${p.player_name||'Aventureiro'} solicitou a casa ${Number(p.x)+1}, linha ${Number(p.y)+1}.`;break;case'session_note':title=p.kind==='quest'?'Progresso de missão':p.kind==='map'?'Exploração do mapa':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
 
   function formatChatMessage(ev){const p=ev.payload||{};const mine=ev.actor_id===currentUserId();return `<div class="chat-message ${mine?'mine':''}"><div class="chat-message-meta"><strong>${esc(p.display_name||'Aventureiro')}</strong><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div><p>${esc(p.text||'')}</p></div>`}
 
@@ -631,8 +776,9 @@
     const gs=state.campaign.game_state||defaultGameState();const partyState={...(gs.partyState||{})};
     participants.forEach(m=>{const ch=normalizeCharacter(m.character);const old=partyState[m.user_id]||{};partyState[m.user_id]={hp:Math.max(0,Math.min(Number(old.maxHp)||ch.maxHp,Number.isFinite(Number(old.hp))?Number(old.hp):ch.hp)),maxHp:Number(old.maxHp)||ch.maxHp,defense:ch.defense,inventory:Array.isArray(old.inventory)?old.inventory:ch.inventory,abilityUsed:false}});
     const enc={...template,templateId:template.id,id:crypto.randomUUID?crypto.randomUUID():`enc-${Date.now()}`,round:1,turnIndex:0,specialUsed:false,defeated:false,xpAwarded:false,participantIds:participants.map(m=>m.user_id)};
-    enc.turnOrder=buildTurnOrder(enc,state.members);
-    await updateGameState({encounter:enc,partyState});await createEvent('encounter_started',{monster:enc.name,round:1,turn_order:enc.turnOrder});toast(`Encontro iniciado: ${enc.name}. A ordem de iniciativa foi definida.`);
+    enc.turnOrder=buildTurnOrder(enc,state.members);enc.movementUsed={};
+    const exploration=explorationData(gs),mapRecord=activeMapRecord(gs);mapRecord.tokens={...mapRecord.tokens,monster:{x:7,y:3}};setActiveMapRecord(exploration,mapRecord);
+    await updateGameState({encounter:enc,partyState,exploration});await createEvent('encounter_started',{monster:enc.name,round:1,turn_order:enc.turnOrder});toast(`Encontro iniciado: ${enc.name}. A ordem de iniciativa foi definida.`);
   }
   function renderEncounterModal(){
     modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Preparar combate</div><h2>Escolher criatura</h2><p>Selecione um inimigo do bestiário inicial. A iniciativa será rolada automaticamente.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="encounter-form"><div class="choice-grid">${MONSTERS.map((m,i)=>`<label class="choice-card ${i===0?'selected':''}"><input type="radio" name="monster" value="${m.id}" ${i===0?'checked':''} onchange="document.querySelectorAll('.choice-card').forEach(x=>x.classList.remove('selected'));this.closest('.choice-card').classList.add('selected')"><strong>${m.emoji} ${esc(m.name)}</strong><small>${esc(m.kind)} · Nível ${m.level} · ${m.hp} HP · Defesa ${m.defense}</small><small>${esc(m.specialName)}: ${esc(m.specialDescription)}</small></label>`).join('')}</div><input type="hidden" id="monster-template" value="${MONSTERS[0].id}"><div class="notice">Apenas personagens que já possuem ficha entram na ordem de iniciativa. O monstro terá seu próprio turno e poderá atacar automaticamente.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button type="submit" class="btn btn-primary">Iniciar encontro</button></div></form></section></div>`;
@@ -679,7 +825,7 @@
       else if(action==='disconnect-backend')disconnectSupabase()
       else if(action==='open-book'){state.currentBook=btn.dataset.book;state.modal='book';render()}
       else if(action==='open-cloud-campaign'){await openCloudCampaign(btn.dataset.id)}
-      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');localStorage.setItem(KEYS.active,c.id);state.view=c.status==='active'?'session':'lobby';render()}}
+      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);localStorage.setItem(KEYS.active,c.id);state.view=c.status==='active'?'session':'lobby';render()}}
       else if(action==='copy-code'){await navigator.clipboard?.writeText(state.campaign.code);toast('Código copiado.');}
       else if(action==='copy-invite'){const link=location.href.split('?')[0]+'?join='+encodeURIComponent(state.campaign.code);await navigator.clipboard?.writeText(link);toast('Link de convite copiado.');}
       else if(action==='create-character')openModal('character')
@@ -721,7 +867,13 @@
       else if(action==='open-damage'){
         modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog"><div class="modal-head"><div><h2>Registrar ataque</h2><p>Informe o dano causado. O mestre confirma e aplica o valor à criatura.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="damage-form"><div class="field"><label for="damage-amount">DANO DECLARADO</label><input class="input" type="number" id="damage-amount" min="1" max="1000" value="12" required></div><div class="field"><label for="damage-note">AÇÃO (OPCIONAL)</label><input class="input" id="damage-note" placeholder="Ex.: Golpe poderoso com espada"></div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button class="btn btn-primary" type="submit">Enviar ao mestre</button></div></form></section></div>`;
       }
-      else if(action==='end-encounter'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode encerrar o encontro.');await updateGameState({encounter:null});toast('Encontro encerrado.')}
+      else if(action==='end-encounter'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode encerrar o encontro.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);delete rec.tokens.monster;await updateGameState({encounter:null,exploration:setActiveMapRecord(ex,rec)});toast('Encontro encerrado.')}
+      else if(action==='map-change'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode trocar o mapa.');const id=btn.dataset.mapId;if(!MAP_TEMPLATES.some(m=>m.id===id))throw new Error('Mapa não encontrado.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs);ex.mapId=id;state.selectedMapToken=state.members.find(m=>m.role==='player'&&m.character)?.user_id||null;state.selectedMapTool='move';await updateGameState({exploration:ex});await createEvent('session_note',{kind:'map',text:`O mapa mudou para ${mapTemplate(id).name}.`})}
+      else if(action==='map-tool'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode selecionar ferramentas do mapa.');state.selectedMapTool=btn.dataset.tool||'move';render()}
+      else if(action==='toggle-map-fog'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode controlar a névoa de guerra.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);rec.fogEnabled=!rec.fogEnabled;if(rec.fogEnabled){mapTokens(rec,gs).filter(t=>t.kind==='player').forEach(t=>addRevealedAround(rec,t.position.x,t.position.y,1))}await updateGameState({exploration:setActiveMapRecord(ex,rec)});toast(rec.fogEnabled?'Névoa de guerra ativada.':'Mapa totalmente revelado.')}
+      else if(action==='map-cell'){await handleMapCellClick(btn)}
+      else if(action==='approve-map-move'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode aprovar movimentos.');const ev=state.pendingMapMoves.find(x=>x.id===btn.dataset.id);if(!ev)throw new Error('Solicitação não encontrada.');try{await moveMapToken(ev.actor_id,Number(ev.payload.x),Number(ev.payload.y),ev.id,ev.payload.map_id)}catch(err){await createEvent('session_note',{kind:'map',request_id:ev.id,accepted:false,text:`Movimento recusado: ${err.message}`});state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);throw err}state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);render()}
+      else if(action==='reject-map-move'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode recusar movimentos.');const ev=state.pendingMapMoves.find(x=>x.id===btn.dataset.id);if(ev){await createEvent('session_note',{kind:'map',request_id:ev.id,accepted:false,text:`O mestre recusou o movimento de ${ev.payload?.player_name||'um aventureiro'}.`});state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);render()}}
       else if(action==='open-adventure-manager'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode gerenciar a jornada.');renderAdventureManagerModal()}
       else if(action==='open-npc'){renderNPCModal(btn.dataset.npcId)}
       else if(action==='accept-quest'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode apresentar missões.');const gs=state.campaign.game_state||defaultGameState();const data=narrativeState(gs);const q=data.quests.find(x=>x.id===btn.dataset.questId);if(!q||q.status!=='available')throw new Error('Esta missão não está disponível.');q.status='active';let text=`A companhia aceitou a missão: ${q.title}.`;if(q.id==='side-01'&&data.revealedNpcIds.includes('tovin')){const result=markObjective(data.quests,'side-01','meet-tovin');data.quests=result.quests;if(result.changed)text+=' O grupo já havia conhecido Tovin; esse objetivo foi reconhecido automaticamente.'}data.journalEntries=[...data.journalEntries,{id:crypto.randomUUID?crypto.randomUUID():`journal-${Date.now()}`,text,kind:'quest',createdAt:new Date().toISOString()}].slice(-50);await updateGameState({quests:data.quests,journalEntries:data.journalEntries});await createEvent('session_note',{kind:'quest',text});renderAdventureManagerModal();toast('Missão apresentada à companhia.')}
@@ -738,6 +890,9 @@
   document.addEventListener('click',e=>{
     const choice=e.target.closest('[data-choice]');if(!choice||!state.charDraft)return;
     state.charDraft[choice.dataset.choice]=choice.dataset.value;renderCharacterModal();
+  });
+  document.addEventListener('change',e=>{
+    if(e.target.id==='map-token-select'){state.selectedMapToken=e.target.value||null;render()}
   });
   document.addEventListener('input',e=>{
     if(!state.charDraft)return;

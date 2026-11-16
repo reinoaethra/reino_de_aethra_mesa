@@ -1,4 +1,4 @@
-# Roteiro de teste multiplayer — Reino de Aethra v0.5
+# Roteiro de teste multiplayer — Reino de Aethra v0.6
 
 Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo entre dois ou mais navegadores. Não é necessário instalar um servidor local.
 
@@ -6,7 +6,7 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 
 - Site publicado por HTTPS no GitHub Pages.
 - Projeto Supabase ativo e conectado pelo `config.js`.
-- Banco para v0.5: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.4, faça backup e execute `supabase-migration-v0.5.sql`. Se estiver na v0.3 ou anterior, siga a sequência de migrações descrita no README e no guia do Supabase.
+- Banco para v0.6: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.5, faça backup e execute `supabase-migration-v0.6.sql`. Se estiver na v0.4 ou anterior, siga a sequência completa de migrações descrita no README e no guia do Supabase.
 - Anonymous Sign-Ins habilitado.
 - Um navegador/perfil para o mestre e pelo menos um perfil diferente para jogador.
 - Para o teste real, não utilize a mesma sessão autenticada em dois perfis que compartilham o mesmo armazenamento.
@@ -153,7 +153,7 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 - Mensagem do console ou do Supabase (retire chaves e tokens):
 
 
-## 7. Teste da jornada narrativa v0.5
+## 7. Teste da jornada narrativa (introduzida na v0.5)
 
 - [ ] Na sala, o quadro **Missões da companhia** aparece para mestre e jogadores.
 - [ ] O mestre abre **Jornada e missões**.
@@ -169,3 +169,18 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 - [ ] O mestre encerra a sessão e, depois, reabre a campanha: missões, NPCs revelados, cena e diário permanecem.
 
 **Importante:** recompensas textuais das missões são orientações narrativas nesta versão. Elas não creditam automaticamente ouro, itens ou XP. O mestre deve entregar essas recompensas manualmente até a implementação da economia e do gerenciador de recompensas.
+
+
+## Testes adicionais da versão 0.6 — mapas
+
+1. Com o mestre e pelo menos um jogador conectados, abra o mapa da Estrada de Eldoria.
+2. No mestre, selecione a peça de um aventureiro, deixe `Mover peça` selecionado e mova-a para uma casa livre. Confirme que o jogador vê a mesma posição.
+3. No navegador do jogador, clique em uma casa livre e visível. Confirme que aparece uma solicitação no painel do mestre.
+4. Aprove o pedido e confirme a posição sincronizada; depois repita e recuse outro pedido.
+5. Ative a névoa e revele uma área. Confirme que o jogador não vê as casas ainda ocultas.
+6. Coloque um baú e mova um personagem até ele. Confirme o acréscimo de 15 PO.
+7. Coloque uma armadilha e mova um personagem até ela. Confirme a redução de 5 HP.
+8. Inicie um encontro e teste que o movimento de uma peça fora do turno é recusado. No turno dela, confirme o limite de quatro casas e o bloqueio por obstáculos.
+9. Salve e encerre a sessão, abra novamente a campanha e confira se o mapa, posições, marcadores descobertos, ouro e HP foram preservados.
+
+Esses testes exigem a função SQL `request_map_move` da v0.6. Em um banco que já estava na v0.5, execute `supabase-migration-v0.6.sql` antes de testar o pedido de movimento feito pelo jogador.

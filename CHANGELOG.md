@@ -1,3 +1,19 @@
+## v0.6 — Mapas táticos e exploração compartilhada
+
+- Quatro mapas 2D em grade: Estrada de Eldoria, Vila de Brumafolha, Torre dos Vigias e Santuário das Raízes.
+- Grade 10 × 8 com tipos de terreno e obstáculos que bloqueiam movimento.
+- Peças para aventureiros e criatura ativa, com posições iniciais específicas para cada mapa e casas livres conectadas para a companhia.
+- Mestre pode selecionar qualquer peça e reposicioná-la; jogador solicita movimento da própria peça.
+- Pedidos de movimento aguardam aprovação/recusa do mestre e deixam de aparecer como pendentes após a decisão, inclusive depois de recarregar a campanha.
+- Validação de caminho por busca de menor rota, ocupação de casa e limites de movimento.
+- Movimento ortogonal de até 4 casas no turno de combate; sem diagonais.
+- Névoa de guerra com revelação manual do mestre e descoberta de área ao redor das peças.
+- Baús escondidos que concedem 15 moedas de ouro e armadilhas escondidas que causam 5 HP de dano ao serem acionadas.
+- Ouro visível no painel do personagem e inventário.
+- Mapas, peças, marcadores e névoa salvos em `campaigns.game_state`.
+- Função RPC `request_map_move` para validar identidade do jogador, estado da sessão, mapa e limites de coordenadas antes de registrar o pedido.
+- Guia de uso dos mapas e documentação de instalação atualizada.
+
 # Histórico de versões — Reino de Aethra
 
 ## v0.5 — Primeira aventura, missões, NPCs e diário

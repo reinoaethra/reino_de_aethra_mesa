@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 0.5**  
+**Versão do jogo: 0.6**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -22,11 +22,12 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 4. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
 5. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
 6. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-7. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+7. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+8. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 0.5
+## 2. O que está incluído na versão 0.6
 
 ### Campanhas e jogadores
 
@@ -77,18 +78,35 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Diário da campanha com descobertas, mudanças de cena e progresso de missões.
 - Dados narrativos guardados no campo `game_state` JSONB já existente.
 
+
+### Exploração tática e mapas (v0.6)
+
+- Quatro mapas 2D em grade: Estrada de Eldoria, Vila de Brumafolha, Torre dos Vigias e Santuário das Raízes.
+- Grade de 10 × 8 casas, com terreno livre, trilhas, água, árvores, casas, rochas, colunas e muros.
+- Peças compartilhadas para personagens e criatura do encontro.
+- Mestre escolhe a peça e move diretamente; jogadores podem solicitar o deslocamento da própria peça.
+- Aprovação ou recusa de pedidos de movimento pelo mestre.
+- Verificação de caminho, obstáculos, ocupação de casas e distância.
+- Movimento ortogonal de até 4 casas por turno em combate; fora do combate, cada deslocamento também é limitado a 4 casas.
+- Névoa de guerra, área revelada pelo mestre e descoberta de casas ao redor dos aventureiros.
+- Marcadores de baú e armadilha, com descoberta automática ao entrar na casa.
+- Baú concede 15 moedas de ouro; armadilha causa 5 HP de dano.
+- Saldo de ouro visível no painel do personagem e no inventário.
+- Posições, mapas e marcadores salvos em `campaigns.game_state`.
+- Nova função RPC `request_map_move`, que permite ao jogador solicitar somente o movimento da própria peça.
+
 ### Biblioteca
 
 A interface apresenta a estrutura inicial dos sete livros: Livro do Mestre, Bestiário, Grandes Chefes, Atlas dos Cinco Reinos, Grimório, Arsenal e Manual do Aventureiro. **Os capítulos completos, ilustrações editoriais e PDFs ainda serão produzidos em uma etapa posterior.** Não interprete os títulos dos livros como se todo o conteúdo já estivesse escrito.
 
 ## 3. O que ainda não está pronto
 
-A versão 0.5 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
+A versão 0.6 é uma base jogável em evolução, não o produto final. Ainda não estão completos:
 
-- A campanha completa ainda está em produção. A versão 0.5 entrega o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
+- A campanha completa ainda está em produção. A versão 0.6 mantém o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
 - Livros completos e PDFs diagramados.
 - Bestiário extenso, chefes com várias fases e inteligência avançada dos monstros.
-- Mapas táticos com miniaturas, casas, obstáculos e áreas de efeito.
+- Mapas com artes próprias em alta resolução, miniaturas animadas, áreas de efeito, linhas de visão e ferramentas avançadas de batalha.
 - Condições de estado completas (veneno, sangramento, congelamento etc.).
 - Troca de equipamentos por uma interface de inventário completa.
 - Sistema de login permanente com e-mail ou outro método e recuperação entre dispositivos.
@@ -111,7 +129,7 @@ O livro do mestre na interface contém somente uma estrutura inicial. **Não col
 
 **Importante: não há um servidor VPS mantido por você.** O Supabase é um serviço hospedado na nuvem e precisa estar disponível para que a campanha online funcione. O computador do mestre só precisa ficar ligado e conectado durante a partida. Entre sessões, o mestre pode desligá-lo: os dados confirmados permanecem no banco.
 
-A versão 0.4 usa a comunicação Realtime do Supabase. **Ela ainda não usa conexão direta WebRTC/P2P.** Portanto, não é correto dizer que o computador do mestre está recebendo conexões de internet diretamente dos jogadores. O mestre é a autoridade da lógica de jogo; o Supabase transporta as atualizações e armazena os dados.
+A versão 0.6 usa a comunicação Realtime do Supabase. **Ela ainda não usa conexão direta WebRTC/P2P.** Portanto, não é correto dizer que o computador do mestre está recebendo conexões de internet diretamente dos jogadores. O mestre é a autoridade da lógica de jogo; o Supabase transporta as atualizações e armazena os dados.
 
 ## 5. Instalação pela primeira vez
 
@@ -144,12 +162,13 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 | Situação | O que executar |
 |---|---|
 | Nunca criou as tabelas de Aethra / projeto Supabase novo | Execute todo o `supabase-schema.sql` uma vez. |
-| O banco já está na versão 0.4 | Execute `supabase-migration-v0.5.sql` para atualizar o estado inicial de novas campanhas; depois atualize os arquivos do site. |
-| O banco já está na versão 0.3 | Faça backup e execute, nesta ordem, `supabase-migration-v0.4.sql` e `supabase-migration-v0.5.sql`. |
-| O banco está na versão 0.2 | Faça backup e execute, nesta ordem, `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql` e `supabase-migration-v0.5.sql`. |
+| Banco já está na versão 0.5 | Faça backup e execute `supabase-migration-v0.6.sql` uma vez. |
+| O banco já está na versão 0.4 | Execute `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`; atualize os arquivos do site. |
+| O banco já está na versão 0.3 | Faça backup e execute, nesta ordem, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`. |
+| O banco está na versão 0.2 | Faça backup e execute, nesta ordem, `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`. |
 | O banco é da versão 0.1 ou de uma estrutura modificada manualmente | Não execute migrações às cegas. Crie um projeto Supabase de teste ou peça ajuda para identificar o esquema atual antes de alterar o banco. |
 
-Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. A v0.5 não cria tabelas novas. Missões, NPCs revelados, cenas e diário ficam no campo JSONB `campaigns.game_state`. A migração v0.5 só atualiza o valor padrão utilizado por campanhas novas; ela não altera campanhas existentes. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
+Não execute uma migração v0.4 em um banco vazio: ela pressupõe que as tabelas e funções da versão 0.3 já existam. A v0.5 atualiza o estado inicial de campanhas novas e a v0.6 adiciona a função `request_map_move`. Os mapas, as posições, a névoa e os marcadores ficam no campo JSONB `campaigns.game_state`; não são necessárias tabelas adicionais. Não apague as tabelas para tentar corrigir um erro. Veja [SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md) ou peça ajuda com a mensagem exata do erro.
 
 ## 7. Configuração do `config.js`
 
@@ -199,7 +218,9 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
-| `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura e usar o painel narrativo v0.5. |
+| `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
+| `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos quatro mapas, movimentos, névoa, baús e armadilhas. |
+| `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura, usar o painel narrativo e consultar as limitações atuais. |
 | `CHANGELOG.md` | Histórico das versões. |
 | `REGRAS-DE-COMBATE.md` | Regras implementadas na versão 0.4. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
@@ -225,4 +246,4 @@ Antes de usar uma campanha importante, siga o roteiro de teste e confirme os res
 
 ---
 
-**Reino de Aethra v0.5 — A primeira jornada possui missões, NPCs, cenas e diário compartilhado.**
+**Reino de Aethra v0.6 — A primeira jornada agora pode ser explorada em mapas táticos compartilhados, com movimento validado pelo mestre.**

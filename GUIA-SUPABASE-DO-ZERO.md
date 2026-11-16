@@ -1,4 +1,4 @@
-# Guia do Supabase do zero — Reino de Aethra v0.5
+# Guia do Supabase do zero — Reino de Aethra v0.6
 
 Este tutorial foi escrito para quem **nunca usou Supabase, nunca criou um banco de dados e não sabe programar**. Leia uma etapa de cada vez. Você não precisa instalar o Supabase no computador: tudo será feito pelo navegador.
 
@@ -92,7 +92,7 @@ Esta é a etapa em que você instala a estrutura de dados do jogo. Parece técni
 
 ### 3.1 Encontrar o arquivo certo no ZIP
 
-1. Baixe o pacote ZIP do Reino de Aethra v0.5.
+1. Baixe o pacote ZIP do Reino de Aethra v0.6.
 2. No computador, encontre o arquivo ZIP baixado.
 3. Clique nele com o botão direito e escolha **Extrair tudo** (Windows) ou use o aplicativo de extração disponível.
 4. Abra a pasta resultante.
@@ -402,7 +402,7 @@ Quando pedir ajuda, envie o nome do arquivo e a mensagem de erro completa. **Nun
 
 ## PARTE FINAL — Atualizar o banco para a versão 0.5
 
-Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.5, o padrão novo já está incluído.
+Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.6, o padrão novo já está incluído.
 
 ### O que esta migração faz?
 
@@ -430,3 +430,34 @@ Não execute a migração v0.5 isoladamente em um banco v0.3 ou v0.2. Primeiro a
 ### Como conferir
 
 Crie uma campanha de teste. O capítulo inicial deverá aparecer como **Capítulo I — Ecos na Estrada**, no local **Estrada Esquecida de Eldoria**. A campanha antiga não deve ter perdido o capítulo, os personagens nem o progresso anterior.
+
+
+## Atualização para mapas táticos — versão 0.6
+
+Esta etapa só é necessária se o seu banco já estava funcionando na versão 0.5. Se você criou um projeto Supabase agora e executou o arquivo `supabase-schema.sql` que veio no pacote v0.6, a função de movimento já está incluída e você não precisa executar esta migração.
+
+A migração `supabase-migration-v0.6.sql` cria a função `request_map_move`. Ela permite que um jogador envie um pedido de movimento para a própria peça. O mestre recebe o pedido, confere obstáculos, distância e turno e aprova ou recusa. A migração não apaga campanhas, personagens, eventos ou inventários.
+
+### Passo a passo para executar a migração v0.6
+
+1. Entre em https://supabase.com e faça login.
+2. Abra a organização onde está o projeto usado por Aethra.
+3. Clique no projeto correto. Confira o nome antes de continuar.
+4. No menu lateral, procure **SQL Editor**.
+5. Clique em **New query** para abrir uma consulta vazia.
+6. No computador, abra o arquivo `supabase-migration-v0.6.sql` usando o Bloco de Notas.
+7. Pressione `Ctrl + A` para selecionar tudo e `Ctrl + C` para copiar.
+8. Volte ao Supabase, clique dentro do editor SQL e pressione `Ctrl + V`.
+9. Confira se o texto começa com `-- Reino de Aethra v0.6`.
+10. Clique em **Run** (Executar).
+11. Aguarde a mensagem de sucesso. Se aparecer erro, não execute repetidamente: copie a mensagem completa sem incluir senhas nem chaves e peça ajuda.
+12. Depois de confirmar a migração, publique os arquivos do site v0.6 no GitHub Pages, preservando seu `config.js` configurado.
+
+### Qual arquivo SQL usar?
+
+- **Projeto novo:** execute apenas `supabase-schema.sql` do pacote v0.6.
+- **Banco na v0.5:** execute `supabase-migration-v0.6.sql` uma vez.
+- **Banco na v0.4:** execute primeiro `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`.
+- **Banco na v0.3 ou v0.2:** faça backup e siga a sequência completa de migrações descrita no README: v0.2 → v0.3 → v0.4 → v0.5 → v0.6.
+
+Não execute o esquema completo por cima de um banco existente.

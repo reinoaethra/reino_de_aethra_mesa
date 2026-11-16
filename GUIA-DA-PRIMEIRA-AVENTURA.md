@@ -1,6 +1,6 @@
 # Guia da primeira aventura — Ecos na Estrada de Eldoria
 
-**Reino de Aethra v0.5**
+**Reino de Aethra v0.6**
 
 Este guia ajuda um mestre iniciante a conduzir a primeira sessão. Não é necessário improvisar tudo: use as cenas preparadas, leia a narração, apresente os NPCs e atualize os objetivos no painel **Jornada e missões**.
 
@@ -111,7 +111,7 @@ As anotações são públicas e ficam salvas na campanha. Evite colocar nomes ou
 
 ## 7. Recompensas nesta versão
 
-Os textos de recompensa são lembretes narrativos. A v0.5 **não entrega automaticamente** ouro, itens ou XP por concluir uma missão. O mestre deve entregar essas recompensas manualmente por enquanto. A experiência por derrotar monstros continua sendo tratada pelo sistema de combate da v0.4.
+Os textos de recompensa são lembretes narrativos. A versão 0.6 **não entrega automaticamente** ouro, itens ou XP por concluir uma missão. O mestre deve entregar essas recompensas manualmente por enquanto. A experiência por derrotar monstros continua sendo tratada pelo sistema de combate da v0.4.
 
 ## 8. Salvamento e retomada
 
@@ -122,3 +122,8 @@ Ao encerrar a sessão, o mestre deve usar **Salvar e encerrar sessão**. Na pró
 ## 9. Limite importante sobre conteúdo reservado
 
 O GitHub Pages entrega os arquivos JavaScript ao navegador. Qualquer texto colocado em constantes, HTML, narração pública, NPCs revelados ou JSON compartilhado pode ser lido pelo usuário. A tela da Central do Mestre é uma separação de interface, não uma barreira de segurança para dados secretos embutidos no código. Até existir uma tabela de notas privadas com políticas de acesso específicas, mantenha as informações de bastidores fora dos arquivos publicados.
+
+
+## Mapas da versão 0.6
+
+O capítulo agora pode ser acompanhado com mapas táticos. Durante a sessão, role até **Mapa tático** e escolha Estrada de Eldoria, Vila de Brumafolha, Torre dos Vigias ou Santuário das Raízes. O mestre pode mover as peças, revelar áreas e posicionar baús ou armadilhas. Consulte `GUIA-MAPA-E-EXPLORACAO.md` para as instruções completas.

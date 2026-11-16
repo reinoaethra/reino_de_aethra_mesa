@@ -1,4 +1,4 @@
-# Regras de combate — Reino de Aethra v0.5 (regras introduzidas na v0.4)
+# Regras de combate — Reino de Aethra v0.6 (regras introduzidas na v0.4)
 
 Este documento explica as regras de combate implementadas nesta versão. Os valores são o primeiro equilíbrio de teste de Aethra e poderão mudar após partidas reais.
 

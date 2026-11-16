@@ -1,4 +1,4 @@
-# Solução de problemas — Reino de Aethra v0.5
+# Solução de problemas — Reino de Aethra v0.6
 
 Este guia reúne erros comuns e o que fazer. Antes de mudar qualquer configuração, leia a mensagem com calma.
 
@@ -38,15 +38,16 @@ Veja também `GUIA-SUPABASE-DO-ZERO.md`, Parte 4.
 O banco ainda não recebeu o esquema correto.
 
 - Em projeto novo: execute `supabase-schema.sql`.
-- Em banco v0.3: execute `supabase-migration-v0.4.sql` (o banco já deve ter recebido o esquema anterior).
-- Em banco v0.2: execute as migrações v0.3, v0.4 e v0.5, nesta ordem.
-- Em banco v0.4: execute `supabase-migration-v0.5.sql` para atualizar o estado inicial de campanhas novas.
+- Em banco v0.5: execute `supabase-migration-v0.6.sql`.
+- Em banco v0.4: execute `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`.
+- Em banco v0.3: execute `supabase-migration-v0.4.sql`, depois `supabase-migration-v0.5.sql` e por último `supabase-migration-v0.6.sql`.
+- Em banco v0.2: execute `supabase-migration-v0.3.sql`, `supabase-migration-v0.4.sql`, `supabase-migration-v0.5.sql` e `supabase-migration-v0.6.sql`, nessa ordem.
 
 Não execute migrações aleatórias. Consulte a seção “Qual arquivo SQL devo executar?” do README.
 
 ## 4. “Function award_encounter_xp does not exist”
 
-O site v0.5 está conectado a um banco que ainda não recebeu a migração de combate e XP da v0.4.
+O site v0.6 está conectado a um banco que ainda não recebeu a migração de combate e XP introduzida na v0.4.
 
 1. Confira a versão atual do banco.
 2. Se estava na v0.3, execute `supabase-migration-v0.4.sql`.
@@ -85,7 +86,7 @@ A presença online pode levar um momento para aparecer. Use o botão Sincronizar
 6. Atualize a página com `Ctrl + F5`.
 7. Use **Sincronizar** na sala.
 
-O esquema da v0.4 (mantido na v0.5) tenta adicionar as tabelas à publicação durante a instalação. A conferência manual é útil se o script tiver sido interrompido ou se a configuração foi alterada depois.
+O esquema da v0.4 (mantido nas versões posteriores) tenta adicionar as tabelas à publicação durante a instalação. A conferência manual é útil se o script tiver sido interrompido ou se a configuração foi alterada depois.
 
 ## 8. O jogo mostra “Ainda não é seu turno”
 
@@ -159,14 +160,14 @@ Ao pedir suporte, informe:
 **Nunca envie:** senha do banco, Secret key, `service_role`, token de acesso ou qualquer credencial administrativa.
 
 
-## Missões ou personagens da história não aparecem (v0.5)
+## Missões ou personagens da história não aparecem (recurso introduzido na v0.5)
 
-1. Confirme que os arquivos `app.js` e `styles.css` foram atualizados para a v0.5 junto com `index.html`.
+1. Confirme que os arquivos `app.js`, `styles.css` e `index.html` foram atualizados juntos para a mesma versão.
 2. Faça uma atualização forçada do navegador com `Ctrl + F5`.
 3. Abra uma campanha e entre na sala ativa; o quadro de missões aparece abaixo da narração.
 4. Os NPCs só aparecem aos jogadores depois que o mestre os revela no painel **Jornada e missões**.
 5. Se o botão de gerenciamento não aparece, confirme que entrou com a conta que criou a campanha e que essa conta está como mestre.
-6. A migração v0.5 é recomendada para bancos que já estavam na v0.4, mas só altera o estado inicial de campanhas novas. Se surgir um erro de banco, envie a mensagem completa, sem chaves nem senhas.
+6. A migração v0.5 é necessária para bancos que já estavam na v0.4; ela só altera o estado inicial de campanhas novas. Para habilitar os pedidos de movimento do mapa, execute também a migração v0.6. Se surgir um erro de banco, envie a mensagem completa, sem chaves nem senhas.
 
 ## O mestre não consegue salvar uma cena ou objetivo
 
@@ -174,3 +175,14 @@ Ao pedir suporte, informe:
 - Se tiver duas abas abertas com a mesma conta de mestre, feche uma e tente novamente.
 - Confirme que a sessão Supabase está conectada e que o usuário é membro com papel `master`.
 - Não altere manualmente a coluna `game_state` pelo painel do banco enquanto a partida estiver ativa.
+
+
+## Mapas da versão 0.6
+
+**O jogador não consegue solicitar movimento:** confirme que o Supabase está conectado, a campanha está com sessão ativa e que `supabase-migration-v0.6.sql` foi executado. A conta do jogador precisa ser membro com papel `player`.
+
+**O mapa não troca:** somente o mestre ativo pode trocar o mapa. Peça ao mestre para selecionar a nova localidade.
+
+**Uma peça não se move:** confira se a casa está livre, se não há árvore/água/casa/muro/coluna no caminho e se a peça está no turno correto. Durante o combate, o limite é de quatro casas por turno, com movimento ortogonal.
+
+**O baú ou a armadilha não aparece para jogadores:** os marcadores ficam ocultos até serem acionados. A névoa de guerra também pode esconder casas; o mestre pode usar `Revelar área`.

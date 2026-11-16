@@ -1,4 +1,4 @@
-# Checklist da primeira partida — Reino de Aethra v0.5
+# Checklist da primeira partida — Reino de Aethra v0.6
 
 Use esta lista antes de convidar o grupo para uma campanha importante.
 
@@ -8,7 +8,8 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - [ ] Criei o projeto Supabase.
 - [ ] Guardei a senha do banco num lugar seguro.
 - [ ] Executei `supabase-schema.sql` (instalação nova) ou a sequência correta de migrações.
-- [ ] Se meu banco já era v0.4, executei `supabase-migration-v0.5.sql` depois de fazer backup.
+- [ ] Se meu banco já era v0.4, executei `supabase-migration-v0.5.sql` e depois `supabase-migration-v0.6.sql`, com backup.
+- [ ] Se meu banco já era v0.5, executei `supabase-migration-v0.6.sql` depois de fazer backup.
 - [ ] Ativei Anonymous Sign-Ins.
 - [ ] Copiei a Project URL.
 - [ ] Copiei a Publishable key (`sb_publishable_...`).
@@ -81,7 +82,7 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 **Não use uma campanha importante até concluir os testes básicos com pelo menos dois navegadores.**
 
 
-## 6. Teste da aventura inicial v0.5
+## 6. Teste da aventura inicial (introduzida na v0.5) e mapas (v0.6)
 
 - [ ] A missão principal Ecos na Estrada de Eldoria aparece para todos.
 - [ ] O mestre abre o painel Jornada e missões.
@@ -94,3 +95,14 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 - [ ] A campanha é encerrada e retomada; missões, NPCs revelados, localização e diário continuam salvos.
 
 Lembre-se: recompensas textuais das missões ainda são entregues manualmente pelo mestre nesta versão.
+
+
+## Verificação de mapas (v0.6)
+
+- [ ] O mestre consegue trocar entre os quatro mapas.
+- [ ] O mestre consegue selecionar e mover uma peça.
+- [ ] O jogador consegue solicitar o movimento da própria peça.
+- [ ] O mestre consegue aprovar e recusar pedidos.
+- [ ] A névoa esconde e revela casas corretamente.
+- [ ] Baús e armadilhas são acionados ao entrar na casa.
+- [ ] Ouro e HP permanecem após salvar e retomar a campanha.
