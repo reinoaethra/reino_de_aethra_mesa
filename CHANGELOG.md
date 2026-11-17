@@ -1,5 +1,16 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.1 — Miniaturas articuladas e combate refinado
+- Substituídas as miniaturas estáticas dos aventureiros no mapa por personagens vetoriais de corpo inteiro.
+- Cabeça, tronco, braços, pernas, capa, arma e sombra são elementos separados com animações articuladas.
+- Oito paletas de classe: Guerreiro, Arcano, Patrulheiro, Paladino, Assassino, Clérigo, Druida e Invocador.
+- Postura de combate muda quando há um encontro ativo.
+- `prefers-reduced-motion` desativa os ciclos animados para quem prefere movimento reduzido.
+- Retratos WebP originais permanecem nas fichas, NPCs, biblioteca e cartões de monstros.
+- Nenhuma alteração no Supabase e nenhuma migração SQL.
+- Testes estáticos de sintaxe, estrutura CSS, referências de assets e integridade do ZIP.
+- Não foi realizado teste integrado em navegador com múltiplos usuários/Supabase real.
+
 ## v1.0 — Primeira edição estável
 - Consolidada a experiência de campanha, personagens, mapas, login e combate das versões anteriores.
 - Drakthar, o Devorador, agora possui três fases de combate acionadas por limiares de HP (66% e 33%).

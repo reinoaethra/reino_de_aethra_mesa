@@ -1,4 +1,4 @@
-/* Reino de Aethra v1.0 — primeira edição estável, chefes em fases e combate aprimorado.
+/* Reino de Aethra v1.1 — sprites articulados, leitura de combate e refinamento da mesa.
  * Modo local funciona sem backend. Para salas reais, configure Supabase e aplique o schema/migration.
  */
 (() => {
@@ -144,6 +144,12 @@
   function portraitImage(file,alt,extra=''){return `<img class="portrait-art ${extra}" src="${portraitUrl(file)}" alt="${esc(alt||'Retrato de Aethra')}" loading="lazy" onerror="this.hidden=true">`}
   function memberPortrait(member,extra=''){return member?.character?portraitImage(member.character.portrait||classPortrait(member.character),member.character.name||member.display_name,extra):`<span class="portrait-fallback ${extra}">${member?.role==='master'?'♛':'✦'}</span>`}
   function monsterPortrait(templateId){return MONSTERS.find(m=>m.id===templateId)?.portrait||'goblin-ash.webp'}
+  // Miniaturas vetoriais articuladas para o mapa: membros separados permitem ciclos de movimento reais,
+  // sem depender de uma imagem estática ou de uma spritesheet externa.
+  function mapHeroSprite(className='Guerreiro'){
+    const key=({'Guerreiro':'warrior','warrior':'warrior','Arcano':'mage','arcane':'mage','mage':'mage','Patrulheiro':'ranger','ranger':'ranger','Paladino':'paladin','paladin':'paladin','Assassino':'assassin','assassin':'assassin','Clérigo':'cleric','cleric':'cleric','Druida':'druid','druid':'druid','Invocador':'summoner','summoner':'summoner'})[className]||'warrior';
+    return `<svg class="hero-sprite sprite-${key}" viewBox="0 0 48 58" role="img" aria-label="Aventureiro ${esc(className)}" xmlns="http://www.w3.org/2000/svg"><ellipse class="sprite-shadow" cx="24" cy="54" rx="13" ry="3"/><g class="sprite-body"><g class="sprite-back-arm"><path d="M17 22 Q10 26 11 35"/><circle cx="11" cy="36" r="2.8"/></g><g class="sprite-front-arm"><path d="M30 22 Q38 27 36 34"/><circle cx="36" cy="35" r="2.8"/></g><path class="sprite-cape" d="M17 18 Q8 25 12 43 L20 39 L23 23Z"/><path class="sprite-torso" d="M18 18 Q24 15 30 18 L33 34 Q24 39 15 34Z"/><path class="sprite-belt" d="M16 31 Q24 34 32 31 L32 34 Q24 37 16 34Z"/><g class="sprite-head"><circle cx="24" cy="11" r="6.2"/><path class="sprite-hair" d="M18 10 Q18 3 25 4 Q31 5 30 12 L27 9 L23 10 L19 13Z"/></g><g class="sprite-back-leg"><path d="M20 35 L18 47 L16 52"/><path class="sprite-boot" d="M13 51 L19 50 L20 54 L12 54Z"/></g><g class="sprite-front-leg"><path d="M27 35 L29 46 L32 51"/><path class="sprite-boot" d="M29 50 L35 51 L37 54 L29 54Z"/></g><g class="sprite-weapon"><path d="M37 33 L43 14"/><path d="M39 31 L44 33"/><path d="M41 17 L45 8"/></g><path class="sprite-highlight" d="M20 20 L23 19 L22 29"/></g></svg>`;
+  }
   function mapTokens(record,gs=state.campaign?.game_state||defaultGameState()){
     const mapId=explorationData(gs).mapId,defaults=defaultPartyPositions(mapId);
     const list=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({id:m.user_id,name:m.character.name||m.display_name||'Aventureiro',kind:'player',className:characterMiniatureClass(m.character),portrait:m.character.portrait||classPortrait(m.character),sigil:characterSigil(m.character),initials:tokenInitials(m.character.name||m.display_name),position:record.tokens[m.user_id]||defaults.get(m.user_id)||{x:1,y:6}}));
@@ -736,7 +742,7 @@
     for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
       const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y);
       const marker=markers.find(m=>m.x===x&&m.y===y&&(isMaster()||((m.type==='door'||m.type==='altar')&&visible)||m.discovered));
-      const tokenHtml=cellTokens.map(t=>`<span class="map-token miniature ${t.kind==='monster'?'monster-token':'player-token mini-'+t.className} ${t.id===selected?'token-selected':''}" title="${esc(t.name)}">${portraitImage(t.portrait,t.name,'map-token-art')}<span class="miniature-sigil">${esc(t.sigil)}</span>${t.kind==='player'?`<span class="miniature-name">${esc(t.initials)}</span>`:''}</span>`).join('');
+      const tokenHtml=cellTokens.map(t=>`<span class="map-token miniature ${t.kind==='monster'?'monster-token':'player-token mini-'+t.className} ${t.id===selected?'token-selected':''}" title="${esc(t.name)}">${t.kind==='player'?mapHeroSprite(t.className):portraitImage(t.portrait,t.name,'map-token-art')}<span class="miniature-sigil">${esc(t.sigil)}</span>${t.kind==='player'?`<span class="miniature-name">${esc(t.initials)}</span>`:''}</span>`).join('');
       const markerIcon=marker?(marker.type==='treasure'?'🧰':marker.type==='trap'?'⚠️':marker.type==='door'?(marker.open?'🚪':'🔒'):(marker.discovered?'✧':'◇')):'';
       const markerHtml=marker?`<span class="map-marker marker-${marker.type} ${marker.open?'marker-open':''}" title="${esc(marker.type==='treasure'?'Baú':marker.type==='trap'?'Armadilha':marker.type==='door'?(marker.open?'Porta aberta':'Porta fechada'):'Altar antigo')}">${markerIcon}</span>`:'';
       const fogged=!visible,doorBlocked=marker?.type==='door'&&!marker.open,blocked=mapCellBlocked(template.id,x,y,record);

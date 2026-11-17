@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.0 — primeira edição estável**  
+**Versão do jogo: 1.1 — miniaturas articuladas e combate refinado**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -23,14 +23,23 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 5. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
 6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
 7. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
-8. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-9. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-10. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-11. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — conhecer as miniaturas animadas do mapa e suas limitações.
+9. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+10. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+11. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+12. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.0
+## 2. O que está incluído na versão 1.1
+
+### Novidade da v1.1 — miniaturas articuladas
+
+- Os aventureiros no mapa tático agora usam miniaturas vetoriais de corpo inteiro, com cabeça, tronco, braços, pernas, capa e arma em partes separadas.
+- Ciclos de movimento e postura de combate variam entre exploração e encontro ativo.
+- As oito classes possuem paletas visuais próprias.
+- As animações respeitam `prefers-reduced-motion` e não exigem imagens externas ou migração SQL.
+- Os retratos WebP continuam sendo usados nas fichas, biblioteca, NPCs e painéis de personagem.
 
 ### Campanhas e jogadores
 
@@ -230,7 +239,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.0).
+1. Baixe o ZIP da versão nova (v1.1).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -255,14 +264,14 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 e v1.0 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9, v1.0 e v1.1 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
 | `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
 | `assets/portraits/preview-sheet.jpg` | Folha de contato com os retratos do projeto. |
-| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9 e v1.0. |
+| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9, v1.0 e v1.1. |
 | `GUIA-PERSONAGENS-NPCS-CRIATURAS.md` | Guia dos retratos, miniaturas, criaturas e substituição de imagens. |
 | `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
 | `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
@@ -270,6 +279,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `CHANGELOG.md` | Histórico das versões. |
 | `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo as fases de chefe da v1.0. |
 | `GUIA-CHEFES-E-FASES.md` | Guia de funcionamento e teste das fases de Drakthar. |
+| `GUIA-MINIATURAS-ARTICULADAS.md` | Explica as miniaturas vetoriais articuladas e suas limitações. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
 | `CHECKLIST-DA-PRIMEIRA-PARTIDA.md` | Lista de conferência para a primeira sessão. |
@@ -297,9 +307,9 @@ A v0.9 aprimora a linguagem visual dos mapas táticos sem alterar o formato do b
 
 As animações são efeitos 2D feitos com CSS sobre retratos WebP. Não são spritesheets quadro a quadro, esqueletos 2D, modelos 3D ou captura de movimento.
 
-## 14. Versão 1.0 — primeira edição estável
+## 14. Versão 1.1 — miniaturas articuladas
 
-A versão 1.0 consolida a experiência de campanha e introduz uma mecânica de chefe em múltiplas fases para Drakthar, o Devorador. O combate comunica visualmente a mudança de comportamento do dragão e altera seus valores conforme o HP diminui.
+A versão 1.1 evolui a apresentação do mapa tático com miniaturas vetoriais articuladas. Cada aventureiro é desenhado com partes corporais separadas e ciclos CSS de movimento, postura e arma. A mecânica de Drakthar em três fases, introduzida na v1.0, permanece preservada.
 
 ### Chefe em três fases
 - **Fase I — O Devorador desperta:** estado inicial, Defesa 18 e bônus de ataque +8.
@@ -309,13 +319,13 @@ A versão 1.0 consolida a experiência de campanha e introduz uma mecânica de c
 - O painel de batalha mostra a fase atual, sua descrição e quantos sopros foram utilizados. A transição ocorre após ataques de jogadores e dano manual ou validado pelo mestre.
 
 ### Banco de dados e atualização
-- **Nenhuma migração SQL é necessária na v1.0.** As fases e seus usos ficam no JSONB `campaigns.game_state.encounter`, já utilizado pelo jogo.
+- **Nenhuma migração SQL é necessária na v1.1.** As miniaturas são renderizadas no navegador e não criam tabelas nem campos no Supabase.
 - Banco novo: execute `supabase-schema.sql` e siga o guia do Supabase.
 - Banco existente: preserve o projeto Supabase, a Project URL e a Publishable key; atualize os arquivos do site e envie a pasta `assets/portraits/` completa.
 - Não substitua seu `config.js` por um arquivo de exemplo vazio. Faça uma cópia de segurança antes de publicar.
 
 ### Limites conhecidos desta edição
-- As figuras continuam usando retratos WebP com animações CSS. A v1.0 não inclui spritesheets quadro a quadro, rigs 2D, modelos 3D ou animações de corpo inteiro.
+- As peças dos jogadores no mapa usam miniaturas vetoriais articuladas com ciclos CSS. Ainda não são spritesheets quadro a quadro, rigs 2D profissionais, modelos 3D ou captura de movimento. Retratos WebP permanecem nas fichas e demais painéis.
 - O conteúdo completo dos sete livros, os capítulos seguintes da campanha e novos mapas ilustrados continuam no planejamento editorial.
 - Multiplayer, login, e-mails de recuperação e sincronização precisam ser validados no projeto Supabase real do grupo. As verificações locais não substituem esse teste integrado.
 
@@ -323,4 +333,4 @@ Para instruções específicas do novo chefe, consulte [GUIA-CHEFES-E-FASES.md](
 
 ---
 
-**Reino de Aethra v1.0 — primeira edição estável, com combate de chefe em três fases e continuidade das campanhas.**
+**Reino de Aethra v1.1 — miniaturas articuladas no mapa, combate refinado e continuidade das campanhas.**
