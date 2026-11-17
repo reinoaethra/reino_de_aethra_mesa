@@ -1,3 +1,13 @@
+## v2.5 — atlas visual e Livro do Mestre em PDF
+
+- Criadas cinco ilustrações originais dos reinos, em WebP otimizado, para Eldoria, Drakmor, Nivéria, Thalassor e Solária.
+- A página inicial substitui os cartões de cores simples por cartões ilustrados com elemento, subtítulo e descrição.
+- A criação de personagem agora apresenta cartões visuais com imagem, descrição e afinidade do reino de origem.
+- Layout responsivo para desktop, tablet e celular; as imagens são carregadas localmente e não dependem de links externos.
+- Produzido o Livro do Mestre em PDF A4, com capa, sumário, 12 capítulos, dois apêndices, tabelas de referência e ilustrações dos cinco reinos. O PDF é entregue separadamente para que o mestre possa mantê-lo privado.
+- Nenhuma migração SQL é necessária; `config.js` e os dados das campanhas são preservados.
+- Verificações estáticas de JavaScript, HTML, CSS, imagens e integridade do pacote. Não foi realizado teste visual em navegador nem sessão multiplayer real com Supabase.
+
 ## v2.4 — espólios, relíquias e equipamentos exclusivos
 
 - Sistema de drops específico para monstros e chefes, com materiais regionais e itens raros.

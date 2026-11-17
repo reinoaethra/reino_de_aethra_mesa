@@ -324,3 +324,30 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .book-reader{max-height:88vh;overflow:auto}.book-reader-content{display:grid;gap:14px;margin-top:16px}.book-chapter{padding:18px;border:1px solid rgba(212,177,109,.16);border-radius:12px;background:linear-gradient(145deg,rgba(212,177,109,.055),rgba(255,255,255,.015))}.book-chapter h3{font:600 17px var(--serif);color:#efdfbf;margin:7px 0 9px}.book-chapter p,.book-chapter li{font-size:11px;line-height:1.8;color:#b7c2d0}.book-chapter p{margin:0}.book-chapter ul{margin:10px 0 0;padding-left:19px}.book-chapter li{padding:2px 0}
 
 .npc-fallback-art{width:100%;height:100%;display:grid;place-items:center;font-size:42px;color:#e6c987;background:radial-gradient(circle at 50% 35%,rgba(212,177,109,.25),transparent 65%),linear-gradient(145deg,#273449,#101722);border:1px solid rgba(212,177,109,.25);border-radius:inherit}.npc-avatar-art .npc-fallback-art{font-size:22px}
+
+
+/* v2.5 — atlas ilustrado dos cinco reinos */
+.realm-strip-illustrated{grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;align-items:stretch}
+.realm-card-illustrated{padding:0;min-height:255px;isolation:isolate;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.realm-card-illustrated:hover{transform:translateY(-5px);border-color:rgba(221,190,126,.55);box-shadow:0 18px 42px rgba(0,0,0,.32)}
+.realm-card-illustrated>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s ease}
+.realm-card-illustrated:hover>img{transform:scale(1.055)}
+.realm-card-illustrated:before{z-index:-1;background:linear-gradient(0deg,rgba(5,9,15,.97) 0%,rgba(5,9,15,.64) 40%,rgba(5,9,15,.04) 100%)}
+.realm-card-copy{position:relative;padding:18px 15px 16px;display:flex;flex-direction:column;gap:5px}
+.realm-card-copy .realm-element{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#e6c98f;font-weight:800}
+.realm-card-copy strong{font:600 18px var(--serif);color:#fff1d5}
+.realm-card-copy>span:not(.realm-element){font-size:10px;color:#d9d2c4}
+.realm-card-copy p{font-size:10px;line-height:1.55;color:#d3d5d8;margin:5px 0 0}
+.realm-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 18px}
+.realm-choice-card{padding:0;overflow:hidden;display:grid;grid-template-columns:42% 1fr;text-align:left;min-height:142px;border-radius:13px;border:1px solid rgba(205,174,111,.18);background:linear-gradient(145deg,rgba(26,37,54,.96),rgba(15,23,35,.98));color:inherit;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s}
+.realm-choice-card:hover{transform:translateY(-2px);border-color:rgba(214,177,109,.55)}
+.realm-choice-card.selected{border-color:#d7b66f;box-shadow:0 0 0 2px rgba(215,182,111,.2),0 10px 28px rgba(0,0,0,.22)}
+.realm-choice-card>img{width:100%;height:100%;min-height:142px;object-fit:cover}
+.realm-choice-copy{padding:13px 14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}
+.realm-choice-copy strong{font:600 16px var(--serif);color:#f0dfbd}
+.realm-choice-copy small{font-size:10px;line-height:1.45;color:#aeb9c7}
+.realm-choice-copy em{font-size:9px;line-height:1.4;color:#dfc18a;font-style:normal;margin-top:2px}
+.book-card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+@media(max-width:1050px){.realm-strip-illustrated{grid-template-columns:repeat(3,minmax(0,1fr))}.realm-card-illustrated{min-height:230px}}
+@media(max-width:700px){.realm-strip-illustrated{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.realm-card-illustrated{min-height:205px}.realm-card-copy{padding:14px 12px}.realm-card-copy strong{font-size:16px}.realm-card-copy p{font-size:9px}.realm-choice-grid{grid-template-columns:1fr}.realm-choice-card{min-height:130px}.realm-choice-card>img{min-height:130px}}
+@media(max-width:390px){.realm-strip-illustrated{grid-template-columns:1fr}.realm-card-illustrated{min-height:185px}}

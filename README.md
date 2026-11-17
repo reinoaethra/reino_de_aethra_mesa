@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.4 — espólios, relíquias e equipamentos exclusivos de chefes**  
+**Versão do jogo: 2.5 — atlas ilustrado dos cinco reinos e Livro do Mestre em PDF**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -34,13 +34,23 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 16. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
 17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
 18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
+19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
 19. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.4
+## 2. O que está incluído na versão 2.5
 
-### Novidades da v2.4 — espólios, relíquias e equipamentos exclusivos
+### Novidades da v2.5 — atlas visual e Livro do Mestre
+
+- Os cinco reinos agora possuem ilustrações próprias em WebP, exibidas na página inicial e na etapa de escolha da origem do personagem.
+- Os cartões mostram paisagem, elemento, descrição e afinidade de cada reino; o layout se adapta a computadores, tablets e celulares.
+- As imagens ficam em `assets/realms/` e são servidas localmente junto com o site, sem depender de serviços externos de imagem.
+- O Livro do Mestre recebeu uma edição independente em PDF A4, com capa, sumário, 12 capítulos e dois apêndices.
+- O PDF contém revelações de campanha e deve permanecer privado. Não coloque o arquivo PDF em um repositório público do GitHub Pages. Ele é entregue separadamente do pacote do site.
+- Nenhuma migração SQL é necessária.
+
+### Recursos mantidos da v2.4 — espólios, relíquias e equipamentos exclusivos
 
 - **Drops por criatura:** monstros deixam materiais relacionados à sua região e natureza, como couro de lobo, cinza viva, coral abissal, cristais niverianos e escamas ancestrais.
 - **Recompensas por dificuldade:** cada participante recebe ouro ao vencer; chefes e criaturas de nível elevado têm chances ampliadas de espólios raros.
@@ -91,7 +101,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
 - Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
 
-**Limites conhecidos na v2.4:** durabilidade e reparos ainda não foram implementados. Os efeitos especiais textuais das relíquias e conjuntos são conduzidos pelo mestre, enquanto os bônus numéricos são automáticos. O mercado não vende equipamentos exclusivos de chefes. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+**Limites conhecidos na v2.5:** durabilidade e reparos ainda não foram implementados. Os efeitos especiais textuais das relíquias e conjuntos são conduzidos pelo mestre, enquanto os bônus numéricos são automáticos. O mercado não vende equipamentos exclusivos de chefes. As verificações desta entrega são estáticas; não foi realizado teste multiplayer real contra o Supabase.
 
 Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades, requisitos, bônus e conjuntos. Para os fundamentos do comércio, consulte também `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md`.
 
@@ -472,7 +482,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v2.4 — espólios, relíquias e equipamentos exclusivos.**
+**Reino de Aethra v2.5 — atlas ilustrado e Livro do Mestre em PDF.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
