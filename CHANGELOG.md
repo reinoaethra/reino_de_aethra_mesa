@@ -1,3 +1,13 @@
+## v2.7 — exploração interativa e acontecimentos
+
+- Adicionado painel de exploração com pontos de interesse contextuais por mapa: taverna, oficina, mercado, santuário, biblioteca, porto, templo, forja e ruínas.
+- Pontos de interesse exibem descrição e pista narrativa; o mestre controlador pode registrar descobertas de forma persistente no estado da campanha e no diário.
+- NPCs já revelados aparecem no painel de exploração e abrem seus diálogos existentes, preservando as escolhas persistentes.
+- Mestre pode gerar e encerrar eventos de viagem/exploração; o acontecimento ativo é sincronizado e registrado no diário.
+- Mestre pode viajar entre mapas regionais disponíveis; localização, narração, mapa ativo e diário são atualizados juntos.
+- Estado adicional salvo em `worldExploration` no JSON da campanha; nenhuma migração SQL necessária.
+- `config.js` preservado. Verificações estáticas de JavaScript, HTML, CSS, assets e integridade do ZIP; sem teste visual em navegador ou multiplayer real com Supabase.
+
 ## v2.6 — cenários ilustrados durante a campanha
 
 - Adicionadas seis artes de ambiente locais em WebP: vila ancestral de Eldoria, forjas de Drakmor, arquivos de cristal de Nivéria, porto de Thalassor, templo de Solária e ruínas antigas.

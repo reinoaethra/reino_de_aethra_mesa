@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.6 — cenários ilustrados durante a campanha**  
+**Versão do jogo: 2.7 — exploração interativa e acontecimentos**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -35,11 +35,22 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
 18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
 19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
-20. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+21. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
+22. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.6
+## 2. O que está incluído na versão 2.7
+
+### Novidades da v2.7 — exploração interativa
+
+- Painel de exploração contextual com pontos de interesse: tavernas, oficinas, mercados, santuários, bibliotecas, portos, templos, forjas e ruínas.
+- Cada ponto abre uma descrição e uma pista narrativa. O mestre controlador pode registrar a descoberta; o registro é salvo no estado da campanha e no diário.
+- NPCs já revelados aparecem em uma lista de personagens do mundo e podem ser abertos para diálogo, mantendo as escolhas persistentes existentes.
+- O mestre pode gerar acontecimentos de viagem e exploração, como caravana em apuros, rumores, mercador itinerante, trilha bloqueada e pedido de socorro. O evento ativo fica visível para todos e salvo na campanha.
+- O mestre pode conduzir a companhia entre os mapas regionais disponíveis; a viagem atualiza localização, narração, mapa ativo e diário.
+- Os ambientes de chefe continuam integrados ao fluxo de encontro existente: o mestre pode iniciar o combate quando a narrativa levar a um confronto.
+- Os dados novos usam `worldExploration` dentro do estado JSON da campanha; nenhuma migração SQL é necessária.
 
 ### Novidades da v2.6 — cenários ilustrados durante a campanha
 
