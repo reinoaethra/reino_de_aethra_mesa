@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.0 — equipamento funcional e progressão mecânica**  
+**Versão do jogo: 2.1 — raridades mecânicas, requisitos e conjuntos**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -38,7 +38,16 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. O que está incluído na versão 2.0
 
-### Novidades da v2.0 — equipamento funcional
+### Novidades da v2.1 — raridades e conjuntos de equipamento
+
+- Itens Raros com bônus reais de precisão, dano e Defesa.
+- Requisitos mínimos de nível e restrições por classe, validados ao equipar.
+- Conjunto Vanguarda com três peças: ao equipar arma, armadura e escudo, concede +1 Defesa e +1 no ataque.
+- Novas opções no mercado: Lâmina e Peitoral da Vanguarda, Broquel da Vanguarda, Arco da Lua Prateada e Foco da Aurora.
+- Inventário apresenta bônus de ataque, raridade e progresso do conjunto.
+- O cálculo de combate considera os bônus de equipamento sem exigir migração SQL.
+
+### Histórico v2.0 — equipamento funcional
 
 - Três missões secundárias inéditas: **As Lanternas de Brumafolha**, **O Guardião sem Memória** e **A Maré de Pedra**.
 - Três criaturas novas com fichas de combate, habilidades especiais e silhuetas vetoriais: Mariposa do Véu, Vigia das Ruínas e Colosso de Sal.
@@ -48,9 +57,9 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
 - Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
 
-**Limites da v2.0:** não há durabilidade, reparos, encantamentos ou requisitos por classe. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+**Limites da v2.1:** durabilidade, reparos e encantamentos ainda não foram implementados. As raridades mecânicas desta edição incluem itens Comuns e Raros; Épico e Lendário permanecem para futuras atualizações. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
 
-Consulte `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md` para comprar, equipar, retirar e compreender os efeitos mecânicos dos itens.
+Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades, requisitos, bônus e conjuntos. Para os fundamentos do comércio, consulte também `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md`.
 
 - Mercado com quatro equipamentos funcionais: Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa).
 - Equipar e retirar peças pela Central do Mestre; peças substituídas retornam à mochila.
@@ -324,7 +333,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v2.0).
+1. Baixe o ZIP da versão nova (v2.1).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -349,7 +358,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v2.0 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v2.1 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -428,7 +437,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v2.0 — equipamento funcional, comércio e progressão mecânica.**
+**Reino de Aethra v2.1 — raridades mecânicas, requisitos e conjuntos de equipamento.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -479,7 +488,7 @@ Cada um dos sete livros recebe um sexto capítulo de consulta. O conteúdo conti
 
 ## 22. Versão 2.0 — equipamento funcional e progressão mecânica
 
-A v2.0 transforma equipamentos comprados em itens utilizáveis. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
+A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta raridades com bônus, requisitos por classe e nível e o conjunto Vanguarda. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
 
 O equipamento ativo fica salvo em `game_state.partyState` por jogador, junto com inventário e moedas, e portanto acompanha a sincronização da campanha já existente. O cálculo de Defesa considera Destreza, armadura e escudo. A arma fornece o dado-base de dano para o fluxo de combate existente; não há ainda um sistema completo de proficiências, durabilidade, encantamentos ou comparação automática de DPS.
 

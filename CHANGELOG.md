@@ -253,3 +253,13 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Armas registram dado-base de dano.
 - Biblioteca recebe o sétimo capítulo em cada volume.
 - Sem migração SQL; compatível com campanhas existentes.
+
+
+## 23. v2.1 — raridades, requisitos e conjuntos
+- Cinco novos equipamentos Raros no mercado, com bônus explícitos de precisão, dano ou Defesa.
+- Requisitos de nível e classe validados pelo mestre ativo ao equipar.
+- Conjunto Vanguarda: três peças equipadas concedem +1 Defesa e +1 no ataque.
+- Bônus de equipamento integrados ao cálculo de ataques e Defesa.
+- Inventário apresenta bônus de ataque e progresso do conjunto.
+- Oito capítulos de consulta em cada um dos sete livros.
+- Sem migração SQL; estado persistido em `partyState`, preservando campanhas anteriores.
