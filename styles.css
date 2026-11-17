@@ -704,3 +704,47 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .map-board-layout-new .map-token .miniature-gear-chip.gear-armor{right:-1%;bottom:18%}
 .map-board-layout-new .map-token .miniature-gear-chip.gear-shield{left:0;top:14%}
 @media(max-width:700px){.map-board-layout-new .map-token .miniature-gear-chip{width:12px;height:12px;font-size:8px}}
+
+/* v2.12 — estátuas de mesa, equipamento incorporado e bases multicelulares */
+.map-board-layout-new .map-token.miniature.monster-token .monster-sprite,
+.map-board-layout-new .map-token.miniature.monster-token .monster-miniature-image{
+  filter:grayscale(1) saturate(.12) contrast(1.08) drop-shadow(0 3px 3px rgba(0,0,0,.82));
+}
+.map-board-layout-new .map-token.miniature.monster-token .monster-miniature-image{object-fit:contain}
+.map-board-layout-new .map-cell.boss-footprint-cell{z-index:3}
+.map-board-layout-new .map-cell.boss-anchor-cell{z-index:5}
+.map-board-layout-new .map-cell .boss-footprint-hint{position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(226,184,91,.075);box-shadow:inset 0 0 0 1px rgba(239,196,103,.3)}
+.map-board-layout-new .map-token.monster-boss-token{
+  width:176%;height:188%;
+  left:6%;top:2%;z-index:9;overflow:visible;
+}
+.map-board-layout-new .map-token.miniature.monster-token.monster-boss-token:before{
+  left:5%;right:5%;bottom:1%;height:19%;border-width:4px;border-color:#f0c76a;
+  background:radial-gradient(ellipse at 48% 28%,#ddd1b7 0,#88735c 48%,#302722 100%);
+  box-shadow:0 7px 12px rgba(0,0,0,.88),0 0 17px rgba(245,188,77,.55),inset 0 2px 5px rgba(255,245,204,.6),inset 0 -6px 8px rgba(0,0,0,.68);
+}
+.map-board-layout-new .map-token.monster-elite-token{--piece-ring:#c2a0e9;--piece-glow:rgba(190,148,235,.68)}
+.map-board-layout-new .map-token.monster-boss-token .miniature-sigil{border-color:#f1d17e;color:#ffe7a3;background:linear-gradient(145deg,#653c27,#241a1c)}
+.map-board-layout-new .map-token .miniature-gear-props{position:absolute;inset:0;z-index:5;display:block;pointer-events:none}
+.map-board-layout-new .map-token .miniature-gear-prop{position:absolute;display:block;overflow:visible;filter:drop-shadow(0 2px 2px rgba(0,0,0,.95));}
+.map-board-layout-new .map-token .gear-prop-weapon{right:4%;top:25%;width:31%;height:48%;transform:rotate(7deg)}
+.map-board-layout-new .map-token .gear-prop-armor{left:34%;top:38%;width:33%;height:28%;opacity:.94}
+.map-board-layout-new .map-token .gear-prop-shield{left:2%;top:39%;width:29%;height:31%;transform:rotate(-7deg)}
+.map-piece-thumb .miniature-gear-props{position:absolute;inset:0;z-index:5;pointer-events:none}
+.map-piece-thumb .miniature-gear-prop{position:absolute;filter:drop-shadow(0 1px 2px #000)}
+.map-piece-thumb .gear-prop-weapon{right:0;top:28%;width:30%;height:48%}
+.map-piece-thumb .gear-prop-armor{left:35%;top:42%;width:30%;height:27%}
+.map-piece-thumb .gear-prop-shield{left:0;top:40%;width:28%;height:30%}
+.map-board-layout-new .map-token.monster-defeated{opacity:.32;filter:grayscale(1)}
+@media(max-width:700px){
+  .map-board-layout-new .map-token.monster-boss-token{width:182%;height:192%;left:4.5%;top:1%}
+  .map-board-layout-new .map-token .gear-prop-weapon{right:1%;width:28%}
+}
+.map-board-layout-new .map-cell.large-footprint-cell{z-index:3}
+.map-board-layout-new .map-cell.large-anchor-cell{z-index:6}
+.map-board-layout-new .map-cell .boss-footprint-hint{background:rgba(226,184,91,.08);box-shadow:inset 0 0 0 1px rgba(239,196,103,.3)}
+.map-board-layout-new .map-token.monster-large-token:not(.monster-boss-token){overflow:visible;}
+.map-board-layout-new .map-token.monster-large-token:not(.monster-boss-token):before{left:7%;right:7%;height:19%;bottom:1%;}
+
+.map-piece-thumb .monster-sprite{filter:grayscale(1) saturate(.1) contrast(1.08) drop-shadow(0 2px 2px #000)}
+.encounter-art-thumb .monster-sprite{filter:grayscale(1) saturate(.1) contrast(1.08) drop-shadow(0 2px 2px #000)}

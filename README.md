@@ -23,7 +23,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 5. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
 6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
 7. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
-8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — conhecer as miniaturas animadas do mapa e suas limitações.
+8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — referência histórica das miniaturas vetoriais das versões iniciais; as peças atuais são estátuas estáticas.
 9. **[GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md](GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md)** — entender a representação visual de armas, armaduras, escudos e monstros no tabuleiro.
 10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
 11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
@@ -46,9 +46,9 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 28. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
 29. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md)** — registro da edição anterior do tabuleiro.
 30. **[GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md](GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md)** — fundo ilustrado, grade transparente e movimentação das miniaturas.
-31. **[GUIA-MINIATURAS-DE-MESA-V2.11.md](GUIA-MINIATURAS-DE-MESA-V2.11.md)** — miniaturas das classes, monstros, elites e chefes.
-32. **[ADENDO-MINIATURAS-E-PECAS-DE-MESA-V2.11.pdf](ADENDO-MINIATURAS-E-PECAS-DE-MESA-V2.11.pdf)** — complemento ilustrado do manual para reconhecer e movimentar as peças.
-33. **[ATLAS-MINIATURAS-V2.11.png](ATLAS-MINIATURAS-V2.11.png)** — prancha de referência das oito classes e do Goblin das Cinzas.
+31. **[GUIA-MINIATURAS-DE-MESA-V2.12.md](GUIA-MINIATURAS-DE-MESA-V2.12.md)** — estátuas, equipamento visual e bases de chefes multicelulares.
+32. **[ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf](ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf)** — complemento ilustrado com equipamentos e regras de bases ampliadas.
+33. **[ATLAS-MINIATURAS-V2.12.png](ATLAS-MINIATURAS-V2.12.png)** — prancha de referência das classes e principais modelos de monstros e chefes.
 34. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
@@ -72,7 +72,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - O Goblin das Cinzas recebe uma peça escultórica própria. As outras criaturas usam silhuetas vetoriais sombreadas e base de mesa; chefes conhecidos têm formas específicas.
 - A lista lateral mostra a miniatura, o HP, a coordenada e a marca de chefe/elite. Arma, armadura e escudo equipados são indicados por pequenos marcadores na base; ainda não alteram a escultura da peça.
 - As imagens das classes foram renderizadas a partir dos STL fornecidos como referência. O navegador usa PNG, não carrega STL e não requer suporte 3D.
-- Chefes ainda ocupam uma casa lógica. Ocupar múltiplas casas, rotação e alteração visual do equipamento ficam para uma etapa posterior.
+- Bases de monstros grandes e chefes podem ocupar de 2×1 a 3×3 casas; posicionamento e caminho respeitam toda a área da base. Equipamentos aparecem como detalhes visuais estáticos sobre as miniaturas.
 - Não há alterações no Supabase; nenhuma migração SQL é necessária. Preserve `config.js`.
 
 ## 2.1. Conteúdo herdado da versão 2.10
@@ -499,7 +499,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `CHANGELOG.md` | Histórico das versões. |
 | `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo as fases de chefe da v1.0. |
 | `GUIA-CHEFES-E-FASES.md` | Guia de funcionamento e teste das fases de Drakthar. |
-| `GUIA-MINIATURAS-ARTICULADAS.md` | Explica as miniaturas vetoriais articuladas e suas limitações. |
+| `GUIA-MINIATURAS-ARTICULADAS.md` | Referência histórica das miniaturas vetoriais antigas; não descreve o modelo estático atual. |
 | `GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md` | Explica a representação visual dos equipamentos e monstros no tabuleiro. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
@@ -631,4 +631,13 @@ A v2.11 substitui as figuras vetoriais simplificadas dos aventureiros por miniat
 - Lista lateral de peças mostra miniaturas, posição, HP e marcação especial de chefes.
 - Não foi alterado o modelo de dados do Supabase; nenhuma migração SQL é necessária. Preserve `config.js` ao atualizar o site.
 
-Consulte `GUIA-MINIATURAS-DE-MESA-V2.11.md` para a relação das peças, cores, regras visuais e limitações conhecidas.
+Consulte `GUIA-MINIATURAS-DE-MESA-V2.12.md` para a relação das peças, cores, regras visuais, bases ampliadas e limitações conhecidas.
+
+
+## Versão 2.12 — estátuas de mesa e bases ampliadas
+
+A v2.12 preserva as miniaturas estáticas das oito classes e melhora a leitura de monstros e chefes como estátuas de RPG de mesa. Armas, armaduras e escudos equipados aparecem como detalhes visuais sobre a estátua e usam a cor da raridade. As criaturas continuam com aparências próprias associadas ao identificador do Bestiário.
+
+Chefes e criaturas grandes reservam a área inteira de suas bases: exemplos incluem bases 2×2, 3×2 e 3×3. O início do encontro procura espaço livre para cada base; movimento e caminho também verificam todas as casas ocupadas. Se a base não couber no mapa, o sistema informa o tamanho exigido. As estátuas são estáticas, sem animações ou posturas alternativas. Nenhuma migração SQL é necessária.
+
+Consulte `GUIA-MINIATURAS-DE-MESA-V2.12.md` e `ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf`.

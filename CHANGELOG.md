@@ -392,3 +392,15 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Acrescentado o guia `GUIA-MINIATURAS-DE-MESA-V2.11.md`.
 - Sem alteração de schema ou migração SQL. `config.js` permanece individual.
 - Verificações realizadas: `node --check` passou; os 11 PNGs e quatro SVGs de miniaturas estão presentes; atlas e PDF foram renderizados e inspecionados. A tentativa de abrir a prévia em Chromium foi bloqueada pelo ambiente (`ERR_BLOCKED_BY_ADMINISTRATOR`), portanto não afirmo teste funcional de navegador. Multiplayer e Supabase reais não foram testados.
+
+
+## v2.12 — estátuas de criaturas, equipamentos visuais e bases multicelulares
+
+- Mantidas as oito miniaturas estáticas das classes, com acabamento monocromático de estátua sobre pedestal.
+- Equipamentos equipados agora aparecem sobre a estátua como detalhes visuais: arma junto à mão, placa/brasão no torso e escudo junto ao braço. O acabamento usa a cor associada à raridade do item.
+- Miniaturas de monstros são tratadas por família e identificador, preservando silhuetas próprias para feras, aracnídeos, mortos-vivos, construtos, elementais, dragões, cultistas e criaturas marítimas; o conjunto de arte é exibido em escala monocromática de estátua.
+- A ocupação do tabuleiro agora considera a base completa: monstros grandes 2×1 ou 2×2; chefes 2×2, 3×2 ou 3×3 conforme o identificador.
+- Posicionamento de encontro procura uma área contínua e válida para cada base. Se não houver espaço suficiente, o início do encontro é recusado com indicação do tamanho necessário.
+- Movimento e caminho de monstros grandes verificam todas as casas da base, impedindo sobreposição com obstáculos, portas fechadas, personagens ou outras criaturas.
+- As peças continuam estáticas, sem animações ou posturas alternativas, conforme decisão do projeto.
+- Sem alteração de schema ou migração SQL. `config.js` permanece individual e deve ser preservado.
