@@ -244,3 +244,12 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Efeitos visuais não alteram regras, HP ou resultados calculados pelo mestre ativo.
 - Respeito a `prefers-reduced-motion`.
 - Nenhuma migração SQL.
+
+
+## 22. v2.0 — equipamento funcional
+- Mercado ampliado com armas, armaduras e escudos compráveis.
+- Equipar e retirar itens com persistência em `partyState`.
+- Defesa efetiva calculada a partir de Destreza, armadura e escudo.
+- Armas registram dado-base de dano.
+- Biblioteca recebe o sétimo capítulo em cada volume.
+- Sem migração SQL; compatível com campanhas existentes.
