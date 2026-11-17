@@ -214,3 +214,15 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @keyframes healSymbol{from{transform:translateY(4px) scale(.9);filter:drop-shadow(0 0 2px #83d8a0)}to{transform:translateY(-5px) scale(1.12);filter:drop-shadow(0 0 12px #83d8a0)}}
 @keyframes monsterSymbol{from{transform:translateX(-2px) scale(.94)}to{transform:translateX(2px) scale(1.1)}}
 @media(prefers-reduced-motion:reduce){.map-token.miniature,.map-token.miniature .map-token-art,.map-token.player-token:after,.map-token.monster-token,.combat-fx-symbol{animation:none!important;transition:none!important}}
+
+
+/* v1.0 — leitura de fases de chefes */
+.boss-phase-panel{display:grid;gap:5px;margin:12px 0 14px;padding:12px 14px;border:1px solid rgba(212,177,109,.38);border-radius:10px;background:linear-gradient(120deg,rgba(94,55,31,.32),rgba(22,26,36,.78));animation:bossPhaseReveal .55s ease both}
+.boss-phase-panel strong{font:700 11px var(--serif);color:#f4d49b;letter-spacing:.45px}
+.boss-phase-panel small{font-size:9px;line-height:1.55;color:#c4c9d2}
+.boss-phase-panel span{font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#d8ad79}
+.boss-phase-2{border-color:rgba(223,117,66,.62);background:linear-gradient(120deg,rgba(111,48,28,.4),rgba(27,24,31,.82));box-shadow:inset 3px 0 0 rgba(229,115,65,.7)}
+.boss-phase-2 strong{color:#ffc08c}.boss-phase-3{border-color:rgba(201,73,61,.78);background:linear-gradient(120deg,rgba(112,31,35,.5),rgba(30,20,27,.88));box-shadow:inset 3px 0 0 rgba(235,75,68,.85),0 0 24px rgba(193,53,48,.12)}
+.boss-phase-3 strong{color:#ffaaa0}.boss-phase-3 span{color:#ffb4a5}
+@keyframes bossPhaseReveal{from{opacity:0;transform:translateY(7px);filter:brightness(1.7)}to{opacity:1;transform:none;filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.boss-phase-panel{animation:none!important}}

@@ -191,3 +191,16 @@ As regras atuais ainda não incluem um sistema completo de resistência a condi�
 - Ataques físicos, habilidades, curas, dano manual e ações de monstros podem exibir efeitos na tela e sons sintetizados pelo navegador.
 - O navegador pode bloquear áudio até que o jogador interaja com a página; nesse caso, o efeito visual continua funcionando.
 - A v0.8 não altera tabelas do banco e não requer migração SQL adicional.
+
+
+## Drakthar, o Devorador — fases da versão 1.0
+
+Drakthar é um chefe de três fases. A mudança ocorre automaticamente quando o HP cai para 66% ou menos (Fase II) e 33% ou menos (Fase III).
+
+| Fase | HP restante | Defesa | Bônus de ataque | Sopro das Cinzas |
+|---|---:|---:|---:|---:|
+| I — O Devorador desperta | acima de 66% | 18 | +8 | 2d8 + 4 |
+| II — As escamas se incendeiam | 66% a 34% | 19 | +9 | 3d8 + 6 |
+| III — Fúria do Dragão Ancião | 33% ou menos | 20 | +10 | 4d8 + 8 |
+
+Em cada fase, o dragão pode usar o Sopro das Cinzas uma vez. O sopro é ativado se o D20 natural do turno do monstro resultar em 17 ou mais e atinge todos os aventureiros vivos. A contagem de usos é persistida no encontro; mudar de fase não restaura usos de fases anteriores.

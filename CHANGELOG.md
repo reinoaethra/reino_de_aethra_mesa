@@ -1,5 +1,15 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.0 — Primeira edição estável
+- Consolidada a experiência de campanha, personagens, mapas, login e combate das versões anteriores.
+- Drakthar, o Devorador, agora possui três fases de combate acionadas por limiares de HP (66% e 33%).
+- Defesa e bônus de ataque do chefe aumentam a cada fase.
+- Sopro das Cinzas pode ser usado uma vez por fase e atinge todos os aventureiros vivos, com dano crescente.
+- Painel de batalha exibe a fase, a descrição e os sopros já utilizados.
+- Mudança de fase atualizada para dano de jogadores, dano manual e dano validado pelo mestre.
+- Nenhuma migração SQL; os dados adicionais são armazenados no JSONB já existente.
+- Documentação de atualização, limites e teste da versão 1.0.
+
 ## v0.9 — Movimento e combate visual
 - Animações CSS de repouso e respiração para retratos de aventureiros.
 - Aura animada para peça selecionada.
@@ -7,9 +17,6 @@
 - Efeitos de impacto, magia, cura e ação de monstros refinados.
 - Respeito à preferência `prefers-reduced-motion`.
 - Nenhuma alteração no banco de dados; nenhuma migração SQL necessária.
-- Documentação atualizada com instruções de atualização e limites das animações.
-
-# Histórico de versões — Reino de Aethra
 
 ## v0.8 — Retratos, bestiário visual e efeitos de combate
 

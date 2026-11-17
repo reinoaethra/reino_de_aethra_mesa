@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 0.8**  
+**Versão do jogo: 1.0 — primeira edição estável**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -22,14 +22,15 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 4. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
 5. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
 6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
-7. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-8. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-9. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-10. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+7. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
+8. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+9. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+10. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+11. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 0.8
+## 2. O que está incluído na versão 1.0
 
 ### Campanhas e jogadores
 
@@ -200,7 +201,7 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 
 | Situação | O que executar |
 |---|---|
-| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.9. |
+| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v1.0. |
 | Banco já na v0.6 | Faça backup e execute `supabase-migration-v0.7.sql` uma vez. |
 | Banco já na v0.5 | Execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`. |
 | Banco já na v0.4 | Execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
@@ -229,7 +230,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v0.9).
+1. Baixe o ZIP da versão nova (v1.0).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -254,20 +255,21 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; a v0.9 mantém o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 e v1.0 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
 | `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
 | `assets/portraits/preview-sheet.jpg` | Folha de contato com os retratos do projeto. |
-| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9. |
+| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9 e v1.0. |
 | `GUIA-PERSONAGENS-NPCS-CRIATURAS.md` | Guia dos retratos, miniaturas, criaturas e substituição de imagens. |
 | `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
 | `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
 | `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura, usar o painel narrativo e consultar as limitações atuais. |
 | `CHANGELOG.md` | Histórico das versões. |
-| `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo atualizações da v0.9. |
+| `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo as fases de chefe da v1.0. |
+| `GUIA-CHEFES-E-FASES.md` | Guia de funcionamento e teste das fases de Drakthar. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
 | `CHECKLIST-DA-PRIMEIRA-PARTIDA.md` | Lista de conferência para a primeira sessão. |
@@ -276,19 +278,9 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 
 ## 11. Testes técnicos realizados nesta entrega
 
-Foram executadas verificações de sintaxe JavaScript (`node --check`), existência e formato dos 16 retratos WebP, referências dos arquivos de imagem, equilíbrio básico das chaves CSS/HTML e integridade do pacote ZIP. Não foi feito teste visual completo em navegador nem teste multiplayer com Supabase real nesta entrega. O SQL não foi alterado na v0.9 e, por isso, não foi necessário executá-lo ou criar uma migração nova.
+Foram executadas verificações locais de sintaxe JavaScript (`node --check app.js`), integridade estrutural do CSS, referências dos retratos locais e integridade do pacote ZIP. Também foram conferidos os pontos de entrada da mecânica de fases de Drakthar. Não foi feito teste visual completo em navegador nem teste multiplayer com Supabase real nesta entrega.
 
 Antes de usar uma campanha importante, siga o roteiro de teste e confirme os resultados com pelo menos dois navegadores.
-
-## Atualização para a versão 0.8 — banco de dados
-
-A versão 0.8 **não exige uma nova migração SQL**. Os retratos são arquivos WebP locais e os identificadores de imagem ficam dentro dos campos JSON da ficha/personagem e do encontro. Os efeitos visuais usam os eventos de campanha já existentes.
-
-- Projeto novo: execute somente `supabase-schema.sql`.
-- Banco já na v0.7: não execute SQL adicional; atualize os arquivos do site e inclua a pasta inteira `assets/portraits/`.
-- Banco mais antigo: complete primeiro as migrações históricas até a v0.7, conforme a tabela de instalação.
-
-Preserve a Project URL e a Publishable key que já estão no seu `config.js`.
 
 ## 12. Documentação oficial útil
 
@@ -299,21 +291,36 @@ Preserve a Project URL e a Publishable key que já estão no seu `config.js`.
 - [Supabase — pausa de projetos gratuitos](https://supabase.com/docs/guides/platform/free-project-pausing)
 - [GitHub — configurar a origem do GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
----
-
-**Reino de Aethra v0.9 — Os aventureiros agora aparecem com retratos próprios e efeitos de combate, mantendo contas e progresso entre dispositivos.**
-
-
-## 13. Novidades da versão 0.9 — movimento e combate visual
+## 13. Novidades herdadas da versão 0.9 — movimento e combate visual
 
 A v0.9 aprimora a linguagem visual dos mapas táticos sem alterar o formato do banco de dados. As peças de aventureiros recebem animação de repouso e respiração sutil; peças selecionadas recebem uma aura; criaturas recebem animação de postura; e, durante encontros ativos, o tabuleiro utiliza uma apresentação de combate. Os efeitos de ataque físico, magia, cura e ação de monstro foram refinados com animações próprias.
 
-### Atualização
-- Não há migração SQL nesta versão.
-- Substitua os arquivos do site pelos arquivos desta versão.
-- Envie a pasta `assets/portraits/` inteira, mantendo os nomes dos arquivos.
-- Preserve seu `config.js` com a URL e a Publishable key do seu projeto Supabase.
-- Faça backup do ZIP da versão anterior antes de publicar.
+As animações são efeitos 2D feitos com CSS sobre retratos WebP. Não são spritesheets quadro a quadro, esqueletos 2D, modelos 3D ou captura de movimento.
 
-### Limite técnico desta etapa
-As animações desta versão são efeitos 2D feitos com CSS sobre os retratos existentes. Não são spritesheets quadro a quadro, esqueletos 2D, modelos 3D ou captura de movimento. A movimentação entre casas continua sendo controlada pelas regras do mapa e pelo estado sincronizado da campanha.
+## 14. Versão 1.0 — primeira edição estável
+
+A versão 1.0 consolida a experiência de campanha e introduz uma mecânica de chefe em múltiplas fases para Drakthar, o Devorador. O combate comunica visualmente a mudança de comportamento do dragão e altera seus valores conforme o HP diminui.
+
+### Chefe em três fases
+- **Fase I — O Devorador desperta:** estado inicial, Defesa 18 e bônus de ataque +8.
+- **Fase II — As escamas se incendeiam:** ativada quando o HP chega a 66% ou menos; Defesa 19 e bônus de ataque +9.
+- **Fase III — Fúria do Dragão Ancião:** ativada quando o HP chega a 33% ou menos; Defesa 20 e bônus de ataque +10.
+- O Sopro das Cinzas pode ser usado uma vez em cada fase, quando o resultado natural do D20 do monstro for 17 ou mais: 2d8+4, 3d8+6 e 4d8+8, respectivamente, atingindo todos os aventureiros vivos.
+- O painel de batalha mostra a fase atual, sua descrição e quantos sopros foram utilizados. A transição ocorre após ataques de jogadores e dano manual ou validado pelo mestre.
+
+### Banco de dados e atualização
+- **Nenhuma migração SQL é necessária na v1.0.** As fases e seus usos ficam no JSONB `campaigns.game_state.encounter`, já utilizado pelo jogo.
+- Banco novo: execute `supabase-schema.sql` e siga o guia do Supabase.
+- Banco existente: preserve o projeto Supabase, a Project URL e a Publishable key; atualize os arquivos do site e envie a pasta `assets/portraits/` completa.
+- Não substitua seu `config.js` por um arquivo de exemplo vazio. Faça uma cópia de segurança antes de publicar.
+
+### Limites conhecidos desta edição
+- As figuras continuam usando retratos WebP com animações CSS. A v1.0 não inclui spritesheets quadro a quadro, rigs 2D, modelos 3D ou animações de corpo inteiro.
+- O conteúdo completo dos sete livros, os capítulos seguintes da campanha e novos mapas ilustrados continuam no planejamento editorial.
+- Multiplayer, login, e-mails de recuperação e sincronização precisam ser validados no projeto Supabase real do grupo. As verificações locais não substituem esse teste integrado.
+
+Para instruções específicas do novo chefe, consulte [GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md).
+
+---
+
+**Reino de Aethra v1.0 — primeira edição estável, com combate de chefe em três fases e continuidade das campanhas.**
