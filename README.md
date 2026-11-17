@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.7 — mapas regionais, recompensas de missão e campanha expandida**  
+**Versão do jogo: 1.8 — diálogos persistentes, decisões narrativas e comércio**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -29,15 +29,26 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
 12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
 13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md)** — consultar mapas regionais, novos monstros, entrega de recompensas e livros ampliados.
-14. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-15. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-16. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+14. **[GUIA-INTERACOES-E-COMERCIO-V1.8.md](GUIA-INTERACOES-E-COMERCIO-V1.8.md)** — conduzir diálogos com escolhas persistentes e registrar compras/vendas.
+15. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+16. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+17. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.7
+## 2. O que está incluído na versão 1.8
 
-### Novidades da v1.7 — mapas, recompensas e livros
+### Novidades da v1.8 — diálogos persistentes e comércio
+
+- Ilyra, Tovin e Irmão Cael possuem escolhas de conversa que o mestre controlador pode registrar.
+- A campanha guarda `dialogueChoices`, `storyFlags` e entradas no diário para preservar as decisões. Uma escolha é registrada por NPC nesta edição.
+- A Central do Mestre inclui comércio: compra de consumíveis/utilidades e venda unitária de itens comuns elegíveis para um personagem escolhido.
+- Compras e vendas atualizam ouro e mochila em `partyState` e são registradas no diário/eventos.
+- Nenhuma migração SQL.
+
+**Limites da v1.8:** as escolhas ainda não alteram missões ou finais automaticamente; o comércio não equipa ou vende equipamentos/itens de missão. Veja o guia v1.8 para o procedimento completo.
+
+### Conteúdo mantido da v1.7 — mapas, recompensas e livros
 
 - Quatro mapas táticos regionais: Recife das Vozes (Thalassor), Galeria Prismática (Nivéria), Altar do Sol Partido (Solária) e Cidadela de Braseiro (Drakmor).
 - Quatro cenas preparadas para apresentar esses locais.
@@ -292,7 +303,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.7).
+1. Baixe o ZIP da versão nova (v1.8).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -317,7 +328,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.7 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.8 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -396,7 +407,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.7 — mapas regionais, recompensas e biblioteca ampliada.**
+**Reino de Aethra v1.8 — diálogos persistentes, comércio e decisões narrativas.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -427,3 +438,12 @@ O bestiário recebe Caranguejo-Catedral, Sentinela Prismática e Acólito do Sol
 Quando uma missão com pacote automático estiver concluída, o mestre pode entregar a recompensa à companhia pelo botão exibido na missão. O jogo acrescenta moedas e itens ao inventário compartilhado de cada personagem participante e registra a entrega no diário. A marca `rewardClaimed` impede uma segunda entrega pela mesma missão. Nem todas as missões possuem pacote automático; nesses casos, o mestre continua responsável pela entrega manual. XP de conclusão de missão ainda deve ser distribuído manualmente.
 
 Cada um dos sete livros passa a ter cinco capítulos de consulta. Não há migração SQL: o estado adicional fica no JSON da campanha já existente.
+
+
+## 20. Versão 1.8 — diálogos, decisões e comércio
+
+A v1.8 acrescenta escolhas de conversa para Ilyra, Tovin e Irmão Cael. O mestre ativo registra a escolha; o texto, a bandeira narrativa e a entrada no diário são salvos no estado da campanha. As decisões permanecem visíveis ao reabrir o diálogo e sincronizam pelo mesmo mecanismo de estado já usado pela campanha.
+
+A Central do Mestre ganhou acesso ao comércio. O mestre seleciona o aventureiro e registra compras de poções, rações, tochas e kit de explorador, ou vende uma unidade de item comum elegível. O saldo e a mochila são atualizados em `partyState`, e cada transação entra no diário e no fluxo de eventos. Itens de missão e equipamentos são protegidos contra venda nesta edição.
+
+**Limites da v1.8:** as escolhas ainda não alteram automaticamente missões, mapas ou finais; elas gravam bandeiras narrativas para uso em futuras expansões. O comércio é conduzido pelo mestre ativo e não inclui equipar armas/armaduras, reparar itens, impostos ou negociação automática. Não há nova migração SQL.
