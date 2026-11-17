@@ -1,4 +1,4 @@
-# Solução de problemas — Reino de Aethra v0.7
+# Solução de problemas — Reino de Aethra v2.9
 
 Este guia reúne erros comuns e o que fazer. Antes de mudar qualquer configuração, leia a mensagem com calma.
 
@@ -52,6 +52,24 @@ O site v0.7 está conectado a um banco que ainda não recebeu uma ou mais migra�
 1. Confira a versão atual do banco.
 2. Se estava na v0.3, execute `supabase-migration-v0.4.sql`.
 3. Atualize a página depois que o SQL terminar sem erro.
+
+
+## Erro ao criar campanha: `function gen_random_bytes(integer) does not exist`
+
+Esse erro ocorre na função SQL `create_campaign`, que em versões anteriores tentava gerar o código de convite usando `gen_random_bytes`. Em alguns projetos Supabase, a extensão `pgcrypto` está instalada no schema `extensions`, enquanto a função de criação limita o `search_path` a `public`; nesse cenário, o PostgreSQL não encontra a função.
+
+**Correção recomendada para quem já tem o banco configurado:**
+
+1. Abra o projeto no Supabase Dashboard.
+2. Entre em **SQL Editor** e crie uma nova consulta.
+3. Abra o arquivo `supabase-migration-v2.9.sql` do pacote atualizado.
+4. Copie todo o conteúdo, cole no SQL Editor e clique em **Run**.
+5. Aguarde a mensagem de sucesso e volte ao Reino de Aethra.
+6. Atualize o site com `Ctrl + F5` e tente criar a campanha novamente.
+
+A correção usa `gen_random_uuid()`, função nativa do PostgreSQL moderno, para formar o código de convite. Ela não apaga campanhas, membros, personagens ou histórico. Não é necessário instalar ou mover extensões manualmente.
+
+Se o erro continuar, envie a mensagem completa do SQL Editor, sem compartilhar chaves ou senhas.
 
 ## 5. SQL Editor mostra erro em vermelho
 

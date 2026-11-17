@@ -1,9 +1,10 @@
--- REINO DE AETHRA — esquema Supabase v0.7
+-- REINO DE AETHRA — esquema Supabase v2.9
 -- Execute este arquivo no SQL Editor do seu projeto Supabase.
 -- Pode ser executado novamente: funções e políticas serão atualizadas.
 -- A aplicação usa somente Publishable key + RLS; nunca exponha Secret/service_role.
 
-create extension if not exists pgcrypto;
+-- gen_random_uuid() é fornecida pelo PostgreSQL moderno (pg_catalog);
+-- não dependemos de gen_random_bytes()/pgcrypto para gerar códigos de convite.
 
 create table if not exists public.campaigns (
   id uuid primary key default gen_random_uuid(),
@@ -114,7 +115,7 @@ begin
   end if;
 
   loop
-    v_code := 'AETHRA-' || upper(substr(encode(gen_random_bytes(5), 'hex'), 1, 8));
+    v_code := 'AETHRA-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
     exit when not exists (select 1 from public.campaigns c where c.code = v_code);
   end loop;
 

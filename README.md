@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.8 — cenas exploráveis, objetos interativos e livros ampliados**  
+**Versão do jogo: 2.9 — cenas regionais ilustradas, livros ampliados e correção de campanhas**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -37,11 +37,22 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
 21. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
 22. **[GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md](GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md)** — movimento narrativo, objetos persistentes, rotinas de NPCs e atualizações da biblioteca.
+23. **[GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md](GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md)** — cenas regionais ilustradas, atualização dos sete livros e correção da criação de campanhas.
+24. **[supabase-migration-v2.9.sql](supabase-migration-v2.9.sql)** — corrige a geração do código de convite sem depender de `gen_random_bytes`.
 23. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.8
+## 2. O que está incluído na versão 2.9
+
+### Novidades da v2.9 — cenas regionais ilustradas e correções
+
+- Painel de exploração agora apresenta uma arte regional em destaque, com nome e descrição do mapa atual, reforçando a identidade visual de cada reino.
+- Os sete livros recebem um novo capítulo sobre direção de cena, continuidade, descrição sensorial e uso das imagens regionais sem confundir exploração narrativa com combate tático.
+- A função SQL `create_campaign` deixa de depender de `gen_random_bytes`, evitando falha quando `pgcrypto` está instalado em um schema fora do `search_path`.
+- Para bancos já instalados, execute `supabase-migration-v2.9.sql` no SQL Editor do Supabase.
+- Para projetos novos, use o `supabase-schema.sql` atualizado.
+- `config.js`, tabelas, campanhas e dados existentes são preservados. Nenhuma tabela é apagada ou recriada.
 
 ### Novidades da v2.8 — cenas exploráveis e biblioteca ampliada
 

@@ -338,3 +338,14 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Inventário apresenta bônus de ataque e progresso do conjunto.
 - Oito capítulos de consulta em cada um dos sete livros.
 - Sem migração SQL; estado persistido em `partyState`, preservando campanhas anteriores.
+
+## v2.9 — identidade visual regional e correção de criação de campanhas
+
+- Painel de exploração recebeu uma arte regional em destaque, com título e descrição do mapa atual, aproveitando as ilustrações locais existentes.
+- A cena visual agora conecta paisagem, território e identidade regional sem substituir o mapa tático ou revelar pistas automaticamente.
+- Os sete livros receberam um capítulo v2.9 sobre direção de cena, habitats, arenas, leitura visual dos reinos, magia, materiais e interpretação das ilustrações.
+- Corrigida a RPC `public.create_campaign`: a geração do código de convite usa `gen_random_uuid()` em vez de `gen_random_bytes()`, evitando falha de resolução da função quando `pgcrypto` está fora do `search_path`.
+- Adicionada a migração `supabase-migration-v2.9.sql`, que substitui somente a RPC e preserva campanhas, membros e histórico.
+- Atualizados `supabase-schema.sql`, README e solução de problemas; `config.js` permanece inalterado.
+- Produzido adendo PDF v2.9 para o Livro do Mestre, separado do pacote público do site.
+- Verificações estáticas realizadas; não houve execução no Supabase do usuário, teste visual em navegador nem sessão multiplayer real.
