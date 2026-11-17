@@ -1,5 +1,20 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.2 — Equipamentos visíveis e criaturas vetoriais
+
+- Exibição visual de arma, armadura e escudo equipados nas miniaturas de aventureiros.
+- Cinco criaturas com silhuetas vetoriais dedicadas no mapa tático: Goblin das Cinzas, Lobo Cinzento, Espectro da Ruptura, Campeão Orc e Drakthar.
+- Animações distintas de postura para feras, espectros, orcs e dragões.
+- Ajustes de camadas, sombras e leitura das peças no tabuleiro.
+- Novo guia `GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md`.
+- Nenhuma alteração no esquema do Supabase; nenhuma migração SQL necessária.
+
+## v1.1 — Miniaturas articuladas
+
+- Miniaturas vetoriais articuladas para as oito classes.
+- Ciclos de postura e movimento em exploração e combate.
+- Guia de miniaturas articuladas.
+
 ## v1.1 — Miniaturas articuladas e combate refinado
 - Substituídas as miniaturas estáticas dos aventureiros no mapa por personagens vetoriais de corpo inteiro.
 - Cabeça, tronco, braços, pernas, capa, arma e sombra são elementos separados com animações articuladas.

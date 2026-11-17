@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.1 — miniaturas articuladas e combate refinado**  
+**Versão do jogo: 1.2 — equipamento visível e criaturas vetoriais**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -24,16 +24,24 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
 7. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
 8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — conhecer as miniaturas animadas do mapa e suas limitações.
-9. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-10. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-11. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-12. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+9. **[GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md](GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md)** — entender a representação visual de armas, armaduras, escudos e monstros no tabuleiro.
+10. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+11. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+12. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+13. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.1
+## 2. O que está incluído na versão 1.2
 
-### Novidade da v1.1 — miniaturas articuladas
+### Novidades da v1.2 — equipamento e criaturas
+
+- Equipamento inicial (arma, armadura e escudo, quando equipado) é representado visualmente nas miniaturas do tabuleiro.
+- Goblin das Cinzas, Lobo Cinzento, Espectro da Ruptura, Campeão Orc e Drakthar recebem silhuetas vetoriais próprias no mapa.
+- Criaturas possuem ciclos de postura diferentes, com destaque especial para o espectro e o dragão.
+- A interface respeita `prefers-reduced-motion`.
+
+### Recursos preservados da v1.1 — miniaturas articuladas
 
 - Os aventureiros no mapa tático agora usam miniaturas vetoriais de corpo inteiro, com cabeça, tronco, braços, pernas, capa e arma em partes separadas.
 - Ciclos de movimento e postura de combate variam entre exploração e encontro ativo.
@@ -239,7 +247,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.1).
+1. Baixe o ZIP da versão nova (v1.2).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -264,14 +272,14 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9, v1.0 e v1.1 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9, v1.0, v1.1 e v1.2 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
 | `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
 | `assets/portraits/preview-sheet.jpg` | Folha de contato com os retratos do projeto. |
-| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9, v1.0 e v1.1. |
+| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9, v1.0, v1.1 e v1.2. |
 | `GUIA-PERSONAGENS-NPCS-CRIATURAS.md` | Guia dos retratos, miniaturas, criaturas e substituição de imagens. |
 | `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
 | `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
@@ -280,6 +288,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo as fases de chefe da v1.0. |
 | `GUIA-CHEFES-E-FASES.md` | Guia de funcionamento e teste das fases de Drakthar. |
 | `GUIA-MINIATURAS-ARTICULADAS.md` | Explica as miniaturas vetoriais articuladas e suas limitações. |
+| `GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md` | Explica a representação visual dos equipamentos e monstros no tabuleiro. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
 | `CHECKLIST-DA-PRIMEIRA-PARTIDA.md` | Lista de conferência para a primeira sessão. |
@@ -333,4 +342,13 @@ Para instruções específicas do novo chefe, consulte [GUIA-CHEFES-E-FASES.md](
 
 ---
 
-**Reino de Aethra v1.1 — miniaturas articuladas no mapa, combate refinado e continuidade das campanhas.**
+## 15. Versão 1.2 — equipamentos visíveis e criaturas vetoriais
+
+A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos personagens, usando o equipamento registrado na ficha. Cinco monstros recebem silhuetas vetoriais próprias no tabuleiro: Goblin das Cinzas, Lobo Cinzento, Espectro da Ruptura, Campeão Orc e Drakthar. As criaturas possuem ciclos CSS de postura diferentes.
+
+- A arte é uma representação estilizada por classe e tipo de equipamento; não reproduz individualmente cada item cosmético ou raridade.
+- Os retratos WebP continuam nas fichas e no bestiário.
+- Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
+- Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
+
+**Reino de Aethra v1.2 — equipamento visível, criaturas vetoriais e continuidade das campanhas.**

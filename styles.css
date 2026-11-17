@@ -249,3 +249,27 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @keyframes spriteCombatReady{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-2px) rotate(1deg)}}@keyframes spriteGuard{from{transform:rotate(-14deg)}to{transform:rotate(4deg)}}@keyframes spriteWeaponReady{from{transform:rotate(-8deg)}to{transform:rotate(12deg)}}
 @media(prefers-reduced-motion:reduce){.hero-sprite *,.hero-sprite .sprite-body,.map-board.battle-active .hero-sprite .sprite-body{animation:none!important}}
 @media(max-width:620px){.map-token.miniature.player-token .hero-sprite{inset:-10% -10% 0;width:120%;height:116%}}
+
+
+/* v1.2 — equipamento visível e criaturas vetoriais no tabuleiro */
+.map-token.miniature.player-token .hero-sprite{overflow:visible}
+.hero-sprite .sprite-equipped-armor{stroke:#ead4a4;stroke-width:1.25;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
+.hero-sprite .sprite-armor-trim{fill:none;stroke:rgba(255,235,190,.8);stroke-width:.8;stroke-linecap:round}
+.hero-sprite .sprite-equipped-weapon{fill:none;stroke:#e8e0ca;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 1px #1b1b1b)}
+.hero-sprite .sprite-equipped-shield{fill:#9b7440;stroke:#f0d28d;stroke-width:1.5;filter:drop-shadow(0 1px 2px #111)}
+.map-token.miniature.monster-token{overflow:visible;background:transparent;border:0;box-shadow:none;border-radius:0}
+.map-token.miniature.monster-token .monster-sprite{position:absolute;inset:-8% -8% 0;width:116%;height:112%;overflow:visible;z-index:1;filter:drop-shadow(0 3px 3px rgba(0,0,0,.8));pointer-events:none}
+.monster-sprite .monster-creature{transform-box:fill-box;transform-origin:50% 80%;animation:creatureBreath 2.1s ease-in-out infinite}
+.monster-lobo-cinzento .monster-creature{animation:beastProwl 1.8s ease-in-out infinite}
+.monster-espectro-ruptura .monster-creature{animation:wraithFloat 2.4s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(117,226,244,.7))}
+.monster-campeao-orc .monster-creature{animation:orcBreath 1.9s ease-in-out infinite}
+.monster-drakthar .monster-creature{animation:dragonThreat 1.7s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(239,105,58,.55))}
+.map-board.battle-active .monster-sprite .monster-creature{animation-duration:1.05s}
+.map-token.monster-token:before{content:"";position:absolute;inset:-10%;border-radius:50%;background:radial-gradient(circle,rgba(211,70,50,.2),transparent 68%);animation:monsterThreat 1.8s ease-in-out infinite;z-index:0}
+@keyframes creatureBreath{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1.5px) scale(1.025,1.04)}}
+@keyframes beastProwl{0%,100%{transform:translateX(0) rotate(0)}35%{transform:translateX(-1.5px) rotate(-2deg)}70%{transform:translateX(1px) rotate(1deg)}}
+@keyframes wraithFloat{0%,100%{transform:translateY(1px) scale(.98);opacity:.82}50%{transform:translateY(-4px) scale(1.03);opacity:1}}
+@keyframes orcBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.05,1.025) translateY(-1px)}}
+@keyframes dragonThreat{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.04,1.02) rotate(-1deg)}65%{transform:scale(.98,1.04) rotate(1deg)}}
+@keyframes monsterThreat{0%,100%{opacity:.25;transform:scale(.88)}50%{opacity:.8;transform:scale(1.12)}}
+@media(prefers-reduced-motion:reduce){.monster-sprite *,.map-token.monster-token:before{animation:none!important}}
