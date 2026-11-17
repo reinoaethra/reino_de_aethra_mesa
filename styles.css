@@ -320,7 +320,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @keyframes bossFlame{0%{opacity:0;transform:scaleX(.12)}25%{opacity:.95;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1.2)}}
 @media(prefers-reduced-motion:reduce){.map-token.token-boss-breath:after,.map-token.token-boss-breath .monster-drakthar .monster-creature{animation:none!important}}
 
-/* Biblioteca editorial v1.5 */
+/* Biblioteca editorial — conteúdo ampliado v1.6 */
 .book-reader{max-height:88vh;overflow:auto}.book-reader-content{display:grid;gap:14px;margin-top:16px}.book-chapter{padding:18px;border:1px solid rgba(212,177,109,.16);border-radius:12px;background:linear-gradient(145deg,rgba(212,177,109,.055),rgba(255,255,255,.015))}.book-chapter h3{font:600 17px var(--serif);color:#efdfbf;margin:7px 0 9px}.book-chapter p,.book-chapter li{font-size:11px;line-height:1.8;color:#b7c2d0}.book-chapter p{margin:0}.book-chapter ul{margin:10px 0 0;padding-left:19px}.book-chapter li{padding:2px 0}
 
 .npc-fallback-art{width:100%;height:100%;display:grid;place-items:center;font-size:42px;color:#e6c987;background:radial-gradient(circle at 50% 35%,rgba(212,177,109,.25),transparent 65%),linear-gradient(145deg,#273449,#101722);border:1px solid rgba(212,177,109,.25);border-radius:inherit}.npc-avatar-art .npc-fallback-art{font-size:22px}

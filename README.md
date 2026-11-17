@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.5 — campanha expandida, bestiário ampliado e livros de consulta**  
+**Versão do jogo: 1.6 — progressão narrativa, novos arcos, bestiário e livros ampliados**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -28,28 +28,30 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
 11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
 12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md)** — consultar os novos arcos, missões, monstros e o conteúdo inicial dos sete livros.
+13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md)** — consultar os oito capítulos principais, sete missões secundárias, novos monstros e a progressão automática por combate.
 14. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
 15. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
 16. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.5
+## 2. O que está incluído na versão 1.6
 
-### Novidades da v1.5 — campanha, monstros e biblioteca
+### Novidades da v1.6 — progressão, campanha e livros
 
-- Expansão narrativa com cinco missões principais encadeadas em cinco arcos regionais: Eldoria, Santuário das Raízes, Thalassor, Nivéria e Solária.
-- Quatro missões secundárias com investigação, exploração e recompensas narrativas.
-- Seis novas criaturas selecionáveis no encontro: Aranha de Umbrafunda, Cultista do Véu Cinzento, Golem de Basalto, Sereia Abissal, Cavaleiro Oco de Solária e Draco de Cristal Niveriano.
-- As novas criaturas possuem silhuetas vetoriais próprias no mapa e no seletor de encontros, além de estatísticas, XP e habilidades especiais.
-- Os sete livros da Biblioteca agora apresentam capítulos de consulta escritos dentro do jogo: Livro do Mestre, Bestiário, Grandes Chefes, Atlas, Grimório, Arsenal e Manual do Aventureiro.
-- Campanhas já existentes recebem as novas missões ausentes sem apagar objetivos concluídos ou o progresso já salvo.
+- A campanha principal agora possui oito missões (capítulos I a VIII), prolongando a jornada até Drakmor e a Prisão Celestial. O conjunto possui sete missões secundárias.
+- Novo arco de Drakmor: Cidadela de Braseiro, Forja dos Juramentos, Mestre Ferreiro Brann e Malgor, General das Cinzas.
+- Seis novas criaturas selecionáveis: Sabueso das Brasas, Guardião das Raízes, Saqueador Afogado, Revenante da Geada, Escorpião do Sol Partido e Malgor, General das Cinzas. Todas possuem ficha de combate e silhueta vetorial própria.
+- A derrota de criaturas específicas pode concluir objetivos correspondentes automaticamente quando a missão estiver ativa e o mestre ativo confirmar o fim do encontro. A regra cobre inimigos de vários arcos, incluindo Aranha de Umbrafunda, Cultista, Sereia, Draco de Cristal, Cavaleiro Oco, lobos, espectros, Sabuesos, Malgor, Saqueador e Revenante.
+- A revelação do novo NPC Brann atualiza o objetivo de encontro da missão principal de Drakmor.
+- Quatro capítulos de consulta em cada um dos sete livros: conteúdo adicional para o Livro do Mestre, Bestiário, Grandes Chefes, Atlas, Grimório, Arsenal e Manual do Aventureiro.
+- Cenas narrativas preparadas para a Cidadela de Braseiro, Forja dos Juramentos, acampamento de Malgor e Prisão Celestial.
+- Campanhas antigas recebem apenas IDs de missões ausentes; o progresso salvo de objetivos existentes é preservado.
 - Nenhuma alteração no esquema do Supabase; nenhuma migração SQL é necessária.
 
-**Importante sobre o avanço da história:** as novas missões ficam disponíveis na central de jornada. O mestre apresenta/aceita cada missão e marca os objetivos como concluídos; o sistema ainda não libera automaticamente o próximo capítulo por derrotar uma criatura ou visitar um local. As recompensas de texto são orientações narrativas, não itens adicionados automaticamente ao inventário.
+**Como funciona a automação:** somente os objetivos ligados a criaturas mapeadas são concluídos automaticamente, após o mestre validar a derrota. A missão precisa estar aceita/ativa. Exploração, pistas, itens, diálogos e objetivos finais continuam sob controle do mestre; a derrota de um monstro não conclui a missão inteira se restarem outros objetivos.
 
-**Importante sobre os livros:** esta versão entrega uma primeira edição digital com capítulos iniciais úteis, mas não representa os sete livros completos nem PDFs editoriais finalizados. O conteúdo será aprofundado progressivamente. O Livro do Mestre contém orientações de condução, não segredos privados; o código do navegador é público e não oferece isolamento de segredos por função.
+**Sobre os livros:** cada volume agora possui quatro capítulos de consulta, mas ainda não é uma obra completa diagramada. PDFs editoriais, ilustrações próprias em cada capítulo, tabelas completas e regras mecânicas de itens/magias ainda precisam de desenvolvimento. O Livro do Mestre continua no frontend e não deve armazenar segredos privados.
 
 ### Novidades da v1.4 — equipamento e combate aprimorados
 
@@ -283,7 +285,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.5).
+1. Baixe o ZIP da versão nova (v1.6).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -308,7 +310,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.5 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.6 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -387,7 +389,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.5 — campanha ampliada, bestiário e biblioteca em expansão.**
+**Reino de Aethra v1.6 — progressão narrativa, novos arcos e biblioteca ampliada.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -400,3 +402,10 @@ A v1.4 acrescenta leitura visual de raridade aos itens equipados, barras de HP n
 A v1.5 acrescenta cinco missões principais, quatro secundárias e seis monstros ao bestiário, cobrindo novos arcos em Thalassor, Nivéria e Solária além da expansão do mistério em Eldoria. Os sete livros da Biblioteca recebem capítulos iniciais de consulta. Em campanhas antigas, novas missões são anexadas sem substituir o progresso anterior. O mestre ainda precisa apresentar missões, marcar objetivos e entregar recompensas manualmente; a progressão automática por eventos de combate e inventário completo ficam para versões futuras. Nenhuma migração SQL é necessária.
 
 A biblioteca agora possui conteúdo inicial escrito, mas os volumes completos, ilustrações editoriais e PDFs diagramados continuam pendentes. Consulte `GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md`.
+
+
+## 18. Versão 1.6 — progressão narrativa e novos arcos
+
+A v1.6 amplia a crônica para oito missões principais e sete secundárias, introduz Drakmor como novo arco jogável e acrescenta seis criaturas ao bestiário. A derrota de inimigos associados a objetivos pode atualizar automaticamente o diário da campanha, desde que a missão esteja ativa e o mestre ativo valide o encontro. O novo NPC Brann também atualiza o objetivo de apresentação da missão de Drakmor. Os sete livros recebem um quarto capítulo de consulta cada.
+
+A automação é intencionalmente limitada a eventos claros e identificáveis; objetivos de exploração, investigação, itens, escolhas e conclusão dos capítulos continuam manuais. Não há migração SQL nesta versão. Consulte `GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md`.

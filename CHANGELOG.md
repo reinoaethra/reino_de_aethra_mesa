@@ -1,5 +1,17 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.6 — Progressão narrativa, novos arcos e livros ampliados
+
+- Campanha ampliada para oito missões principais e sete secundárias.
+- Novo arco de Drakmor com Cidadela de Braseiro, Forja dos Juramentos, Brann e Malgor.
+- Seis novas criaturas com atributos, habilidades, XP e miniaturas vetoriais próprias.
+- Progresso automático de objetivos de combate mapeados, após validação do mestre ativo e somente em missões aceitas.
+- Revelação de Brann atualiza o objetivo correspondente.
+- Quarto capítulo de consulta adicionado a cada um dos sete livros.
+- Quatro novas cenas preparadas para o painel narrativo.
+- Nenhuma migração SQL necessária; campanhas antigas preservam o progresso existente e recebem missões novas por ID.
+
+
 ## v1.5 — Campanha expandida, bestiário e biblioteca
 
 - Cinco missões principais organizadas em arcos regionais até Solária e quatro missões secundárias.
