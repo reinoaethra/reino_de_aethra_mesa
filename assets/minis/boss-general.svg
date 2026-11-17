@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 132">
+<defs><linearGradient id="armor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e1a16b"/><stop offset=".5" stop-color="#874538"/><stop offset="1" stop-color="#2d252c"/></linearGradient><linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e9d7b6"/><stop offset="1" stop-color="#6b5a50"/></linearGradient></defs>
+<ellipse cx="59" cy="120" rx="34" ry="6" fill="#080b10" opacity=".5"/>
+<path d="M40 51L19 39 10 60 26 75 18 102 38 94 47 70ZM78 51L101 38 112 59 95 77 104 103 82 94 72 70" fill="#613b37" stroke="#34242a" stroke-width="3"/>
+<path d="M44 51L76 51 89 89 75 110 43 109 30 88Z" fill="url(#armor)" stroke="#35262b" stroke-width="4"/>
+<path d="M42 61L60 69 79 60 73 86 60 98 46 84Z" fill="#41434a" stroke="#d3a76d" stroke-width="3"/>
+<path d="M44 35L60 16 77 35 73 56 60 64 47 55Z" fill="#98745a" stroke="#3b2a2b" stroke-width="3"/>
+<path d="M48 29L33 7 52 18M72 29L89 7 68 18" fill="none" stroke="url(#steel)" stroke-width="6" stroke-linecap="round"/>
+<path d="M46 41L55 42M65 42L75 41" stroke="#ffdf9a" stroke-width="3" stroke-linecap="round"/>
+<path d="M51 50Q60 57 69 50" fill="none" stroke="#261b20" stroke-width="3"/>
+<path d="M35 76L15 85 9 109 28 104 45 88M83 75L102 84 111 108 91 104 75 88" fill="url(#armor)" stroke="#34252a" stroke-width="3"/>
+<path d="M28 103L24 120 42 115 51 103M91 103L96 120 77 115 69 103" fill="#55434a" stroke="#2d252c" stroke-width="3"/>
+<path d="M16 18L8 10M105 18L114 10" stroke="#d9bb8b" stroke-width="4" stroke-linecap="round"/>
+</svg>

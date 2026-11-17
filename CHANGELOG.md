@@ -380,3 +380,15 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Névoa de guerra, portas, colisões e limite de movimento preservados.
 - Novos fundos 5:4 adicionados para os cinco reinos e para mapas de ruínas.
 - Nenhuma alteração de banco de dados.
+
+
+## v2.11 — miniaturas de mesa para aventureiros, monstros e chefes
+
+- Oito classes jogáveis recebem miniaturas renderizadas a partir de modelos STL enviados pelo usuário, convertidas em PNG com transparência para uso leve no navegador.
+- As peças possuem aparência de miniaturas físicas sobre pedestais: aro azul para aventureiros, vermelho para monstros, violeta para elites e dourado para chefes.
+- Goblin das Cinzas recebe uma miniatura escultórica original; as demais criaturas e chefes recebem silhuetas vetoriais com sombreamento volumétrico, base e escala diferenciada.
+- Chefes são visualmente maiores no tabuleiro e recebem marcação própria na lista de peças; a ocupação mecânica continua sendo de uma casa nesta versão.
+- Miniaturas são usadas também na lista lateral de peças, com coordenadas, HP e indicação de chefe/elite.
+- Acrescentado o guia `GUIA-MINIATURAS-DE-MESA-V2.11.md`.
+- Sem alteração de schema ou migração SQL. `config.js` permanece individual.
+- Verificações realizadas: `node --check` passou; os 11 PNGs e quatro SVGs de miniaturas estão presentes; atlas e PDF foram renderizados e inspecionados. A tentativa de abrir a prévia em Chromium foi bloqueada pelo ambiente (`ERR_BLOCKED_BY_ADMINISTRATOR`), portanto não afirmo teste funcional de navegador. Multiplayer e Supabase reais não foram testados.

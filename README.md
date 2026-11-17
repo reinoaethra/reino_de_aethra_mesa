@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.10.2 — cenário ilustrado contínuo e miniaturas móveis**  
+**Versão do jogo: 2.11 — miniaturas de mesa para personagens, monstros e chefes**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -46,11 +46,14 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 28. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
 29. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md)** — registro da edição anterior do tabuleiro.
 30. **[GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md](GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md)** — fundo ilustrado, grade transparente e movimentação das miniaturas.
-30. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+31. **[GUIA-MINIATURAS-DE-MESA-V2.11.md](GUIA-MINIATURAS-DE-MESA-V2.11.md)** — miniaturas das classes, monstros, elites e chefes.
+32. **[ADENDO-MINIATURAS-E-PECAS-DE-MESA-V2.11.pdf](ADENDO-MINIATURAS-E-PECAS-DE-MESA-V2.11.pdf)** — complemento ilustrado do manual para reconhecer e movimentar as peças.
+33. **[ATLAS-MINIATURAS-V2.11.png](ATLAS-MINIATURAS-V2.11.png)** — prancha de referência das oito classes e do Goblin das Cinzas.
+34. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.10.2
+## 2. O que está incluído na versão 2.10.2 (base visual preservada)
 
 ### v2.10.2 — cenário ilustrado e miniaturas móveis
 - O tabuleiro recebe uma imagem contínua de cenário; não usa mais uma imagem de terreno por quadrado.
@@ -61,6 +64,16 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Fundos ilustrados adaptados para os mapas dos cinco reinos e das cavernas.
 - Miniaturas derrotadas deixam de bloquear o movimento.
 - O pacote não requer migração de banco de dados.
+
+## 2.2. Versão 2.11 — miniaturas de mesa
+
+- Oito classes jogáveis recebem imagens próprias de miniaturas em resina cinza, com base e fundo transparente.
+- Aventureiros usam aro azul; monstros comuns, aro vermelho; elites, aro violeta; chefes, aro dourado e escala visual maior.
+- O Goblin das Cinzas recebe uma peça escultórica própria. As outras criaturas usam silhuetas vetoriais sombreadas e base de mesa; chefes conhecidos têm formas específicas.
+- A lista lateral mostra a miniatura, o HP, a coordenada e a marca de chefe/elite. Arma, armadura e escudo equipados são indicados por pequenos marcadores na base; ainda não alteram a escultura da peça.
+- As imagens das classes foram renderizadas a partir dos STL fornecidos como referência. O navegador usa PNG, não carrega STL e não requer suporte 3D.
+- Chefes ainda ocupam uma casa lógica. Ocupar múltiplas casas, rotação e alteração visual do equipamento ficam para uma etapa posterior.
+- Não há alterações no Supabase; nenhuma migração SQL é necessária. Preserve `config.js`.
 
 ## 2.1. Conteúdo herdado da versão 2.10
 
@@ -606,3 +619,16 @@ A v2.4 acrescenta tabelas de espólio por monstro, recompensas em ouro, relíqui
 O equipamento ativo fica salvo em `game_state.partyState` por jogador, junto com inventário e moedas, e portanto acompanha a sincronização da campanha já existente. O cálculo de Defesa considera Destreza, armadura e escudo. A arma fornece o dado-base de dano para o fluxo de combate existente; não há ainda um sistema completo de proficiências, durabilidade, encantamentos ou comparação automática de DPS.
 
 Os sete livros recebem um sétimo capítulo sobre campanha ramificada, encontros ajustados ao equipamento, comércio regional, magia defensiva e regras de equipamento. Nenhuma migração SQL é necessária.
+
+
+## 3. Versão 2.11 — peças de mesa para personagens, monstros e chefes
+
+A v2.11 substitui as figuras vetoriais simplificadas dos aventureiros por miniaturas renderizadas em PNG com fundo transparente, base escultural e leitura clara em visão superior inclinada. As oito classes jogáveis recebem uma peça visual distinta: Guerreiro, Arcano, Patrulheiro, Paladino, Assassino, Clérigo, Druida e Invocador.
+
+- As imagens das classes foram renderizadas a partir de modelos STL fornecidos pelo usuário e adaptadas para imagens PNG leves; os arquivos STL originais não são incluídos no pacote.
+- Goblin das Cinzas recebe uma miniatura escultórica própria. As demais criaturas continuam com silhuetas vetoriais originais, agora com sombreamento e base de mesa; chefes recebem escala maior e base com aro dourado.
+- Aros: azul para aventureiros, vermelho para criaturas hostis, violeta para criaturas de elite e dourado para chefes.
+- Lista lateral de peças mostra miniaturas, posição, HP e marcação especial de chefes.
+- Não foi alterado o modelo de dados do Supabase; nenhuma migração SQL é necessária. Preserve `config.js` ao atualizar o site.
+
+Consulte `GUIA-MINIATURAS-DE-MESA-V2.11.md` para a relação das peças, cores, regras visuais e limitações conhecidas.
