@@ -649,7 +649,7 @@
     const defeated=Number(enc.hp)<=0;
     const next=defeated?{...enc,defeated:true,turnOrder:[],turnIndex:0}:advanceCombatTurn(enc);
     await updateGameState({encounter:next,partyState});
-    await createEvent('combat_action_result',{request_id:ev.id,player_name:character.name,action,natural,total,hit,damage,healing,description,monster_hp:next.hp,round:next.round,next_turn:activeCombatTurn(next)?.name||'—',boss_phase:next.bossPhase||null,boss_phase_changed:bossPhaseChanged});
+    await createEvent('combat_action_result',{request_id:ev.id,player_name:character.name,actor_id:ev.actor_id,action,natural,total,hit,damage,healing,description,monster_hp:next.hp,round:next.round,next_turn:activeCombatTurn(next)?.name||'—',boss_phase:next.bossPhase||null,boss_phase_changed:bossPhaseChanged});
     if(bossPhaseChanged)toast(enc.bossPhaseName,'error');
     if(defeated){await awardEncounterRewards(next);toast(`${next.name} foi derrotado! Experiência distribuída à companhia.`)}
     if(natural!==null){showDice(natural,character.name);if(natural===20&&hit)toast('Acerto crítico! Dano adicional aplicado.')}
@@ -673,7 +673,7 @@
     partyState[target.member.user_id]=targetState;
     const next=advanceCombatTurn(enc);await updateGameState({encounter:next,partyState});
     const abilityText=enc.templateId==='campeao-orc'&&hit&&natural>=19?' Golpe demolidor: dano adicional aplicado.':'';
-    await createEvent('monster_attack_result',{monster:enc.name,target:target.character.name,natural,total,hit,damage,hp:Math.max(0,target.vitals.hp-damage),description:hit?`${enc.name} atinge ${target.character.name} e causa ${damage} de dano.${abilityText}${specialText}`:`${enc.name} ataca ${target.character.name}, mas erra.`});
+    await createEvent('monster_attack_result',{monster:enc.name,target:target.character.name,target_user_id:target.member.user_id,natural,total,hit,damage,hp:Math.max(0,target.vitals.hp-damage),description:hit?`${enc.name} atinge ${target.character.name} e causa ${damage} de dano.${abilityText}${specialText}`:`${enc.name} ataca ${target.character.name}, mas erra.`});
     showDice(natural,enc.name);toast(hit?`O monstro causou ${damage} de dano a ${target.character.name}.`:'O monstro errou o ataque.');
   }
   async function createEvent(type,payload){
@@ -1018,10 +1018,23 @@
   }
   function openModal(which){state.modal=which;if(which==='character'){state.charStep=0;state.charDraft=state.member?.character?JSON.parse(JSON.stringify(state.member.character)):newCharacterDraft()}render()}
   function closeModal(){state.modal=null;state.currentBook=null;modalRoot.innerHTML=''}
+  function animateMapCombat(payload={},monsterAction=false){
+    const board=document.querySelector('.map-board');if(!board)return;
+    const tokens=[...board.querySelectorAll('.map-token')];
+    const findToken=name=>tokens.find(token=>(token.getAttribute('title')||'').trim()===(name||'').trim());
+    const attacker=monsterAction?findToken(payload.monster):findToken(payload.player_name);
+    const target=monsterAction?findToken(payload.target):tokens.find(token=>token.classList.contains('monster-token'));
+    const actionClass=Number(payload.healing)>0?'token-heal':payload.hit===false?'token-miss':monsterAction?'token-monster-attack':payload.action==='ability'?'token-cast':'token-attack';
+    const pulse=(token,cls)=>{if(!token)return;token.classList.remove('token-attack','token-cast','token-heal','token-miss','token-monster-attack','token-hit');void token.offsetWidth;token.classList.add(cls);window.setTimeout(()=>token.classList.remove(cls),1050)};
+    pulse(attacker,actionClass);
+    if(monsterAction&&Array.isArray(payload.affected)){payload.affected.forEach(item=>pulse(findToken(item.name),'token-hit'))}
+    else if(target&&Number(payload.damage)>0)pulse(target,'token-hit');
+  }
   function showCombatFX(payload={}){
     const healed=Number(payload.healing)>0;const monster=!!payload.monsterAction;const magic=payload.action==='ability'&&!healed;const kind=healed?'heal':monster?'monster':magic?'magic':'physical';
     const title=healed?'Energia restauradora':monster?'Ataque da criatura':magic?'Poder arcano':'Golpe de combate';
     const detail=payload.description||((Number(payload.damage)||0)>0?`${payload.damage} de dano`:'Ação resolvida');
+    animateMapCombat(payload,monster);
     const node=document.createElement('div');node.className=`combat-fx combat-fx-${kind}`;node.innerHTML=`<span class="combat-fx-symbol">${healed?'✚':monster?'☠':magic?'✧':'⚔'}</span><span><strong>${esc(title)}</strong><small>${esc(detail)}</small></span>`;document.body.append(node);playCombatFXSound(kind);setTimeout(()=>node.remove(),2100);
   }
   function playCombatFXSound(kind){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const now=ctx.currentTime;const tones=kind==='magic'?[540,720,900]:kind==='heal'?[440,554,660]:kind==='monster'?[130,98,73]:[210,145,110];tones.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=kind==='magic'?'sine':'triangle';o.frequency.setValueAtTime(f,now+i*.05);g.gain.setValueAtTime(.0001,now+i*.05);g.gain.exponentialRampToValueAtTime(.026,now+i*.05+.018);g.gain.exponentialRampToValueAtTime(.0001,now+i*.05+.14);o.connect(g);g.connect(ctx.destination);o.start(now+i*.05);o.stop(now+i*.05+.15)});setTimeout(()=>ctx.close(),650)}catch(e){}}

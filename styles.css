@@ -273,3 +273,20 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @keyframes dragonThreat{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.04,1.02) rotate(-1deg)}65%{transform:scale(.98,1.04) rotate(1deg)}}
 @keyframes monsterThreat{0%,100%{opacity:.25;transform:scale(.88)}50%{opacity:.8;transform:scale(1.12)}}
 @media(prefers-reduced-motion:reduce){.monster-sprite *,.map-token.monster-token:before{animation:none!important}}
+
+/* v1.3 — reações temporárias das miniaturas durante o combate */
+.map-token.token-attack .hero-sprite .sprite-body{animation:tokenHeroStrike .48s cubic-bezier(.2,.8,.2,1) both!important}
+.map-token.token-cast .hero-sprite .sprite-body{animation:tokenHeroCast .72s ease-in-out both!important}
+.map-token.token-heal:after{content:"✚";position:absolute;z-index:5;left:50%;top:-22%;font-size:clamp(13px,2vw,20px);color:#9bf0b5;text-shadow:0 0 8px #54d98a;animation:tokenHealFloat .9s ease-out both;pointer-events:none}
+.map-token.token-miss .hero-sprite .sprite-body{animation:tokenHeroMiss .5s ease both!important}
+.map-token.token-monster-attack .monster-sprite .monster-creature{animation:tokenMonsterLunge .52s cubic-bezier(.2,.8,.2,1) both!important}
+.map-token.token-hit{animation:tokenImpact .48s ease both!important;filter:brightness(1.65) drop-shadow(0 0 7px rgba(255,105,75,.85))}
+.map-token.token-hit:after{content:"";position:absolute;inset:12%;border:2px solid rgba(255,205,150,.9);border-radius:50%;animation:tokenImpactRing .55s ease-out both;pointer-events:none}
+@keyframes tokenHeroStrike{0%{transform:translateX(0) rotate(0)}35%{transform:translateX(5px) rotate(-8deg) scale(1.06)}70%{transform:translateX(-2px) rotate(3deg)}100%{transform:translateX(0) rotate(0)}}
+@keyframes tokenHeroCast{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-4px) scale(1.06)}65%{transform:translateY(-2px) scale(.98)}100%{transform:translateY(0) scale(1)}}
+@keyframes tokenHeroMiss{0%,100%{transform:translateX(0)}30%{transform:translateX(-4px) rotate(-5deg)}65%{transform:translateX(3px) rotate(3deg)}}
+@keyframes tokenMonsterLunge{0%{transform:translateX(0) scale(1)}38%{transform:translateX(-6px) scale(1.1, .96)}72%{transform:translateX(2px) scale(.98,1.04)}100%{transform:translateX(0) scale(1)}}
+@keyframes tokenImpact{0%,100%{translate:0 0}25%{translate:2px -1px}50%{translate:-2px 1px}75%{translate:1px 0}}
+@keyframes tokenImpactRing{from{transform:scale(.35);opacity:.95}to{transform:scale(1.8);opacity:0}}
+@keyframes tokenHealFloat{from{transform:translate(-50%,8px) scale(.7);opacity:0}25%{opacity:1}to{transform:translate(-50%,-22px) scale(1.1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.map-token.token-attack,.map-token.token-cast,.map-token.token-heal,.map-token.token-miss,.map-token.token-monster-attack,.map-token.token-hit,.map-token.token-hit:after,.map-token.token-heal:after{animation:none!important;filter:none!important}}

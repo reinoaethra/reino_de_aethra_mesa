@@ -177,3 +177,13 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 ### Observação de teste
 
 A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer um projeto Supabase configurado, Manual Linking habilitado e URLs de retorno válidas; não foi possível validar a entrega real de e-mails nesta cópia local.
+
+
+## v1.3 — Combate reativo
+
+- Miniaturas de aventureiros e monstros recebem animações temporárias de ataque, magia, cura, erro e impacto.
+- O alvo recebe reação visual quando sofre dano; ataques de área destacam os alvos afetados.
+- Eventos de combate incluem identificadores adicionais do ator/alvo para facilitar a sincronização visual.
+- Efeitos visuais não alteram regras, HP ou resultados calculados pelo mestre ativo.
+- Respeito a `prefers-reduced-motion`.
+- Nenhuma migração SQL.
