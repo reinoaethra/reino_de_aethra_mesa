@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 0.7**  
+**Versão do jogo: 0.8**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -24,11 +24,12 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
 7. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
 8. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-9. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+9. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+10. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 0.7
+## 2. O que está incluído na versão 0.8
 
 ### Campanhas e jogadores
 
@@ -60,7 +61,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Combate por turnos com iniciativa.
 - Ataque básico, habilidades, poção e turno do monstro.
 - HP do monstro e HP dos aventureiros salvos no estado da campanha.
-- Três criaturas de demonstração: Goblin das Cinzas, Lobo Cinzento e Drakthar, o Devorador.
+- Cinco criaturas ilustradas: Goblin das Cinzas, Lobo Cinzento, Espectro da Ruptura, Campeão Orc e Drakthar, o Devorador.
 - Recompensa de XP ao derrotar uma criatura.
 - A cada nível conquistado: +5 HP máximo e +1 no atributo principal da classe (até 12).
 - Proteção contra ações de combate fora do turno, respostas duplicadas e recompensa de XP repetida.
@@ -109,10 +110,21 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 **Limites importantes:** a conta só sincroniza campanhas criadas/participadas no Supabase. Campanhas criadas anteriormente no modo local (`localStorage`) não são enviadas automaticamente à nuvem. Uma sessão visitante não pode ser recuperada em outro dispositivo até que o jogador conclua o vínculo do e-mail e defina uma senha. No novo dispositivo, entre na conta antes de criar um personagem ou entrar em uma campanha como visitante.
 
-### Exploração visual (v0.7)
+### Personagens, NPCs e criaturas ilustrados (v0.8)
 
-- Miniaturas visuais estilizadas por classe para os aventureiros, com iniciais e símbolos.
-- Animação suave de ociosidade e destaque da criatura no mapa.
+- Retratos WebP próprios para as oito classes jogáveis: Guerreiro, Arcano, Patrulheiro, Paladino, Assassino, Clérigo, Druida e Invocador.
+- Retratos para os três NPCs da primeira aventura: Ilyra Avelorn, Tovin Ferromar e Irmão Cael.
+- Retratos para cinco criaturas do bestiário inicial, incluindo Drakthar, o Devorador.
+- Os retratos aparecem na criação de personagens, prévia da ficha, participantes do lobby, painel do personagem, miniaturas do mapa e cartões de combate.
+- Seleção de encontros com cartões ilustrados, atributos e habilidades.
+- Inventário com identificação visual do personagem e slots de equipamento mais destacados.
+- Efeitos visuais e sonoros para ataques físicos, habilidades, curas e ações de monstros.
+- Imagens locais na pasta `assets/portraits`; o jogo não depende de hospedagem externa para carregar retratos.
+
+### Exploração visual (base v0.7, aprimorada na v0.8)
+
+- Miniaturas visuais por classe para os aventureiros, agora com retratos ilustrados, iniciais e símbolos.
+- Animação suave de ociosidade das miniaturas e destaque da criatura no mapa.
 - Portas que o mestre pode posicionar e abrir/fechar.
 - Jogadores próximos podem solicitar abertura de portas; o mestre aprova ou recusa.
 - Altares que podem ser examinados mediante pedido e aprovação do mestre.
@@ -131,7 +143,7 @@ A versão 0.7 é uma base jogável em evolução, não o produto final. Ainda n�
 - A campanha completa ainda está em produção. A versão 0.7 mantém o primeiro capítulo estruturado, com missões iniciais, NPCs e cenas preparadas; os capítulos seguintes e suas escolhas serão desenvolvidos em versões futuras.
 - Livros completos e PDFs diagramados.
 - Bestiário extenso, chefes com várias fases e inteligência avançada dos monstros.
-- Mapas com artes próprias em alta resolução, miniaturas 3D/ilustradas, áreas de efeito, linhas de visão e ferramentas avançadas de batalha.
+- Mapas de batalha com ilustrações de cenário próprias em alta resolução, peças animadas em 3D, áreas de efeito, linhas de visão e ferramentas avançadas de batalha. Os retratos 2D das classes e criaturas já estão incluídos, mas ainda não são modelos 3D nem animações completas de corpo inteiro.
 - Condições de estado completas (veneno, sangramento, congelamento etc.).
 - Troca de equipamentos por uma interface de inventário completa.
 - Login social (Google/Discord), passkeys e autenticação multifator ainda não estão implementados.
@@ -188,7 +200,7 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 
 | Situação | O que executar |
 |---|---|
-| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.7. |
+| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.8. |
 | Banco já na v0.6 | Faça backup e execute `supabase-migration-v0.7.sql` uma vez. |
 | Banco já na v0.5 | Execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`. |
 | Banco já na v0.4 | Execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
@@ -217,7 +229,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova.
+1. Baixe o ZIP da versão nova (v0.8).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -230,7 +242,7 @@ Não substitua o `config.js` preenchido por um arquivo vazio que tenha vindo no 
 
 ## 9. Limitações importantes de conta e disponibilidade
 
-A versão atual cria usuários anônimos pelo Supabase Auth. Isso dispensa e-mail e senha, mas a documentação do Supabase informa que uma identidade anônima não pode ser recuperada se a pessoa sair da conta, apagar os dados de navegação ou trocar de dispositivo. Por isso, cada jogador deve voltar usando o mesmo navegador e perfil. A recuperação/vinculação de contas será adicionada mais adiante. Leia [Anonymous Sign-Ins](https://supabase.com/docs/guides/auth/auth-anonymous).
+Na primeira visita, o jogo pode criar uma identidade visitante pelo Supabase Auth. Esse acesso funciona no mesmo navegador, mas não pode ser recuperado em outro aparelho se os dados locais forem apagados. Para continuar em computador, celular ou tablet, o jogador deve abrir **Conta → Salvar progresso**, informar um e-mail, confirmar o link no mesmo navegador e depois definir uma senha. Nos outros dispositivos, deve abrir **Conta → Já tenho uma conta** e entrar com esse e-mail e senha. O vínculo preserva o identificador original do visitante, portanto as fichas e campanhas na nuvem continuam associadas à pessoa. Leia [Anonymous Sign-Ins](https://supabase.com/docs/guides/auth/auth-anonymous) e o `GUIA-LOGIN-E-PROGRESSO.md`.
 
 O plano Free do Supabase pode pausar projetos com pouca atividade durante sete dias. A documentação atual informa que algumas requisições ao banco por dia normalmente ajudam a manter o projeto ativo, mas não oferecem garantia. Se o projeto pausar, o proprietário deverá abrir o Dashboard e selecionar **Resume project**. O projeto restaurado mantém dados e configurações dentro do período indicado pelo Supabase. Leia [Project Pausing](https://supabase.com/docs/guides/platform/free-project-pausing). Como o grupo pretende jogar nos finais de semana, considere esse comportamento ao planejar a disponibilidade.
 
@@ -242,17 +254,20 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7 em um projeto novo. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; a v0.8 mantém o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
 | `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
+| `assets/portraits/preview-sheet.jpg` | Folha de contato com os retratos do projeto. |
+| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.8. |
+| `GUIA-PERSONAGENS-NPCS-CRIATURAS.md` | Guia dos retratos, miniaturas, criaturas e substituição de imagens. |
 | `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
 | `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
 | `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura, usar o painel narrativo e consultar as limitações atuais. |
 | `CHANGELOG.md` | Histórico das versões. |
-| `REGRAS-DE-COMBATE.md` | Regras implementadas na versão 0.4. |
+| `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo atualizações da v0.8. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
 | `CHECKLIST-DA-PRIMEIRA-PARTIDA.md` | Lista de conferência para a primeira sessão. |
@@ -261,9 +276,19 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 
 ## 11. Testes técnicos realizados nesta entrega
 
-Foram executadas verificações de sintaxe JavaScript, consistência dos nomes dos arquivos, existência dos arquivos referenciados, estrutura HTML/CSS, correspondência dos trechos de funções SQL entre esquema e migração e integridade do pacote ZIP. O SQL foi revisado estaticamente, mas **não foi executado em um projeto Supabase real** nesta entrega. Também não foi possível simular um multiplayer real sem as credenciais de um projeto Supabase ativo e sem navegadores de jogadores conectados.
+Foram executadas verificações de sintaxe JavaScript (`node --check`), existência e formato dos 16 retratos WebP, referências dos arquivos de imagem, equilíbrio básico das chaves CSS/HTML e integridade do pacote ZIP. Não foi feito teste visual completo em navegador nem teste multiplayer com Supabase real nesta entrega. O SQL não foi alterado na v0.8 e, por isso, não foi necessário executá-lo ou criar uma migração nova.
 
 Antes de usar uma campanha importante, siga o roteiro de teste e confirme os resultados com pelo menos dois navegadores.
+
+## Atualização para a versão 0.8 — banco de dados
+
+A versão 0.8 **não exige uma nova migração SQL**. Os retratos são arquivos WebP locais e os identificadores de imagem ficam dentro dos campos JSON da ficha/personagem e do encontro. Os efeitos visuais usam os eventos de campanha já existentes.
+
+- Projeto novo: execute somente `supabase-schema.sql`.
+- Banco já na v0.7: não execute SQL adicional; atualize os arquivos do site e inclua a pasta inteira `assets/portraits/`.
+- Banco mais antigo: complete primeiro as migrações históricas até a v0.7, conforme a tabela de instalação.
+
+Preserve a Project URL e a Publishable key que já estão no seu `config.js`.
 
 ## 12. Documentação oficial útil
 
@@ -276,4 +301,4 @@ Antes de usar uma campanha importante, siga o roteiro de teste e confirme os res
 
 ---
 
-**Reino de Aethra v0.7 — Os aventureiros podem vincular suas fichas a uma conta e continuar a crônica em outros dispositivos.**
+**Reino de Aethra v0.8 — Os aventureiros agora aparecem com retratos próprios e efeitos de combate, mantendo contas e progresso entre dispositivos.**

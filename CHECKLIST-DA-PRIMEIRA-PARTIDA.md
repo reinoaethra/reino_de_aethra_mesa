@@ -1,4 +1,4 @@
-# Checklist da primeira partida — Reino de Aethra v0.7
+# Checklist da primeira partida — Reino de Aethra v0.8
 
 Use esta lista antes de convidar o grupo para uma campanha importante.
 
@@ -85,7 +85,7 @@ Use esta lista antes de convidar o grupo para uma campanha importante.
 **Não use uma campanha importante até concluir os testes básicos com pelo menos dois navegadores.**
 
 
-## 6. Teste da aventura inicial (v0.5) e mapas (v0.6/v0.7)
+## 6. Teste da aventura inicial (v0.5), mapas (v0.6/v0.7) e retratos (v0.8)
 
 - [ ] A missão principal Ecos na Estrada de Eldoria aparece para todos.
 - [ ] O mestre abre o painel Jornada e missões.
@@ -138,3 +138,19 @@ Faça este teste depois de configurar Email, Anonymous Sign-Ins, Manual Linking 
 **Aprovado:** a mesma campanha e ficha aparecem com o mesmo progresso nos dois dispositivos. Não crie uma segunda campanha se a primeira não aparecer; confira se a conta usada é exatamente a mesma.
 
 **Atenção:** uma conta visitante ainda não vinculada não pode ser recuperada em outro aparelho. Vincule o e-mail no dispositivo original primeiro.
+
+
+## Teste visual da versão 0.8
+
+- [ ] Os oito cartões de classe exibem retratos diferentes na criação de personagem.
+- [ ] A prévia da ficha mostra o retrato da classe escolhida.
+- [ ] Participantes com personagem aparecem com retratos no lobby e na sala.
+- [ ] As miniaturas do mapa mostram retratos, iniciais e símbolos.
+- [ ] O seletor de encontro exibe as ilustrações das cinco criaturas.
+- [ ] O cartão de batalha mostra a ilustração e HP da criatura correta.
+- [ ] Revelar Ilyra, Tovin ou Cael apresenta o retrato correspondente aos jogadores.
+- [ ] Ataques, habilidades e ações de monstros exibem efeitos visuais; o som é reproduzido quando permitido pelo navegador.
+- [ ] No celular, os cartões de classe, criaturas e NPCs reorganizam-se sem cortar os botões.
+- [ ] A pasta `assets/portraits/` foi enviada ao GitHub junto com `index.html`, `app.js` e `styles.css`.
+
+**Banco de dados:** a v0.8 não exige migração SQL. Se o banco já está na v0.7, apenas publique todos os arquivos da v0.8, incluindo a pasta de retratos.

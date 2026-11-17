@@ -1,4 +1,4 @@
-# Regras de combate — Reino de Aethra v0.7 (regras introduzidas na v0.4)
+# Regras de combate — Reino de Aethra v0.8 (regras introduzidas na v0.4 e ampliadas na v0.8)
 
 Este documento explica as regras de combate implementadas nesta versão. Os valores são o primeiro equilíbrio de teste de Aethra e poderão mudar após partidas reais.
 
@@ -130,12 +130,16 @@ O mestre pode usar **Avançar / pular turno** para resolver uma situação espec
 |---|---:|---:|---:|---:|---:|
 | Goblin das Cinzas | 42 | 12 | +3 | 1d6 + 1 | 25 |
 | Lobo Cinzento | 58 | 13 | +4 | 1d8 + 1 | 40 |
+| Espectro da Ruptura | 74 | 15 | +5 | 1d8 + 2 | 70 |
+| Campeão Orc | 96 | 15 | +6 | 1d8 + 2 | 90 |
 | Drakthar, o Devorador | 720 | 18 | +8 | 1d10 + 4 | 250 |
 
 ### Habilidades dos monstros
 
 - **Goblin das Cinzas — Golpe oportunista:** recebe +1 no ataque quando é o primeiro da ordem de iniciativa.
 - **Lobo Cinzento — Mordida dilacerante:** quando o D20 natural do ataque é 18 ou mais e o ataque acerta, acrescenta 1d6 de dano.
+- **Espectro da Ruptura — Toque debilitante:** quando acerta com resultado natural 18 ou mais, reduz a Defesa do alvo em 1 até o fim da rodada seguinte. A penalidade é registrada no estado da campanha e não acumula consigo mesma.
+- **Campeão Orc — Golpe demolidor:** quando acerta com resultado natural 19 ou 20, acrescenta 1d8 de dano.
 - **Drakthar — Sopro das Cinzas:** uma vez por encontro, quando o D20 natural do monstro é 17 ou mais, causa 2d8 + 4 de dano a todos os aventureiros que ainda possuem HP.
 
 O monstro escolhe aleatoriamente um aventureiro vivo nos ataques normais. A decisão é processada pelo navegador do mestre.
@@ -177,3 +181,13 @@ O banco registra quais jogadores já receberam XP por aquele encontro. Isso evit
 ## 11. O que ainda será desenvolvido
 
 As regras atuais ainda não incluem um sistema completo de resistência a condições, armaduras equipáveis dinamicamente, economia, peso, munição, alcance, movimento por mapa, magia com custos e listas completas de habilidades. O inventário já mostra os equipamentos iniciais e permite usar a poção de cura durante o combate, mas a troca de equipamentos pela interface ainda não está pronta.
+
+
+## 12. Apresentação visual e efeitos (v0.8)
+
+- As oito classes têm retratos próprios na criação, na ficha, no mapa e na lista de participantes.
+- NPCs revelados exibem seus retratos nas fichas públicas.
+- O seletor do bestiário e o cartão de batalha apresentam os retratos das cinco criaturas.
+- Ataques físicos, habilidades, curas, dano manual e ações de monstros podem exibir efeitos na tela e sons sintetizados pelo navegador.
+- O navegador pode bloquear áudio até que o jogador interaja com a página; nesse caso, o efeito visual continua funcionando.
+- A v0.8 não altera tabelas do banco e não requer migração SQL adicional.

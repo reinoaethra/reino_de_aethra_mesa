@@ -1,4 +1,4 @@
-# Guia de login e progresso entre dispositivos — Reino de Aethra v0.7
+# Guia de login e progresso entre dispositivos — Reino de Aethra v0.8
 
 Este guia ensina, passo a passo, como fazer um jogador começar no computador e continuar no celular ou tablet usando o mesmo e-mail e senha.
 
@@ -180,3 +180,8 @@ Se a campanha não aparecer, não crie outra campanha para “corrigir”. Verif
 - Anonymous Sign-Ins e vínculo de identidade: <https://supabase.com/docs/guides/auth/auth-anonymous>
 - Configuração de provedores e autenticação: <https://supabase.com/docs/guides/auth/general-configuration>
 - Site URL e Redirect URLs: <https://supabase.com/docs/guides/auth/redirect-urls>
+
+
+## Compatibilidade com a v0.8
+
+O fluxo de visitante, confirmação de e-mail, criação de senha, login e recuperação continua igual na v0.8. Não é necessária migração SQL para essa atualização. Depois de publicar a v0.8, faça o teste com computador e celular descrito no checklist.

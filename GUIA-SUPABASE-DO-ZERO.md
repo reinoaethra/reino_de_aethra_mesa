@@ -1,4 +1,4 @@
-# Guia do Supabase do zero — Reino de Aethra v0.7
+# Guia do Supabase do zero — Reino de Aethra v0.8
 
 Este tutorial foi escrito para quem **nunca usou Supabase, nunca criou um banco de dados e não sabe programar**. Leia uma etapa de cada vez. Você não precisa instalar o Supabase no computador: tudo será feito pelo navegador.
 
@@ -92,7 +92,7 @@ Esta é a etapa em que você instala a estrutura de dados do jogo. Parece técni
 
 ### 3.1 Encontrar o arquivo certo no ZIP
 
-1. Baixe o pacote ZIP do Reino de Aethra v0.7.
+1. Baixe o pacote ZIP do Reino de Aethra v0.8.
 2. No computador, encontre o arquivo ZIP baixado.
 3. Clique nele com o botão direito e escolha **Extrair tudo** (Windows) ou use o aplicativo de extração disponível.
 4. Abra a pasta resultante.
@@ -402,7 +402,7 @@ Quando pedir ajuda, envie o nome do arquivo e a mensagem de erro completa. **Nun
 
 ## PARTE FINAL — Atualizar o banco para a versão 0.5
 
-Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.7, o padrão novo já está incluído.
+Esta etapa só é necessária se você já tinha instalado o banco da versão 0.4. Se acabou de criar um projeto do zero e executou o `supabase-schema.sql` que veio neste pacote v0.8, o padrão novo já está incluído.
 
 ### O que esta migração faz?
 
@@ -434,7 +434,7 @@ Crie uma campanha de teste. O capítulo inicial deverá aparecer como **Capítul
 
 ## Atualização para mapas táticos — versão 0.6
 
-Esta etapa só é necessária se o seu banco já estava funcionando na versão 0.5. Se você criou um projeto Supabase agora e executou o arquivo `supabase-schema.sql` que veio no pacote v0.7, a função de movimento já está incluída e você não precisa executar esta migração.
+Esta etapa só é necessária se o seu banco já estava funcionando na versão 0.5. Se você criou um projeto Supabase agora e executou o arquivo `supabase-schema.sql` que veio no pacote v0.8, a função de movimento já está incluída e você não precisa executar esta migração.
 
 A migração `supabase-migration-v0.6.sql` cria a função `request_map_move`. Ela permite que um jogador envie um pedido de movimento para a própria peça. O mestre recebe o pedido, confere obstáculos, distância e turno e aprova ou recusa. A migração não apaga campanhas, personagens, eventos ou inventários.
 
@@ -451,17 +451,17 @@ A migração `supabase-migration-v0.6.sql` cria a função `request_map_move`. E
 9. Confira se o texto começa com `-- Reino de Aethra v0.6`.
 10. Clique em **Run** (Executar).
 11. Aguarde a mensagem de sucesso. Se aparecer erro, não execute repetidamente: copie a mensagem completa sem incluir senhas nem chaves e peça ajuda.
-12. Se estiver atualizando para a versão atual, continue com a migração v0.7 descrita na seção seguinte. Execute todas as migrações necessárias antes de publicar o pacote v0.7 no GitHub Pages, preservando seu `config.js` configurado.
+12. Se estiver atualizando para a versão atual, continue com a migração v0.7 descrita na seção seguinte. Execute todas as migrações necessárias antes de publicar o pacote v0.8 no GitHub Pages, preservando seu `config.js` configurado.
 
 ### Qual arquivo SQL usar?
 
-- **Projeto novo:** execute apenas `supabase-schema.sql` do pacote v0.7.
+- **Projeto novo:** execute apenas `supabase-schema.sql` do pacote v0.8.
 - **Banco na v0.6:** execute `supabase-migration-v0.7.sql`.
 - **Banco na v0.5:** execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`.
 - **Banco na v0.4:** execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`.
 - **Banco na v0.3 ou v0.2:** faça backup e siga a sequência completa de migrações descrita no README, sem pular versões.
 
-Depois de todas as migrações, publique o pacote mais recente (v0.7) uma única vez. Não é necessário publicar versões intermediárias.
+Depois de todas as migrações, publique o pacote mais recente (v0.8) uma única vez. Não é necessário publicar versões intermediárias.
 
 Não execute o esquema completo por cima de um banco existente.
 
@@ -470,7 +470,7 @@ Não execute o esquema completo por cima de um banco existente.
 
 ## Atualização do banco para mapas interativos — versão 0.7
 
-Leia esta seção somente se o banco já estava funcionando na v0.6. Se criou um projeto novo e executou o `supabase-schema.sql` da v0.7, esta função já está incluída e não é necessário executar a migração separada.
+Leia esta seção somente se o banco já estava funcionando na v0.6. Se criou um projeto novo e executou o `supabase-schema.sql` da v0.8, esta função já está incluída e não é necessário executar a migração separada.
 
 A migração `supabase-migration-v0.7.sql` adiciona a função segura `request_map_interaction`, usada para que um jogador solicite a abertura de uma porta ou a inspeção de um altar. O mestre recebe o pedido e aprova ou recusa. A migração não apaga campanhas, personagens, eventos ou fichas.
 
@@ -481,18 +481,18 @@ A migração `supabase-migration-v0.7.sql` adiciona a função segura `request_m
 3. Antes de executar SQL, faça backup usando o procedimento de backup explicado neste guia.
 4. Abra **SQL Editor** no menu lateral.
 5. Clique em **New query**.
-6. Na pasta extraída do ZIP v0.7, encontre `supabase-migration-v0.7.sql`.
+6. Na pasta extraída do ZIP v0.8, encontre `supabase-migration-v0.7.sql`.
 7. Abra o arquivo com o Bloco de Notas (não use Word).
 8. Pressione `Ctrl + A` e depois `Ctrl + C`.
 9. Volte ao SQL Editor, clique na área de consulta e pressione `Ctrl + V`.
 10. Confira se o início do arquivo menciona v0.7 e interações com portas/altares.
 11. Clique em **Run**.
 12. Aguarde a mensagem de sucesso. Se aparecer erro, pare e copie a mensagem completa, sem enviar senhas ou chaves.
-13. Publique os arquivos da v0.7 no GitHub Pages.
+13. Publique os arquivos da v0.8 no GitHub Pages.
 
 ### Sequência resumida das atualizações
 
-- Projeto novo: `supabase-schema.sql` da v0.7.
+- Projeto novo: `supabase-schema.sql` da v0.8.
 - Banco v0.6: `supabase-migration-v0.7.sql`.
 - Banco v0.5: migrações v0.6 e v0.7, nessa ordem.
 - Banco v0.4: migrações v0.5, v0.6 e v0.7, nessa ordem.
@@ -528,7 +528,7 @@ Troque os nomes do exemplo pelo seu endereço real. A URL configurada no Supabas
 - <https://supabase.com/docs/guides/auth/general-configuration>
 - <https://supabase.com/docs/guides/auth/redirect-urls>
 
-**Não execute SQL adicional para criar usuários.** O Supabase Auth administra as contas. A autenticação não exige uma migração de tabelas para a v0.7.
+**Não execute SQL adicional para criar usuários.** O Supabase Auth administra as contas. A autenticação não exige uma migração de tabelas própria; esse fluxo continua igual na v0.8.
 
 ### Limitações que você precisa conhecer
 
@@ -537,3 +537,14 @@ Troque os nomes do exemplo pelo seu endereço real. A URL configurada no Supabas
 - Campanhas feitas em modo local não são automaticamente transferidas para o Supabase.
 - Em um aparelho novo, faça login antes de entrar em uma campanha como visitante.
 - O computador do mestre continua necessário apenas durante a sessão ao vivo; o Supabase mantém os dados salvos entre sessões.
+
+
+## Atualização da versão 0.8 — não há SQL novo
+
+A v0.8 adiciona retratos WebP, cartões ilustrados e efeitos visuais/sonoros. Essas informações são arquivos locais e valores guardados em campos JSON que já existiam no banco. Por isso, **não execute uma nova migração SQL para atualizar da v0.7 para a v0.8**.
+
+- Se o banco já está na v0.7: não execute uma migração SQL adicional. Apenas publique todos os arquivos da v0.8, incluindo a pasta `assets/portraits/`.
+- Se o banco está na v0.6 ou anterior: primeiro conclua as migrações históricas necessárias até a v0.7, conforme a tabela do README. Depois publique os arquivos v0.8.
+- Se está criando o projeto agora: execute apenas `supabase-schema.sql` do pacote v0.8.
+
+Não substitua as credenciais do `config.js` por valores de exemplo. Preserve a Project URL e a Publishable key que você já configurou.

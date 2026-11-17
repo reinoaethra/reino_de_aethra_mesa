@@ -1,3 +1,28 @@
+# Histórico de versões — Reino de Aethra
+
+## v0.8 — Retratos, bestiário visual e efeitos de combate
+
+- Criados 16 retratos WebP locais: oito classes, três NPCs e cinco criaturas.
+- Retratos apresentados na seleção de classe e no resumo da ficha.
+- Miniaturas do mapa agora usam retratos das classes e criaturas, mantendo iniciais e símbolos.
+- Lista de participantes e painel de personagem exibem retratos.
+- NPCs revelados e suas fichas públicas exibem ilustrações próprias.
+- Bestiário e seletor de encontros exibem cartões ilustrados.
+- Incluídos Espectro da Ruptura e Campeão Orc como novas criaturas; implementadas suas habilidades especiais.
+- Cartão de batalha apresenta arte da criatura em destaque.
+- Adicionados efeitos visuais e sonoros para ataques, habilidades, cura e ações de monstros.
+- Inventário recebeu cabeçalho ilustrado do personagem e slots de equipamento destacados.
+- Documentação atualizada para explicar os retratos e a ausência de migração SQL na v0.8.
+- Preservadas autenticação, contas vinculadas, campanhas, mapas, migrações e regras da v0.7.
+
+### Verificações
+
+- Sintaxe JavaScript verificada com `node --check`.
+- Arquivos de imagem WebP verificados quanto a formato e dimensões.
+- Referências a retratos conferidas no código.
+- O SQL da v0.8 não foi alterado: nenhum novo campo ou função de banco foi introduzido.
+- Teste de navegador e multiplayer real não foi concluído neste ambiente; exige publicação e projeto Supabase configurado.
+
 ## v0.7 — Conta e continuidade entre dispositivos
 
 - Adicionado painel de conta no cabeçalho.
@@ -32,7 +57,6 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Função RPC `request_map_move` para validar identidade do jogador, estado da sessão, mapa e limites de coordenadas antes de registrar o pedido.
 - Guia de uso dos mapas e documentação de instalação atualizada.
 
-# Histórico de versões — Reino de Aethra
 
 ## v0.5 — Primeira aventura, missões, NPCs e diário
 

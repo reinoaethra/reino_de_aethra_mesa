@@ -1,4 +1,4 @@
-# Guia do GitHub Pages do zero — Reino de Aethra v0.7
+# Guia do GitHub Pages do zero — Reino de Aethra v0.8
 
 Este guia ensina a colocar Reino de Aethra na internet usando o GitHub Pages. Foi escrito para quem nunca publicou um site.
 
@@ -40,7 +40,7 @@ O repositório público significa que qualquer pessoa poderá ver os arquivos do
 
 ## PARTE 3 — Extrair o ZIP no computador
 
-1. Baixe `reino-de-aethra-v0.7.zip`.
+1. Baixe `reino-de-aethra-v0.8.zip`.
 2. Abra a pasta Downloads.
 3. Clique com o botão direito no ZIP.
 4. Selecione **Extrair tudo**.
@@ -63,7 +63,7 @@ Antes de enviar, confirme que o `config.js` contém a Project URL e Publishable 
 6. Arraste-os para a área de upload do GitHub ou use o seletor de arquivos.
 7. Confira a lista de arquivos antes de confirmar.
 8. Na parte inferior, encontre **Commit changes**.
-9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.7`.
+9. Se quiser, deixe a mensagem `Publica Reino de Aethra v0.8`.
 10. Clique em **Commit changes**.
 
 ### Conferir a posição dos arquivos
@@ -76,6 +76,8 @@ reino-de-aethra/
 ├── styles.css
 ├── app.js
 ├── config.js
+├── assets/
+│   └── portraits/   (imagens das classes, NPCs e criaturas)
 ├── supabase-schema.sql
 ├── supabase-migration-v0.3.sql
 ├── supabase-migration-v0.4.sql  (atualização histórica)
@@ -214,3 +216,8 @@ No painel do Supabase, abra **Authentication → URL Configuration** e:
 Use o endereço real do seu projeto, não o exemplo. O caminho do repositório faz parte do endereço: não remova `/reino-de-aethra/` se esse for o nome do repositório.
 
 Esta configuração é necessária para que os links de confirmação de e-mail e recuperação de senha retornem ao site certo. Veja também o `GUIA-LOGIN-E-PROGRESSO.md`.
+
+
+### Arquivos de imagem na v0.8
+
+A pasta `assets/portraits/` é obrigatória. Ela contém os retratos WebP usados na criação de personagens, miniaturas do mapa, NPCs e monstros. Ao enviar o projeto ao GitHub, envie a pasta inteira. Sem ela, o jogo abre, mas os retratos não aparecem.

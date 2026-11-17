@@ -1,4 +1,4 @@
-# Roteiro de teste multiplayer — Reino de Aethra v0.7
+# Roteiro de teste multiplayer — Reino de Aethra v0.8
 
 Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo entre dois ou mais navegadores. Não é necessário instalar um servidor local.
 
@@ -6,7 +6,7 @@ Este roteiro complementa o README e o guia do Supabase. Ele verifica o fluxo ent
 
 - Site publicado por HTTPS no GitHub Pages.
 - Projeto Supabase ativo e conectado pelo `config.js`.
-- Banco para v0.7: execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.6, faça backup e execute `supabase-migration-v0.7.sql`. Se estiver na v0.4 ou anterior, siga a sequência completa de migrações descrita no README e no guia do Supabase.
+- Banco da base v0.7 (mantido na v0.8): execute `supabase-schema.sql` em uma instalação nova. Se já estiver na v0.6, faça backup e execute `supabase-migration-v0.7.sql`. Se estiver na v0.4 ou anterior, siga a sequência completa de migrações descrita no README e no guia do Supabase.
 - Anonymous Sign-Ins habilitado.
 - Um navegador/perfil para o mestre e pelo menos um perfil diferente para jogador.
 - Para o teste real, não utilize a mesma sessão autenticada em dois perfis que compartilham o mesmo armazenamento.
@@ -201,3 +201,17 @@ Esses testes exigem a função SQL `request_map_move` da v0.6. Em um banco que j
 - [ ] Salvo e retomado o jogo, portas, altares, estado de descoberta e posições continuam iguais.
 
 Essas interações compartilhadas exigem a função `request_map_interaction` da v0.7. Um banco que já estava na v0.6 precisa receber `supabase-migration-v0.7.sql`.
+
+
+## Testes visuais da v0.8
+
+1. Abra a criação de personagem e percorra as oito classes.
+2. Escolha uma classe, salve a ficha e confira o retrato no lobby.
+3. Entre na sessão por um segundo navegador e verifique se ambos veem o mesmo retrato no mapa e na lista de participantes.
+4. O mestre abre Iniciar encontro e seleciona cada uma das cinco criaturas.
+5. Confirme que todos recebem a mesma imagem da criatura e a mesma barra de HP.
+6. Execute um ataque básico, uma habilidade e uma ação do monstro.
+7. Verifique efeitos visuais e, se o navegador permitir áudio, os efeitos sonoros.
+8. Revele um NPC no painel da jornada e confira a imagem nos navegadores dos jogadores.
+
+**Esperado:** todos os navegadores veem o mesmo retrato associado à ficha e ao encontro. Os arquivos de imagem são carregados localmente pelo site, não pelo banco de dados.

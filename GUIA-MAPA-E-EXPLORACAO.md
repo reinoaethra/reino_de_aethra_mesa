@@ -1,4 +1,4 @@
-# Guia de mapas e exploração — Reino de Aethra v0.7
+# Guia de mapas e exploração — Reino de Aethra v0.8
 
 Este guia, atualizado para a versão 0.6, ensina passo a passo como usar os mapas da campanha. Os mapas são tabuleiros táticos vistos por todos os participantes. O mestre continua sendo responsável por aprovar movimentos e controlar os elementos da cena.
 
@@ -92,6 +92,8 @@ A partir da v0.7, cada jogador pode vincular seu acesso visitante a e-mail e sen
 - O mestre pode colocar um **Altar**. Quando o jogador está próximo, pode clicar nele para solicitar inspeção. O mestre valida a interação e, quando aprovada, o altar é revelado e uma nota é adicionada ao diário.
 - Os pedidos compartilhados precisam de Supabase e da função `request_map_interaction`. Banco novo recebe a função pelo `supabase-schema.sql` v0.7; banco v0.6 precisa de `supabase-migration-v0.7.sql`.
 
-### Miniaturas de personagens (v0.7)
+### Miniaturas ilustradas (v0.8)
 
-As peças de aventureiro usam um símbolo e uma cor de borda por classe, além das iniciais do personagem. A miniatura se destaca quando selecionada. A criatura ativa possui um marcador maior e animação de respiração. Esses recursos são visuais; a posição real continua guardada no estado de exploração da campanha.
+As peças de aventureiros usam retratos WebP da classe e continuam exibindo as iniciais do personagem. A criatura ativa usa o retrato correspondente ao monstro do encontro. As imagens ficam em `assets/portraits/`; os dados de posição permanecem guardados no estado de exploração da campanha.
+
+A v0.8 não altera as regras de movimento, névoa, portas ou interações com objetos. Não há migração SQL adicional para os retratos.
