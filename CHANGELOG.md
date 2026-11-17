@@ -1,5 +1,15 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.5 — Campanha expandida, bestiário e biblioteca
+
+- Cinco missões principais organizadas em arcos regionais até Solária e quatro missões secundárias.
+- Seis novas criaturas com fichas de combate, habilidades e silhuetas vetoriais dedicadas: Aranha de Umbrafunda, Cultista do Véu Cinzento, Golem de Basalto, Sereia Abissal, Cavaleiro Oco de Solária e Draco de Cristal Niveriano.
+- Seletor de encontros usa as novas silhuetas quando não existe retrato WebP específico.
+- Os sete livros recebem capítulos iniciais de consulta com orientações, regras, mundo, magia, equipamento, criaturas e condução de campanha.
+- Campanhas antigas recebem novas missões sem apagar o progresso anterior.
+- Nenhuma migração SQL nova. O mestre ainda aceita missões, marca objetivos e entrega recompensas manualmente; não há progressão automática por derrota de monstros.
+- Guia `GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md`.
+
 ## v1.4 — Equipamento por raridade e combate aprimorado
 
 - Cores de raridade para arma, armadura e escudo equipados; aceita `rarity` ou `raridade` e cor opcional `color`.

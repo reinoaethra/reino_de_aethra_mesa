@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.4 — equipamento por raridade e combate aprimorado**  
+**Versão do jogo: 1.5 — campanha expandida, bestiário ampliado e livros de consulta**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -28,13 +28,28 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
 11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
 12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-13. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-14. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-15. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md)** — consultar os novos arcos, missões, monstros e o conteúdo inicial dos sete livros.
+14. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+15. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+16. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.4
+## 2. O que está incluído na versão 1.5
+
+### Novidades da v1.5 — campanha, monstros e biblioteca
+
+- Expansão narrativa com cinco missões principais encadeadas em cinco arcos regionais: Eldoria, Santuário das Raízes, Thalassor, Nivéria e Solária.
+- Quatro missões secundárias com investigação, exploração e recompensas narrativas.
+- Seis novas criaturas selecionáveis no encontro: Aranha de Umbrafunda, Cultista do Véu Cinzento, Golem de Basalto, Sereia Abissal, Cavaleiro Oco de Solária e Draco de Cristal Niveriano.
+- As novas criaturas possuem silhuetas vetoriais próprias no mapa e no seletor de encontros, além de estatísticas, XP e habilidades especiais.
+- Os sete livros da Biblioteca agora apresentam capítulos de consulta escritos dentro do jogo: Livro do Mestre, Bestiário, Grandes Chefes, Atlas, Grimório, Arsenal e Manual do Aventureiro.
+- Campanhas já existentes recebem as novas missões ausentes sem apagar objetivos concluídos ou o progresso já salvo.
+- Nenhuma alteração no esquema do Supabase; nenhuma migração SQL é necessária.
+
+**Importante sobre o avanço da história:** as novas missões ficam disponíveis na central de jornada. O mestre apresenta/aceita cada missão e marca os objetivos como concluídos; o sistema ainda não libera automaticamente o próximo capítulo por derrotar uma criatura ou visitar um local. As recompensas de texto são orientações narrativas, não itens adicionados automaticamente ao inventário.
+
+**Importante sobre os livros:** esta versão entrega uma primeira edição digital com capítulos iniciais úteis, mas não representa os sete livros completos nem PDFs editoriais finalizados. O conteúdo será aprofundado progressivamente. O Livro do Mestre contém orientações de condução, não segredos privados; o código do navegador é público e não oferece isolamento de segredos por função.
 
 ### Novidades da v1.4 — equipamento e combate aprimorados
 
@@ -268,7 +283,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.4).
+1. Baixe o ZIP da versão nova (v1.5).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -293,7 +308,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.4 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.5 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -372,9 +387,16 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.4 — equipamento por raridade, criaturas e combate aprimorados.**
+**Reino de Aethra v1.5 — campanha ampliada, bestiário e biblioteca em expansão.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
 
 A v1.4 acrescenta leitura visual de raridade aos itens equipados, barras de HP nas peças de monstros, estados visuais para chefes em fases avançadas e animação de derrota. A raridade é um metadado opcional do item e não altera atributos, dano, defesa ou regras. Consulte `GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md` para aplicar esses metadados e compreender os limites da atualização.
+
+
+## 17. Versão 1.5 — campanha expandida e livros
+
+A v1.5 acrescenta cinco missões principais, quatro secundárias e seis monstros ao bestiário, cobrindo novos arcos em Thalassor, Nivéria e Solária além da expansão do mistério em Eldoria. Os sete livros da Biblioteca recebem capítulos iniciais de consulta. Em campanhas antigas, novas missões são anexadas sem substituir o progresso anterior. O mestre ainda precisa apresentar missões, marcar objetivos e entregar recompensas manualmente; a progressão automática por eventos de combate e inventário completo ficam para versões futuras. Nenhuma migração SQL é necessária.
+
+A biblioteca agora possui conteúdo inicial escrito, mas os volumes completos, ilustrações editoriais e PDFs diagramados continuam pendentes. Consulte `GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.5.md`.
