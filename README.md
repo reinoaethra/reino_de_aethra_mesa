@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.2 — progressão até o nível 50, raridades e chefes escaláveis**  
+**Versão do jogo: 2.4 — espólios, relíquias e equipamentos exclusivos de chefes**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -33,11 +33,24 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 15. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
 16. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
 17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
-18. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
+19. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.2
+## 2. O que está incluído na versão 2.4
+
+### Novidades da v2.4 — espólios, relíquias e equipamentos exclusivos
+
+- **Drops por criatura:** monstros deixam materiais relacionados à sua região e natureza, como couro de lobo, cinza viva, coral abissal, cristais niverianos e escamas ancestrais.
+- **Recompensas por dificuldade:** cada participante recebe ouro ao vencer; chefes e criaturas de nível elevado têm chances ampliadas de espólios raros.
+- **Equipamentos exclusivos:** Malgor, Devorador das Marés, Titã Primordial, Rainha de Cristal, Arconte Solar, Colosso da Umbra e outros chefes possuem tabelas próprias de recompensas.
+- **Relíquias e itens Míticos:** o Broto da Raiz Eterna e o Coração de Vharzun entram no sistema de espólios, além de peças Míticas vinculadas a chefes lendários.
+- **Conjuntos completos:** Cinzas Forjadas, Guardião das Marés e Titã Primordial possuem três peças e bônus mecânico de conjunto, além de um efeito especial descrito no inventário.
+- **Entrega automática:** XP, ouro e itens são entregues aos participantes registrados no encontro; o espólio é marcado no estado da campanha para evitar repetição após reconexão normal.
+- **Forja integrada:** Fragmentos de Forja e Essências Arcanas também podem ser obtidos em combate e guardados para aprimoramentos.
+- **Biblioteca ampliada:** os livros do Mestre, Bestiário, Chefes, Arsenal e Manual do Aventureiro receberam orientações sobre recompensas.
+- **Banco de dados:** nenhuma migração SQL nova é necessária; os novos dados ficam no estado JSON da campanha.
 
 ### Novidades da v2.3 — forja, aprimoramentos e encantamentos
 
@@ -78,7 +91,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
 - Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
 
-**Limites da v2.3:** durabilidade e reparos ainda não foram implementados. Os encantamentos disponíveis são fixos e não possuem chance aleatória de falha. A raridade Mítica já possui escala mecânica, mas não há peça Mítica no mercado inicial. Os efeitos especiais de vários monstros de alto nível são descritos para condução pelo mestre; Drakthar e Vharzun possuem lógica automática de fases e sopro. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+**Limites conhecidos na v2.4:** durabilidade e reparos ainda não foram implementados. Os efeitos especiais textuais das relíquias e conjuntos são conduzidos pelo mestre, enquanto os bônus numéricos são automáticos. O mercado não vende equipamentos exclusivos de chefes. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
 
 Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades, requisitos, bônus e conjuntos. Para os fundamentos do comércio, consulte também `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md`.
 
@@ -354,7 +367,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v2.3).
+1. Baixe o ZIP da versão nova (v2.4).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -459,7 +472,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v2.3 — forja, aprimoramentos e encantamentos.**
+**Reino de Aethra v2.4 — espólios, relíquias e equipamentos exclusivos.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -510,7 +523,7 @@ Cada um dos sete livros recebe um sexto capítulo de consulta. O conteúdo conti
 
 ## 22. Versão 2.0 — equipamento funcional e progressão mecânica
 
-A v2.3 acrescenta a forja de equipamentos, materiais e encantamentos. A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta requisitos e conjuntos; a v2.2 amplia a raridade de Comum a Mítico, leva a progressão ao nível 50 e introduz novos chefes. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
+A v2.4 acrescenta tabelas de espólio por monstro, recompensas em ouro, relíquias e equipamentos exclusivos de chefes. A v2.3 acrescenta a forja de equipamentos, materiais e encantamentos. A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta requisitos e conjuntos; a v2.2 amplia a raridade de Comum a Mítico, leva a progressão ao nível 50 e introduz novos chefes. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
 
 O equipamento ativo fica salvo em `game_state.partyState` por jogador, junto com inventário e moedas, e portanto acompanha a sincronização da campanha já existente. O cálculo de Defesa considera Destreza, armadura e escudo. A arma fornece o dado-base de dano para o fluxo de combate existente; não há ainda um sistema completo de proficiências, durabilidade, encantamentos ou comparação automática de DPS.
 

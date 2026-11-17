@@ -1,3 +1,16 @@
+## v2.4 — espólios, relíquias e equipamentos exclusivos
+
+- Sistema de drops específico para monstros e chefes, com materiais regionais e itens raros.
+- Recompensas de ouro por encontro e chances de espólio ajustadas pela dificuldade e nível.
+- Equipamentos exclusivos de Malgor, Devorador das Marés, Titã Primordial, Rainha de Cristal, Arconte Solar, Colosso da Umbra, Drakthar e Vharzun.
+- Relíquias especiais e peças Míticas obtidas apenas em encontros específicos.
+- Três conjuntos novos com peças completas e bônus mecânicos: Cinzas Forjadas, Guardião das Marés e Titã Primordial.
+- Espólio e ouro são entregues aos participantes do encontro; materiais, relíquias e equipamentos não podem ser vendidos.
+- Inventário permite equipar relíquias; os requisitos de classe e nível continuam sendo verificados.
+- Livros do Mestre, Bestiário, Chefes, Arsenal e Manual do Aventureiro receberam capítulo sobre espólios.
+- Nenhuma migração SQL nova; os dados usam `partyState` e o estado JSON da campanha.
+- Verificações estáticas de sintaxe, estrutura HTML/CSS e integridade do ZIP; sem teste visual em navegador ou multiplayer real no Supabase.
+
 ## v2.3 — forja, aprimoramentos e encantamentos
 
 - Adicionados Fragmento de Forja e Essência Arcana ao mercado.
