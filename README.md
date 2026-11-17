@@ -38,6 +38,20 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. O que está incluído na versão 1.8
 
+### Novidades da v1.9 — novas aventuras e biblioteca ampliada
+
+- Três missões secundárias inéditas: **As Lanternas de Brumafolha**, **O Guardião sem Memória** e **A Maré de Pedra**.
+- Três criaturas novas com fichas de combate, habilidades especiais e silhuetas vetoriais: Mariposa do Véu, Vigia das Ruínas e Colosso de Sal.
+- Derrotas dessas criaturas atualizam automaticamente os objetivos correspondentes quando a missão está aceita e o mestre controlador valida a vitória.
+- Três cenas narrativas preparadas para Eldoria, Nivéria e Thalassor.
+- Sexto capítulo adicionado a cada um dos sete livros, com orientações mais avançadas para mestre, jogadores, exploração, magia, criaturas e equipamentos.
+- Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
+- Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
+
+**Limites da v1.9:** os novos livros continuam sendo capítulos de consulta, não livros diagramados em PDF; recompensas dessas novas missões devem ser entregues manualmente pelo mestre. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+
+Consulte `GUIA-CAMPANHA-E-BIBLIOTECA-V1.9.md` para os passos de uso e atualização.
+
 ### Novidades da v1.8 — diálogos persistentes e comércio
 
 - Ilyra, Tovin e Irmão Cael possuem escolhas de conversa que o mestre controlador pode registrar.
@@ -303,7 +317,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.8).
+1. Baixe o ZIP da versão nova (v1.9).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -328,7 +342,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.8 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.9 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -407,7 +421,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.8 — diálogos persistentes, comércio e decisões narrativas.**
+**Reino de Aethra v1.9 — novas aventuras, criaturas e biblioteca ampliada.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -447,3 +461,10 @@ A v1.8 acrescenta escolhas de conversa para Ilyra, Tovin e Irmão Cael. O mestre
 A Central do Mestre ganhou acesso ao comércio. O mestre seleciona o aventureiro e registra compras de poções, rações, tochas e kit de explorador, ou vende uma unidade de item comum elegível. O saldo e a mochila são atualizados em `partyState`, e cada transação entra no diário e no fluxo de eventos. Itens de missão e equipamentos são protegidos contra venda nesta edição.
 
 **Limites da v1.8:** as escolhas ainda não alteram automaticamente missões, mapas ou finais; elas gravam bandeiras narrativas para uso em futuras expansões. O comércio é conduzido pelo mestre ativo e não inclui equipar armas/armaduras, reparar itens, impostos ou negociação automática. Não há nova migração SQL.
+
+
+## 21. Versão 1.9 — aventuras e biblioteca ampliadas
+
+A v1.9 acrescenta três missões secundárias e três criaturas com fichas e silhuetas próprias. Quando o mestre controlador valida a derrota de uma criatura nova, o objetivo correspondente avança apenas se a missão estiver aceita. As cenas novas podem ser escolhidas na Central do Mestre.
+
+Cada um dos sete livros recebe um sexto capítulo de consulta. O conteúdo continua integrado ao leitor interno do jogo; não são PDFs ou arquivos editoriais separados. As recompensas das novas missões permanecem sob entrega manual do mestre. Nenhuma migração SQL é necessária.

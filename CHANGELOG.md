@@ -1,5 +1,17 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.9 — novas aventuras, criaturas e biblioteca ampliada
+
+- Três missões secundárias novas em Eldoria, Nivéria e Thalassor.
+- Três criaturas novas: Mariposa do Véu, Vigia das Ruínas e Colosso de Sal.
+- Fichas de combate, habilidades especiais e silhuetas vetoriais próprias para as criaturas novas.
+- Objetivos de missão atualizados automaticamente após validação da derrota pelo mestre controlador.
+- Três cenas preparadas adicionadas à Central do Mestre.
+- Sexto capítulo de consulta adicionado aos sete livros.
+- Campanhas anteriores recebem as missões por ID, sem perder progresso.
+- Nenhuma migração SQL nova; sem teste visual em navegador ou multiplayer real com Supabase nesta entrega.
+
+
 ## v1.7 — Mapas regionais, recompensas e biblioteca
 
 - Quatro mapas táticos novos: Recife das Vozes (Thalassor), Galeria Prismática (Nivéria), Altar do Sol Partido (Solária) e Cidadela de Braseiro (Drakmor).
