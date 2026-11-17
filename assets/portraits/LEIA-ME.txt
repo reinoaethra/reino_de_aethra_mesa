@@ -1,0 +1,7 @@
+Retratos de Reino de Aethra v0.8.
+
+Os arquivos WebP desta pasta são recursos visuais originais produzidos para o projeto.
+Cada classe, NPC e criatura usa um arquivo separado.
+O arquivo preview-sheet.jpg é apenas uma folha de contato para conferência.
+
+Não renomeie os arquivos sem atualizar as referências no app.js.
