@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.9 — cenas regionais ilustradas, livros ampliados e correção de campanhas**  
+**Versão do jogo: 2.10 — manual para iniciantes, encontros com múltiplos monstros e mapas de cavernas**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -35,19 +35,29 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
 18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
 19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
+20. **[GUIA-CENARIOS-ILUSTRADOS-V2.6.md](GUIA-CENARIOS-ILUSTRADOS-V2.6.md)** — referência das cenas regionais ilustradas.
 21. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
 22. **[GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md](GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md)** — movimento narrativo, objetos persistentes, rotinas de NPCs e atualizações da biblioteca.
 23. **[GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md](GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md)** — cenas regionais ilustradas, atualização dos sete livros e correção da criação de campanhas.
 24. **[supabase-migration-v2.9.sql](supabase-migration-v2.9.sql)** — corrige a geração do código de convite sem depender de `gen_random_bytes`.
-23. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+25. **[MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md](MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md)** — manual completo para quem nunca jogou RPG de mesa.
+26. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md)** — mapas, obstáculos, miniaturas e grupos de monstros.
+27. **[GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md](GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md)** — passo a passo de cenas e objetivos.
+28. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
+29. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.9
+## 2. O que está incluído na versão 2.10
 
-### Novidades da v2.9 — cenas regionais ilustradas e correções
+### Novidades da v2.10 — manual de iniciação e mapa tático 2D
 
-- Painel de exploração agora apresenta uma arte regional em destaque, com nome e descrição do mapa atual, reforçando a identidade visual de cada reino.
+- Novo livro de iniciação, com explicações para mestres e jogadores sem experiência prévia.
+- Seleção de até seis monstros em um encontro, cada um com peça, HP, posição e turno próprios.
+- Novos mapas de cavernas: Umbrafunda, Gruta das Brasas e Abismo de Cristal.
+- Instruções de uso da Cena Interativa, missões e coordenadas diretamente na interface.
+- Manual em PDF e Markdown, guia de mapa tático e adendo do Livro do Mestre.
+- A v2.10 não exige migração SQL; preserve seu config.js.
 - Os sete livros recebem um novo capítulo sobre direção de cena, continuidade, descrição sensorial e uso das imagens regionais sem confundir exploração narrativa com combate tático.
 - A função SQL `create_campaign` deixa de depender de `gen_random_bytes`, evitando falha quando `pgcrypto` está instalado em um schema fora do `search_path`.
 - Para bancos já instalados, execute `supabase-migration-v2.9.sql` no SQL Editor do Supabase.

@@ -438,3 +438,29 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .world-region-art strong{font:600 clamp(17px,2.4vw,25px) var(--serif);color:#f4e5c4;text-shadow:0 2px 12px #000}
 .world-region-art small{font-size:10px;color:#d2d0c8;text-shadow:0 1px 7px #000}
 @media(max-width:620px){.world-region-art{height:150px}.world-region-art>div{bottom:13px}.world-region-art small{font-size:9px}}
+
+/* v2.10 — onboarding, 2D tactical terrain and enemy squads */
+.scene-howto{display:grid;gap:5px;margin-top:13px;padding:11px 13px;border:1px solid rgba(207,176,112,.2);border-radius:9px;background:rgba(15,24,31,.52);color:#b9c3cc;font-size:9px;line-height:1.6}
+.scene-howto strong{color:#e5c98e;font:600 10px var(--serif)}
+.map-coordinate-guide{display:flex;justify-content:space-between;gap:12px;max-width:850px;min-width:390px;margin:0 auto 8px;color:#b6a47f;font-size:8px;letter-spacing:.03em}
+.map-howto{margin-top:10px;font-size:9px;line-height:1.65}
+.map-cell.blocked{filter:brightness(.58) saturate(.72);cursor:not-allowed}
+.map-cell.blocked:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(4,8,11,.12),rgba(3,7,10,.42));pointer-events:none}
+.map-cell.tile-rock{background-image:radial-gradient(circle at 35% 30%,rgba(220,220,210,.16),transparent 36%),linear-gradient(145deg,#555b5c,#30383a 70%,#4b5150)}
+.map-cell.tile-water{background-image:repeating-linear-gradient(155deg,rgba(135,209,220,.16) 0 2px,transparent 3px 10px),linear-gradient(145deg,#244e61,#142d40)}
+.map-cell.tile-wall{background-image:repeating-linear-gradient(0deg,#41494b 0 9px,#252d30 10px 12px),linear-gradient(90deg,#596164,#30383b)}
+.map-token{border-width:3px;box-shadow:0 3px 0 rgba(20,15,12,.55),0 5px 10px rgba(0,0,0,.58),inset 0 1px 3px rgba(255,255,255,.35)}
+.player-token{background:radial-gradient(circle at 35% 22%,#f0dfb7,#a17b4a 62%,#49351f);border-color:#f0d69b}
+.monster-token{background:radial-gradient(circle at 35% 22%,#e6a18c,#8b3934 62%,#3d1b20);border-color:#e9a48b}
+.battle-enemy-roster{margin:12px 0;padding:11px;border:1px solid rgba(204,116,94,.22);border-radius:9px;background:rgba(75,31,29,.16)}
+.battle-enemy-roster h4{margin:0 0 8px;color:#e9c7a5;font:600 11px var(--serif)}
+.battle-enemy-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:9px;color:#d7d0c5}
+.battle-enemy-row strong{color:#e4b1a1}.battle-enemy-row span:last-child{color:#d6b879}.battle-enemy-row.defeated{opacity:.48;text-decoration:line-through}
+.encounter-art-card:has(input:checked){border-color:rgba(212,177,109,.82);background:rgba(212,177,109,.095);box-shadow:0 0 0 1px rgba(212,177,109,.13)}
+@media(max-width:620px){.map-coordinate-guide{font-size:7px}.battle-enemy-row{grid-template-columns:1fr auto}.battle-enemy-row span:last-child{grid-column:1/-1}}
+.map-board-layout{display:grid;grid-template-columns:22px minmax(390px,850px);gap:5px;justify-content:center;align-items:stretch;overflow-x:auto}
+.map-axis-side{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;color:#b6a47f;font-size:8px;padding:1px 0}
+.map-board-layout .map-board{min-width:390px}
+.map-axis-bottom{margin-left:27px}
+.combat-target-label{display:grid;gap:5px;min-width:150px;color:#d9c59d;font-size:8px}
+.combat-target-label .select{min-height:34px}

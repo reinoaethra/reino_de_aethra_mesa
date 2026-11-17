@@ -349,3 +349,14 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Atualizados `supabase-schema.sql`, README e solução de problemas; `config.js` permanece inalterado.
 - Produzido adendo PDF v2.9 para o Livro do Mestre, separado do pacote público do site.
 - Verificações estáticas realizadas; não houve execução no Supabase do usuário, teste visual em navegador nem sessão multiplayer real.
+
+## v2.10 — Manual de iniciação e reformulação tática
+- Adicionado o livro **Primeiros Passos em Aethra**, para ensinar desde o início o papel do mestre e dos jogadores, testes, missões, Cena Interativa, mapa tático e combate.
+- Adicionada a versão Markdown e o PDF diagramado do manual.
+- O seletor de encontro agora permite marcar até seis criaturas; cada inimigo possui miniatura, posição, HP e entrada própria na iniciativa.
+- Combate passa a percorrer os turnos individuais dos monstros e termina quando todas as criaturas do grupo são derrotadas.
+- Espólios e objetivos de combate consideram as criaturas do grupo.
+- Adicionados os mapas de cavernas de Umbrafunda, Gruta das Brasas e Abismo de Cristal.
+- Adicionadas instruções na interface para Cena Interativa, objetivos de missão e coordenadas do tabuleiro.
+- Os STL enviados foram considerados referências de linguagem visual; os arquivos originais não são incluídos no pacote publicado.
+- Sem alterações no schema do Supabase; `config.js` permanece individual e deve ser preservado.
