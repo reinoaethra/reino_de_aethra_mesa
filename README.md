@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.1 — raridades mecânicas, requisitos e conjuntos**  
+**Versão do jogo: 2.2 — progressão até o nível 50, raridades e chefes escaláveis**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -32,13 +32,25 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 14. **[GUIA-INTERACOES-E-COMERCIO-V1.8.md](GUIA-INTERACOES-E-COMERCIO-V1.8.md)** — conduzir diálogos com escolhas persistentes e registrar compras/vendas.
 15. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
 16. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-17. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
+18. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.0
+## 2. O que está incluído na versão 2.2
 
-### Novidades da v2.1 — raridades e conjuntos de equipamento
+### Novidades da v2.2 — progressão até o nível 50 e raridades poderosas
+
+- Limite de personagem ampliado do nível 20 para o nível 50.
+- XP para o próximo nível: nível atual × 100; cada nível concede +10 HP e +1 ponto no atributo principal, até o limite 30.
+- Escala de raridade aplicada mecanicamente: Comum +1, Incomum +3, Raro +10, Épico +25, Lendário +100 e Mítico +150. Armas recebem bônus de ataque e dano; armaduras e escudos recebem Defesa.
+- Conjuntos completos concedem bônus adicionais de ataque e Defesa conforme a raridade.
+- Novas armas e armaduras Épicas e Lendárias, incluindo o conjunto Celestial de Elyndra.
+- Nove monstros/chefes de progressão tardia, do nível 12 ao nível 50; Vharzun é o chefe final nível 50 com três fases.
+- Encontros ajustam HP, Defesa, ataque e XP ao nível médio do grupo; chefes recebem resistência adicional.
+- **Atualização obrigatória do Supabase:** execute `supabase-migration-v2.2.sql` uma vez no SQL Editor se o banco já existia. Instalações novas devem usar o `supabase-schema.sql` atualizado.
+
+### Conteúdo mantido da v2.1 — raridades e conjuntos de equipamento
 
 - Itens Raros com bônus reais de precisão, dano e Defesa.
 - Requisitos mínimos de nível e restrições por classe, validados ao equipar.
@@ -57,7 +69,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
 - Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
 
-**Limites da v2.1:** durabilidade, reparos e encantamentos ainda não foram implementados. As raridades mecânicas desta edição incluem itens Comuns e Raros; Épico e Lendário permanecem para futuras atualizações. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+**Limites da v2.2:** durabilidade, reparos e encantamentos ainda não foram implementados. A raridade Mítica já possui escala mecânica, mas não há peça Mítica no mercado inicial. Os efeitos especiais de vários monstros de alto nível são descritos para condução pelo mestre; Drakthar e Vharzun possuem lógica automática de fases e sopro. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
 
 Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades, requisitos, bônus e conjuntos. Para os fundamentos do comércio, consulte também `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md`.
 
@@ -333,7 +345,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v2.1).
+1. Baixe o ZIP da versão nova (v2.2).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -358,7 +370,8 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v2.1 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco, atualizado para a progressão v2.2. |
+| `supabase-migration-v2.2.sql` | Atualiza a RPC de XP de bancos existentes para nível 50 e +10 HP por nível. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -437,7 +450,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v2.1 — raridades mecânicas, requisitos e conjuntos de equipamento.**
+**Reino de Aethra v2.2 — progressão até o nível 50, raridades lendárias e novos chefes.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -488,7 +501,7 @@ Cada um dos sete livros recebe um sexto capítulo de consulta. O conteúdo conti
 
 ## 22. Versão 2.0 — equipamento funcional e progressão mecânica
 
-A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta raridades com bônus, requisitos por classe e nível e o conjunto Vanguarda. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
+A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta requisitos e conjuntos; a v2.2 amplia a raridade de Comum a Mítico, leva a progressão ao nível 50 e introduz novos chefes. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
 
 O equipamento ativo fica salvo em `game_state.partyState` por jogador, junto com inventário e moedas, e portanto acompanha a sincronização da campanha já existente. O cálculo de Defesa considera Destreza, armadura e escudo. A arma fornece o dado-base de dano para o fluxo de combate existente; não há ainda um sistema completo de proficiências, durabilidade, encantamentos ou comparação automática de DPS.
 

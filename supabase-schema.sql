@@ -280,7 +280,7 @@ begin
   if p_encounter_id is null or char_length(p_encounter_id) < 1 or char_length(p_encounter_id) > 100 then
     raise exception 'Identificador do encontro inválido.';
   end if;
-  if p_xp is null or p_xp < 1 or p_xp > 5000 then
+  if p_xp is null or p_xp < 1 or p_xp > 50000 then
     raise exception 'A recompensa de XP precisa estar entre 1 e 5000.';
   end if;
   if jsonb_typeof(p_user_ids) is distinct from 'array' then
@@ -323,9 +323,9 @@ begin
     v_attributes := coalesce(v_character->'attributes', '{}'::jsonb);
     v_xp := case when coalesce(v_character->>'xp','') ~ '^[0-9]{1,9}$' then (v_character->>'xp')::integer else 0 end + p_xp;
     -- Limite defensivo: um valor adulterado nunca pode produzir níveis negativos ou acima do teto.
-    v_level := case when coalesce(v_character->>'level','') ~ '^[0-9]{1,2}$' then least(20, greatest(1, (v_character->>'level')::integer)) else 1 end;
+    v_level := case when coalesce(v_character->>'level','') ~ '^[0-9]{1,2}$' then least(50, greatest(1, (v_character->>'level')::integer)) else 1 end;
     v_new_level := v_level;
-    while v_new_level < 20 and v_xp >= (v_new_level * 100) loop
+    while v_new_level < 50 and v_xp >= (v_new_level * 100) loop
       v_new_level := v_new_level + 1;
     end loop;
     v_levels_gained := v_new_level - v_level;
@@ -342,26 +342,26 @@ begin
     end if;
     v_attributes := jsonb_set(
       v_attributes, array[v_primary],
-      to_jsonb(least(12, (v_attributes->>v_primary)::integer + v_levels_gained)), true
+      to_jsonb(least(30, (v_attributes->>v_primary)::integer + v_levels_gained)), true
     );
 
     v_con := case when coalesce(v_attributes->>'constituicao','') ~ '^-?[0-9]{1,3}$' then (v_attributes->>'constituicao')::integer else 4 end;
     v_dex := case when coalesce(v_attributes->>'destreza','') ~ '^-?[0-9]{1,3}$' then (v_attributes->>'destreza')::integer else 4 end;
-    v_armor := case when coalesce(v_character #>> '{equipment,armor,defense}','') ~ '^[0-9]{1,3}$' then (v_character #>> '{equipment,armor,defense}')::integer else 0 end;
-    v_shield := case when coalesce(v_character #>> '{equipment,shield,defense}','') ~ '^[0-9]{1,3}$' then (v_character #>> '{equipment,shield,defense}')::integer else 0 end;
+    v_armor := (case when coalesce(v_character #>> '{equipment,armor,defense}','') ~ '^[0-9]{1,3}$' then (v_character #>> '{equipment,armor,defense}')::integer else 0 end) + case coalesce(v_character #>> '{equipment,armor,rarity}','Comum') when 'Incomum' then 3 when 'Raro' then 10 when 'Épico' then 25 when 'Lendário' then 100 when 'Mítico' then 150 else 1 end;
+    v_shield := (case when coalesce(v_character #>> '{equipment,shield,defense}','') ~ '^[0-9]{1,3}$' then (v_character #>> '{equipment,shield,defense}')::integer else 0 end) + case coalesce(v_character #>> '{equipment,shield,rarity}','Comum') when 'Incomum' then 3 when 'Raro' then 10 when 'Épico' then 25 when 'Lendário' then 100 when 'Mítico' then 150 else 1 end;
     v_max_hp := case when coalesce(v_character->>'maxHp','') ~ '^[0-9]{1,5}$' then (v_character->>'maxHp')::integer else 20 + v_con * 2 end;
-    v_max_hp := v_max_hp + (v_levels_gained * 5);
+    v_max_hp := v_max_hp + (v_levels_gained * 10);
     v_defense := 10 + floor((v_dex - 4)::numeric / 2)::integer + v_armor + v_shield;
 
-    -- HP atual é preservado. Cada nível recupera somente os +5 HP concedidos,
+    -- HP atual é preservado. Cada nível recupera somente os +10 HP concedidos,
     -- sem restaurar toda a vida do personagem ao fim de qualquer encontro.
     v_party_member := coalesce(v_party->v_user_id::text, '{}'::jsonb);
     v_hp := case
       when coalesce(v_party_member->>'hp','') ~ '^[0-9]{1,5}$' then (v_party_member->>'hp')::integer
       when coalesce(v_character->>'hp','') ~ '^[0-9]{1,5}$' then (v_character->>'hp')::integer
-      else v_max_hp - (v_levels_gained * 5)
+      else v_max_hp - (v_levels_gained * 10)
     end;
-    v_hp := least(v_max_hp, greatest(0, v_hp + (v_levels_gained * 5)));
+    v_hp := least(v_max_hp, greatest(0, v_hp + (v_levels_gained * 10)));
 
     v_character := jsonb_set(v_character, '{attributes}', v_attributes, true);
     v_character := jsonb_set(v_character, '{xp}', to_jsonb(v_xp), true);

@@ -1,3 +1,14 @@
+## v2.2 — progressão até o nível 50 e raridades lendárias
+
+- Limite de nível ampliado para 50; cada nível concede +10 HP e um ponto no atributo principal (limite 30). XP do próximo nível = nível atual × 100.
+- Escala de raridade mecânica: Comum +1, Incomum +3, Raro +10, Épico +25, Lendário +100 e Mítico +150. Armas recebem ataque e dano; armaduras/escudos recebem Defesa.
+- Bônus de conjunto completo cresce conforme a raridade; novos equipamentos Épicos e Lendários foram adicionados ao mercado.
+- Nove criaturas de progressão tardia entre os níveis 12 e 50; Vharzun é o chefe final de nível 50, com três fases e sopro crescente.
+- HP, Defesa, ataque e XP de encontros recebem ajuste conforme o nível médio dos aventureiros; chefes recebem multiplicador adicional de resistência.
+- Migração `supabase-migration-v2.2.sql` atualiza a RPC de XP para nível 50, bônus de HP e recompensas de até 50.000 XP, preservando o registro de encontros já premiados.
+- Sete livros receberam um novo capítulo sobre progressão e desafios de alto nível.
+- Testes estáticos de sintaxe, HTML/CSS e integridade do ZIP; sem teste visual em navegador ou multiplayer real no Supabase.
+
 # Histórico de versões — Reino de Aethra
 
 ## v1.9 — novas aventuras, criaturas e biblioteca ampliada
