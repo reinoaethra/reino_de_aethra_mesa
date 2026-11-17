@@ -39,6 +39,15 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. O que está incluído na versão 2.2
 
+### Novidades da v2.3 — forja, aprimoramentos e encantamentos
+
+- **Forja funcional:** o mestre ativo pode aprimorar armas, armaduras e escudos equipados até +3. Cada nível concede +5 ao atributo principal da peça.
+- **Encantamentos:** Precisão (+5 ataque) e Chama (+5 dano) para armas; Guardião (+5 Defesa) para armaduras e escudos. Cada peça aceita um encantamento.
+- **Materiais:** Fragmento de Forja (180 PO) e Essência Arcana (320 PO) disponíveis no mercado.
+- **Custos:** aprimoramentos +1/+2/+3 custam 1/2/3 Fragmentos e 700/1.400/2.100 PO; encantamento custa 2 Essências e 1.200 PO.
+- **Persistência:** nível de aprimoramento e encantamento ficam gravados no estado de equipamento da campanha, sem alteração de schema SQL.
+- **Segurança de operação:** somente o mestre controlador pode executar; recursos são validados antes de serem consumidos. Equipamentos não são destruídos por falha.
+
 ### Novidades da v2.2 — progressão até o nível 50 e raridades poderosas
 
 - Limite de personagem ampliado do nível 20 para o nível 50.
@@ -69,7 +78,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Campanhas antigas recebem as novas missões por identificador, sem apagar o progresso existente.
 - Nenhuma migração SQL nova; o conteúdo adicional usa o JSONB `game_state` já existente.
 
-**Limites da v2.2:** durabilidade, reparos e encantamentos ainda não foram implementados. A raridade Mítica já possui escala mecânica, mas não há peça Mítica no mercado inicial. Os efeitos especiais de vários monstros de alto nível são descritos para condução pelo mestre; Drakthar e Vharzun possuem lógica automática de fases e sopro. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
+**Limites da v2.3:** durabilidade e reparos ainda não foram implementados. Os encantamentos disponíveis são fixos e não possuem chance aleatória de falha. A raridade Mítica já possui escala mecânica, mas não há peça Mítica no mercado inicial. Os efeitos especiais de vários monstros de alto nível são descritos para condução pelo mestre; Drakthar e Vharzun possuem lógica automática de fases e sopro. O mestre ativo conduz as trocas. Não foi realizado teste visual em navegador nem sessão multiplayer real contra o Supabase nesta entrega.
 
 Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades, requisitos, bônus e conjuntos. Para os fundamentos do comércio, consulte também `GUIA-EQUIPAMENTOS-FUNCIONAIS-V2.0.md`.
 
@@ -345,7 +354,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v2.2).
+1. Baixe o ZIP da versão nova (v2.3).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -450,7 +459,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v2.2 — progressão até o nível 50, raridades lendárias e novos chefes.**
+**Reino de Aethra v2.3 — forja, aprimoramentos e encantamentos.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -501,7 +510,7 @@ Cada um dos sete livros recebe um sexto capítulo de consulta. O conteúdo conti
 
 ## 22. Versão 2.0 — equipamento funcional e progressão mecânica
 
-A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta requisitos e conjuntos; a v2.2 amplia a raridade de Comum a Mítico, leva a progressão ao nível 50 e introduz novos chefes. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
+A v2.3 acrescenta a forja de equipamentos, materiais e encantamentos. A v2.0 transforma equipamentos comprados em itens utilizáveis. A v2.1 acrescenta requisitos e conjuntos; a v2.2 amplia a raridade de Comum a Mítico, leva a progressão ao nível 50 e introduz novos chefes. O mercado oferece Espada de Aço (1d8), Machado de Guerra (1d10), Cota Reforçada (+3 Defesa) e Broquel de Ferro (+1 Defesa). O mestre ativo seleciona o aventureiro no comércio, compra o item e pode equipar ou retirar peças diretamente na seção de equipamento. O inventário mostra os espaços ocupados, o dano-base da arma e a Defesa efetiva.
 
 O equipamento ativo fica salvo em `game_state.partyState` por jogador, junto com inventário e moedas, e portanto acompanha a sincronização da campanha já existente. O cálculo de Defesa considera Destreza, armadura e escudo. A arma fornece o dado-base de dano para o fluxo de combate existente; não há ainda um sistema completo de proficiências, durabilidade, encantamentos ou comparação automática de DPS.
 

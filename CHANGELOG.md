@@ -1,3 +1,13 @@
+## v2.3 — forja, aprimoramentos e encantamentos
+
+- Adicionados Fragmento de Forja e Essência Arcana ao mercado.
+- Implementado aprimoramento de equipamentos até +3, com bônus de +5 por nível no atributo principal.
+- Implementados encantamentos: Precisão (+5 ataque), Chama (+5 dano) e Guardião (+5 Defesa).
+- Custos e materiais são validados antes de serem debitados; equipamentos não são destruídos.
+- Operações ficam registradas no diário da campanha e persistem no estado compartilhado.
+- Livros do Mestre, Arsenal e Manual do Aventureiro receberam capítulo sobre a forja.
+- Nenhuma migração SQL é necessária.
+
 ## v2.2 — progressão até o nível 50 e raridades lendárias
 
 - Limite de nível ampliado para 50; cada nível concede +10 HP e um ponto no atributo principal (limite 30). XP do próximo nível = nível atual × 100.
