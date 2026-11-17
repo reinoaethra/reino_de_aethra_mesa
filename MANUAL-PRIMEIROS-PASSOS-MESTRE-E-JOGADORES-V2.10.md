@@ -66,3 +66,12 @@ Antes de sair, o mestre resume o que mudou e registra: uma decisão importante d
 
 ## Nota da versão 2.10
 A versão introduz a seleção de múltiplas criaturas no início do encontro, com até seis inimigos representados como peças individuais e com HP separado; três mapas adicionais de cavernas; instruções de uso integradas à interface; e este manual de iniciação. As miniaturas STL enviadas pelo usuário servem como referência artística para a direção visual. Os modelos STL originais não são distribuídos dentro do pacote do site.
+
+
+## Atualização v2.10.2 — como usar o cenário ilustrado
+
+O Mapa Tático agora apresenta uma única ilustração grande do local: floresta, ruínas, vila, caverna ou outro ambiente. A grade transparente fica sobre o desenho apenas para identificar as casas (A1 até J8) e permitir selecionar destinos. Os quadrados não desenham grama, água ou pedras individualmente.
+
+**Para mover uma miniatura:** o mestre pode selecionar a peça na lista e clicar na casa de destino, ou arrastar a própria miniatura sobre o tabuleiro. Cada jogador pode arrastar somente a miniatura de seu personagem. Em campanhas conectadas, o pedido de movimento do jogador continua sujeito à aprovação do mestre, conforme as regras da campanha.
+
+A ilustração mostra visualmente o cenário; as regras de colisão continuam no sistema. Árvores, rochas, muros, água profunda, portas fechadas e outras casas bloqueadas não podem ser atravessadas. A névoa de guerra continua escondendo áreas ainda não reveladas.

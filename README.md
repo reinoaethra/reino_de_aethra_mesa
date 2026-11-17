@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.10 — manual para iniciantes, encontros com múltiplos monstros e mapas de cavernas**  
+**Versão do jogo: 2.10.2 — cenário ilustrado contínuo e miniaturas móveis**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -44,21 +44,35 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 26. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md)** — mapas, obstáculos, miniaturas e grupos de monstros.
 27. **[GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md](GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md)** — passo a passo de cenas e objetivos.
 28. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
-29. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+29. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md)** — registro da edição anterior do tabuleiro.
+30. **[GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md](GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md)** — fundo ilustrado, grade transparente e movimentação das miniaturas.
+30. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.10
+## 2. O que está incluído na versão 2.10.2
 
-### Novidades da v2.10 — manual de iniciação e mapa tático 2D
+### v2.10.2 — cenário ilustrado e miniaturas móveis
+- O tabuleiro recebe uma imagem contínua de cenário; não usa mais uma imagem de terreno por quadrado.
+- Grade transparente 10 × 8 para coordenadas e seleção de destino.
+- Miniaturas podem ser arrastadas pelo mestre; cada jogador pode arrastar a própria peça.
+- Clique em uma casa continua disponível para mover/solicitar movimento.
+- Colisões, portas fechadas, ocupação, névoa e limite de movimento permanecem ativos.
+- Fundos ilustrados adaptados para os mapas dos cinco reinos e das cavernas.
+- Miniaturas derrotadas deixam de bloquear o movimento.
+- O pacote não requer migração de banco de dados.
+
+## 2.1. Conteúdo herdado da versão 2.10
+
+### v2.10 — manual de iniciação e preparação de encontros
 
 - Novo livro de iniciação, com explicações para mestres e jogadores sem experiência prévia.
-- Seleção de até seis monstros em um encontro, cada um com peça, HP, posição e turno próprios.
+- Preparação de encontros com seleção de até seis monstros e dados individuais de HP, posição e iniciativa.
 - Novos mapas de cavernas: Umbrafunda, Gruta das Brasas e Abismo de Cristal.
-- Instruções de uso da Cena Interativa, missões e coordenadas diretamente na interface.
-- Manual em PDF e Markdown, guia de mapa tático e adendo do Livro do Mestre.
-- A v2.10 não exige migração SQL; preserve seu config.js.
-- Os sete livros recebem um novo capítulo sobre direção de cena, continuidade, descrição sensorial e uso das imagens regionais sem confundir exploração narrativa com combate tático.
+- Instruções de uso da Cena Interativa e das missões diretamente na interface.
+- Manual em PDF e Markdown, guia de encontro e adendo do Livro do Mestre.
+- A v2.10 preparou o suporte a encontros com várias criaturas, mas conservou a apresentação anterior do tabuleiro; o redesenho visual foi aplicado na correção v2.10.2.
+- A v2.10 não exige migração SQL; preserve seu `config.js`.
 - A função SQL `create_campaign` deixa de depender de `gen_random_bytes`, evitando falha quando `pgcrypto` está instalado em um schema fora do `search_path`.
 - Para bancos já instalados, execute `supabase-migration-v2.9.sql` no SQL Editor do Supabase.
 - Para projetos novos, use o `supabase-schema.sql` atualizado.

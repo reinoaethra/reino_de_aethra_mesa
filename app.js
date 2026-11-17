@@ -1,4 +1,4 @@
-/* Reino de Aethra v2.10 — cenas regionais ilustradas, livros ampliados e correção de criação de campanhas.
+/* Reino de Aethra v2.10.2 — cenário ilustrado contínuo com grade translúcida e miniaturas móveis.
  * Modo local funciona sem backend. Para salas reais, configure Supabase e aplique o schema/migration.
  */
 (() => {
@@ -230,7 +230,7 @@
   );
   // Mapas táticos iniciais (10 colunas x 8 linhas). Os símbolos definem terreno e bloqueios.
   const MAP_TEMPLATES = [
-    {id:'eldoria-road',name:'Estrada de Eldoria',subtitle:'Trilha, árvores e um riacho raso',theme:'forest',layout:['..tt....t.','...t.pp...','t...pp..t.','..tpp...t.','.wwwpp....','...ppp..t.','t...p.....','.t....t...']},
+    {id:'eldoria-road',name:'Estrada de Eldoria',subtitle:'Clareira ilustrada, trilha ancestral e riacho entre as árvores',theme:'forest',layout:['tt....wwww','t.......ww','t........r','tt.......r','t........r','t........t','r.t..r...t','r....r....']},
     {id:'brumafolha',name:'Vila de Brumafolha',subtitle:'Casas, praça e ruas de pedra',theme:'village',layout:['..h....h..','.h......h.','....p.....','pppppppppp','....p.....','.h..p...h.','..h.p.h...','....p.....']},
     {id:'watchtower',name:'Torre dos Vigias',subtitle:'Pedra antiga, colunas e entrada ao sul',theme:'tower',layout:['bbbbbbbbbb','b........b','b..c..c..b','b........b','b.c....c.b','b........b','b........b','bbbb..bbbb']},
     {id:'root-sanctuary',name:'Santuário das Raízes',subtitle:'Raízes antigas cercam um altar',theme:'sanctuary',layout:['..t....t..','.t......t.','....p.....','..pwwwp...','...www....','....p.....','.t......t.','..t....t..']},
@@ -340,7 +340,7 @@
   function mapCellKey(x,y){return `${x},${y}`}
   function addRevealedAround(record,x,y,radius=1){const cells=new Set(record.revealedCells||[]);for(let yy=Math.max(0,y-radius);yy<=Math.min(MAP_HEIGHT-1,y+radius);yy++)for(let xx=Math.max(0,x-radius);xx<=Math.min(MAP_WIDTH-1,x+radius);xx++)cells.add(mapCellKey(xx,yy));record.revealedCells=[...cells];}
   const MAP_PARTY_SPAWNS={
-    'eldoria-road':[{x:7,y:5},{x:5,y:4},{x:6,y:4},{x:8,y:4}],
+    'eldoria-road':[{x:4,y:5},{x:5,y:5},{x:4,y:6},{x:5,y:6}],
     brumafolha:[{x:5,y:4},{x:6,y:4},{x:7,y:4},{x:8,y:4}],
     watchtower:[{x:4,y:4},{x:5,y:4},{x:6,y:4},{x:8,y:4}],
     'root-sanctuary':[{x:6,y:4},{x:7,y:4},{x:8,y:4},{x:9,y:4}],
@@ -353,7 +353,7 @@
     const players=state.members.filter(m=>m.role==='player'&&m.character).sort((a,b)=>String(a.joined_at||'').localeCompare(String(b.joined_at||''))||String(a.user_id).localeCompare(String(b.user_id)));
     const preferred=MAP_PARTY_SPAWNS[mapId]||[],candidates=[...preferred];
     for(let y=MAP_HEIGHT-1;y>=4;y--)for(let x=0;x<MAP_WIDTH;x++)candidates.push({x,y});
-    const chosen=[],monsterStart={x:7,y:3};
+    const chosen=[],monsterStart=mapId==='eldoria-road'?{x:6,y:2}:{x:7,y:3};
     for(const candidate of candidates){
       if(chosen.length>=players.length)break;
       if(mapTileInfo(mapTile(mapId,candidate.x,candidate.y)).blocked||candidate.x===monsterStart.x&&candidate.y===monsterStart.y||chosen.some(p=>p.x===candidate.x&&p.y===candidate.y))continue;
@@ -364,7 +364,7 @@
     return new Map(players.map((member,index)=>[member.user_id,chosen[index]||{x:1+(index%7),y:6}]));
   }
   function defaultTokenPosition(userId,mapId){return defaultPartyPositions(mapId).get(userId)||{x:1,y:6}}
-  function mapTokenPosition(tokenId,record,mapId){if(record.tokens[tokenId])return record.tokens[tokenId];if(tokenId==='monster')return {x:7,y:3};return defaultTokenPosition(tokenId,mapId)}
+  function mapTokenPosition(tokenId,record,mapId){if(record.tokens[tokenId])return record.tokens[tokenId];if(tokenId==='monster')return mapId==='eldoria-road'?{x:6,y:2}:{x:7,y:3};return defaultTokenPosition(tokenId,mapId)}
   function characterMiniatureClass(character){return ({Guerreiro:'warrior',Arcano:'arcane',Patrulheiro:'ranger',Paladino:'paladin',Assassino:'assassin',Clérigo:'cleric',Druida:'druid',Invocador:'summoner'})[character?.class]||'warrior'}
   function characterSigil(character){return ({Guerreiro:'⚔',Arcano:'✧',Patrulheiro:'➶',Paladino:'✥',Assassino:'☾',Clérigo:'✚',Druida:'❧',Invocador:'◈'})[character?.class]||'✦'}
   function tokenInitials(name){return String(name||'A').trim().split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase()||'A'}
@@ -427,10 +427,32 @@
     const palette=id.includes('lobo')?['#9aa8b7','#465465']:id.includes('espectro')?['#9be6e6','#385d78']:id.includes('orc')?['#9aab65','#4b6339']:id.includes('aranha')?['#806a9b','#392c50']:id.includes('cultista')?['#766b91','#302941']:id.includes('golem')?['#9b8c79','#51463d']:id.includes('sereia')?['#64b8b1','#245a63']:id.includes('cavaleiro')?['#d5b66f','#6b4c28']:id.includes('draco')?['#8fd6e8','#376a83']:id.includes('sabueso')?['#d9783d','#633323']:id.includes('guardiao')?['#829c58','#3d5734']:id.includes('saqueador')?['#6caaa4','#31545a']:id.includes('revenante')?['#b4e6f2','#456a86']:id.includes('escorpiao')?['#e2bd59','#775026']:id.includes('general')?['#c46a3e','#592a25']:id.includes('caranguejo')?['#d87965','#733f49']:id.includes('sentinela')?['#9de4f0','#3e758c']:id.includes('acólito')?['#e6c46b','#85602e']:id.includes('vigia')?['#a69b89','#514a43']:id.includes('mariposa')?['#b89cda','#59466f']:id.includes('colosso')?['#c7e0df','#557c83']:id.includes('drakthar')?['#d66c43','#612a2c']:['#bd8660','#583c37'];
     return `<svg class="monster-sprite monster-${id||'unknown'}" viewBox="0 0 48 52" role="img" aria-label="${esc(name)}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="24" cy="48" rx="15" ry="3" fill="#000" opacity=".4"/><g class="monster-creature" fill="${palette[0]}" stroke="${palette[1]}" stroke-width="2" stroke-linejoin="round">${forms[id]||forms['goblin-cinzas']}</g></svg>`;
   }
+  function defaultMonsterSpawn(mapId,occupied=[],index=0){
+    const used=new Set(occupied.map(p=>`${p.x},${p.y}`));
+    const candidates=[];
+    for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
+      if(mapCellBlocked(mapId,x,y,null)||used.has(`${x},${y}`))continue;
+      const party=occupied.filter(p=>p.kind==='party');
+      const nearest=party.length?Math.min(...party.map(p=>Math.abs(p.x-x)+Math.abs(p.y-y))):0;
+      candidates.push({x,y,score:nearest*5+(y<=3?4:0)+(x<=4?1:0)});
+    }
+    candidates.sort((a,b)=>b.score-a.score||a.y-b.y||a.x-b.x);
+    const chosen=candidates[index]||candidates[0]||{x:0,y:0};
+    return {x:chosen.x,y:chosen.y};
+  }
   function mapTokens(record,gs=state.campaign?.game_state||defaultGameState()){
     const mapId=explorationData(gs).mapId,defaults=defaultPartyPositions(mapId);
     const list=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({id:m.user_id,name:m.character.name||m.display_name||'Aventureiro',kind:'player',className:characterMiniatureClass(m.character),equipment:gs.partyState?.[m.user_id]?.equipment||m.character.equipment||{},portrait:m.character.portrait||classPortrait(m.character),sigil:characterSigil(m.character),initials:tokenInitials(m.character.name||m.display_name),position:record.tokens[m.user_id]||defaults.get(m.user_id)||{x:1,y:6}}));
-    if(gs.encounter){const enemies=Array.isArray(gs.encounter.enemies)&&gs.encounter.enemies.length?gs.encounter.enemies:[{...gs.encounter,id:'monster'}];enemies.forEach((e,i)=>list.push({id:e.id||`enemy-${i}`,name:e.name||'Criatura',kind:'monster',className:'monster',templateId:e.templateId||gs.encounter.templateId,portrait:e.portrait||monsterPortrait(e.templateId||gs.encounter.templateId),sigil:e.emoji||'🐉',initials:'',hp:Math.max(0,Number(e.hp)||0),maxHp:Math.max(1,Number(e.maxHp)||1),defeated:!!e.defeated||Number(e.hp)<=0,bossPhase:Number(e.bossPhase)||1,position:mapTokenPosition(e.id||`enemy-${i}`,record,mapId)}));}
+    if(gs.encounter){
+      const enemies=Array.isArray(gs.encounter.enemies)&&gs.encounter.enemies.length?gs.encounter.enemies:[{...gs.encounter,id:'monster'}];
+      const occupied=list.map(t=>({...t.position,kind:'party'}));
+      enemies.forEach((e,i)=>{
+        const id=e.id||`enemy-${i}`;
+        const position=record.tokens[id]||defaultMonsterSpawn(mapId,occupied,i);
+        occupied.push(position);
+        list.push({id,name:e.name||'Criatura',kind:'monster',className:'monster',templateId:e.templateId||gs.encounter.templateId,portrait:e.portrait||monsterPortrait(e.templateId||gs.encounter.templateId),sigil:e.emoji||'🐉',initials:'',hp:Math.max(0,Number(e.hp)||0),maxHp:Math.max(1,Number(e.maxHp)||1),defeated:!!e.defeated||Number(e.hp)<=0,bossPhase:Number(e.bossPhase)||1,position});
+      });
+    }
     return list;
   }
   function mapCellBlocked(mapId,x,y,record=null){
@@ -844,14 +866,14 @@
     }
     const code='AETHRA-'+Math.random().toString(36).slice(2,6).toUpperCase();
     const c={id:'local-'+Date.now(),code,name,description,status:'paused',owner_id:'local-user',game_state:defaultGameState(),members:[{id:'local-master',campaign_id:null,user_id:'local-user',display_name:'Mestre da Crônica',role:'master',character:null,status:'online'}],events:[],created_at:new Date().toISOString()};
-    c.members[0].campaign_id=c.id;state.localCampaigns.unshift(c);writeLocalCampaigns();state.campaign=c;state.member=c.members[0];state.members=c.members;state.events=[];localStorage.setItem(KEYS.active,c.id);state.view='lobby';state.modal=null;render();toast('Campanha criada. Compartilhe o código com seus jogadores.');
+    c.members[0].campaign_id=c.id;state.localCampaigns.unshift(c);writeLocalCampaigns();state.campaign=c;state.member=c.members[0];state.members=c.members;state.events=[];localStorage.setItem(KEYS.active,c.id);state.view='lobby';closeModal();render();toast('Campanha criada. Compartilhe o código com seus jogadores.');
   }
   function normalizeCampaign(c){return c?.campaign||c}
   async function joinCampaign(code,displayName){
     if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);return}
     const c=state.localCampaigns.find(x=>x.code.toUpperCase()===code.toUpperCase());if(!c)throw new Error('Código não encontrado no modo local. Para convidar pessoas de outros computadores, conecte o Supabase.');
     let m=c.members.find(x=>x.user_id==='local-user');if(!m){m={id:'local-player-'+Date.now(),campaign_id:c.id,user_id:'local-user',display_name:displayName,role:'player',character:null,status:'online'};c.members.push(m)}else m.display_name=displayName;
-    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';state.modal=null;render();toast('Você entrou na campanha.');
+    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';closeModal();render();toast('Você entrou na campanha.');
   }
   function pendingDamageFrom(events){const resolved=new Set(events.filter(e=>['damage_applied','damage_rejected'].includes(e.event_type)).map(e=>e.payload?.request_id).filter(Boolean));return events.filter(e=>e.event_type==='damage_request'&&!resolved.has(e.id))}
   async function openCloudCampaign(id){
@@ -863,7 +885,7 @@
     if(ce)throw ce;if(me)throw me;if(ee)throw ee;
     state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
     if(!state.member)throw new Error('Sua conta não está registrada como participante desta campanha. Entre novamente usando o código de convite.');
-    localStorage.setItem(KEYS.active,id);state.view=c.status==='active'?'session':'lobby';state.modal=null;subscribeCampaign();render();
+    localStorage.setItem(KEYS.active,id);state.view=c.status==='active'?'session':'lobby';closeModal();subscribeCampaign();render();
   }
   async function refreshCloudCampaign(options={}){
     if(!state.backendReady||!state.campaign||state.isRefreshing)return;
@@ -1087,7 +1109,7 @@
     character=normalizeCharacter(character);
     if(state.backendReady){const {error}=await state.backend.rpc('save_my_character',{p_campaign_id:state.campaign.id,p_character:character,p_display_name:character.name});if(error)throw error;await refreshCloudCampaign()}
     else{state.member.character=character;state.member.display_name=character.name;state.member.status='online';state.members=state.campaign.members;await persistLocalCampaign()}
-    state.modal=null;state.view='lobby';render();toast('Personagem salvo na crônica.');
+    state.view='lobby';closeModal();render();toast('Personagem salvo na crônica.');
   }
 
   function memberIsOnline(member){
@@ -1156,27 +1178,68 @@
     const id=byMap[mapId]||'eldoria-village';
     return `assets/scenes/${id}.webp`;
   }
+  // Uma única ilustração contínua ocupa todo o tabuleiro. A grade existe apenas como camada de interação;
+  // as células guardam coordenadas e colisões sem desenhar pequenos blocos de terreno.
+  function mapBoardArtworkFor(mapId){
+    const byMap={'eldoria-road':'eldoria-forest','brumafolha':'eldoria-village','watchtower':'ancient-ruins','root-sanctuary':'eldoria-forest','thalassor-reef':'thalassor-harbor','niveria-crystal':'niveria-archive','solaria-dais':'solaria-temple','drakmor-citadel':'drakmor-forge','umbrafunda-cavern':'ancient-ruins','drakmor-lava-cave':'drakmor-forge','niveria-deep-cave':'niveria-archive'};
+    const id=byMap[mapId]||'eldoria-forest';
+    return `assets/maps/${id}.webp`;
+  }
+  function mapTerrainArt(tile,theme='forest'){
+    const common={
+      '.':'<path d="M8 14l3-2m18 5 2-3M13 34l2-2m18-13 2-2M8 28l2-1m21 8 2-2" stroke="#c1d29a" stroke-width="1.8" stroke-linecap="round" opacity=".55"/><circle cx="14" cy="19" r="1.3" fill="#d2bd7d" opacity=".65"/><circle cx="29" cy="31" r="1.2" fill="#d2bd7d" opacity=".6"/>',
+      'p':'<path d="M2 12l12-7 12 6-12 7zM20 27l12-7 12 6-12 7zM-2 39l12-6 11 6-12 7z" fill="#c4a578" stroke="#755c3c" stroke-width="1.4"/><path d="M14 18l-3 4m21 9l-4 4" stroke="#e6d0a7" stroke-width="1.5" opacity=".6"/>',
+      't':'<ellipse cx="24" cy="25" rx="19" ry="17" fill="#102c22" opacity=".55"/><circle cx="21" cy="20" r="13" fill="#356947" stroke="#183b2c" stroke-width="2"/><circle cx="31" cy="26" r="12" fill="#28543a" stroke="#173b2c" stroke-width="2"/><circle cx="17" cy="31" r="10" fill="#477b4b" stroke="#1b442e" stroke-width="2"/><circle cx="19" cy="16" r="3" fill="#80a765" opacity=".55"/><path d="M24 29l2 7" stroke="#a77a4d" stroke-width="2"/>',
+      'w':'<path d="M-2 12q8-5 16 0t16 0t16 0M-2 23q8-5 16 0t16 0t16 0M-2 34q8-5 16 0t16 0t16 0" fill="none" stroke="#83c9d2" stroke-width="2.2" opacity=".7"/><path d="M5 8q7-4 12 0m12 17q6-4 12 0" fill="none" stroke="#c5edf0" stroke-width="1.2" opacity=".6"/>',
+      'r':'<path d="M5 31l5-16 11-7 13 7 5 17-12 9-16-2z" fill="#777b76" stroke="#343c3b" stroke-width="2.4"/><path d="M10 16l11-7 7 3-7 7-11 1z" fill="#b0b3a8" opacity=".55"/><path d="M27 19l9 4" stroke="#d2d0c4" stroke-width="1.5" opacity=".5"/>',
+      'h':'<path d="M4 20L24 6l20 14v21H4z" fill="#77523a" stroke="#35271e" stroke-width="2.5"/><path d="M1 20L24 3l23 17-4 5L24 11 5 25z" fill="#a96342" stroke="#e0b17a" stroke-width="1.8"/><rect x="19" y="27" width="10" height="14" rx="1" fill="#2f211a" stroke="#c59a64" stroke-width="1.4"/><rect x="8" y="27" width="7" height="7" fill="#9dc1c0" stroke="#3b332b"/>',
+      'c':'<ellipse cx="24" cy="25" rx="17" ry="17" fill="#6d706d" stroke="#292f31" stroke-width="3"/><ellipse cx="24" cy="25" rx="9" ry="9" fill="#a9a89d" stroke="#d1c8aa" stroke-width="2"/><circle cx="24" cy="25" r="4" fill="#4b5150"/>',
+      'b':'<path d="M0 0h48v48H0z" fill="#464b4a"/><path d="M0 11h48M0 24h48M0 37h48M12 0v11M35 0v11M24 11v13M9 24v13M34 24v13M18 37v11" stroke="#85867d" stroke-width="2.5"/><path d="M0 2h48" stroke="#c0b79f" stroke-width="2" opacity=".35"/>'
+    };
+    let art=common[tile]||common['.'];
+    if(tile==='w'&&theme==='volcanic')art='<path d="M-2 12q8-5 16 0t16 0t16 0M-2 25q8-5 16 0t16 0t16 0M-2 38q8-5 16 0t16 0t16 0" fill="none" stroke="#ffb34e" stroke-width="4"/><path d="M7 7l8 8m12 8l8 8" stroke="#ffe09a" stroke-width="2" opacity=".85"/>';
+    if(tile==='w'&&theme==='ice')art='<path d="M24 4l4 14 13-6-8 13 10 7-15-1-4 14-4-14-15 1 10-7-8-13 13 6z" fill="#bce9f0" opacity=".45" stroke="#e5fbff" stroke-width="1.5"/><path d="M4 10l14 12m12 7l14 10" stroke="#e7fbff" stroke-width="1.5" opacity=".5"/>';
+    if(tile==='c'&&theme==='ice')art='<path d="M24 4L34 19 29 42 18 42 13 19z" fill="#9ee5f2" stroke="#e2fcff" stroke-width="2"/><path d="M24 4v38M13 19l21 0M18 31l11 0" stroke="#e9fcff" stroke-width="1.5" opacity=".8"/><path d="M8 41l8-12 5 15zM33 44l7-17 4 17z" fill="#6bb9d1" opacity=".75"/>';
+    return `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">${art}</svg>`;
+  }
+  function mapInspector(gs,tokens,selected,template){
+    const enc=gs.encounter,turn=enc?activeCombatTurn(enc):null,chosen=tokens.find(t=>t.id===selected);
+    const rows=tokens.map(t=>{
+      const hp=t.kind==='monster'?t.hp:(()=>{const m=state.members.find(x=>x.user_id===t.id);return m?.character?currentPartyVitals(t.id,m.character).hp:null})();
+      const max=t.kind==='monster'?t.maxHp:(()=>{const m=state.members.find(x=>x.user_id===t.id);return m?.character?currentPartyVitals(t.id,m.character).maxHp:null})();
+      const art=t.kind==='monster'?mapMonsterSprite(t.templateId,t.name):mapHeroSprite(t.className,t.equipment);
+      const pct=max?Math.max(0,Math.min(100,hp/max*100)):0;
+      return `<button class="map-piece-row ${t.id===selected?'selected':''} ${t.defeated?'defeated':''}" data-action="map-select-token" data-token-id="${esc(t.id)}"><span class="map-piece-thumb ${t.kind==='monster'?'enemy':'adventurer'}">${art}</span><span class="map-piece-copy"><strong>${esc(t.name)}</strong><small>${t.kind==='monster'?(t.defeated?'Derrotado':'Criatura hostil'):'Aventureiro'} · ${String.fromCharCode(65+t.position.x)}${t.position.y+1}</small>${max?`<span class="map-piece-hp"><i style="width:${pct}%"></i></span><small>${hp} / ${max} HP</small>`:''}</span><span class="map-piece-mark">${t.kind==='monster'?'◆':'●'}</span></button>`;
+    }).join('');
+    const encounterPanel=enc?`<div class="map-inspector-combat"><div class="map-inspector-combat-top"><span class="map-status-dot ${enc.defeated?'ended':'active'}"></span><strong>${enc.defeated?'Encontro encerrado':'Combate em andamento'}</strong><span>Rodada ${enc.round||1}</span></div><div class="map-active-turn"><small>TURNO ATUAL</small><strong>${esc(turn?.name||'—')}</strong><span>${turn?.kind==='monster'?'Ação da criatura':'Ação do aventureiro'}</span></div><div class="map-inspector-counts"><span><strong>${(enc.enemies||[]).filter(e=>!e.defeated&&e.hp>0).length}</strong> inimigo(s) ativo(s)</span><span><strong>${tokens.filter(t=>t.kind==='player').length}</strong> herói(s)</span></div></div>`:`<div class="map-inspector-explore"><span class="map-inspector-icon">⌖</span><strong>Área de exploração</strong><p>O grupo está explorando <b>${esc(template.name)}</b>. O mestre pode iniciar um encontro para posicionar criaturas neste tabuleiro.</p></div>`;
+    const selectedPanel=chosen?`<div class="map-selected-piece"><div class="map-selected-label">PEÇA SELECIONADA</div><strong>${esc(chosen.name)}</strong><small>${chosen.kind==='monster'?'Criatura':'Aventureiro'} · Casa ${String.fromCharCode(65+chosen.position.x)}${chosen.position.y+1}</small></div>`:'<div class="map-selected-piece muted">Selecione uma peça na lista para movê-la.</div>';
+    return `<aside class="tactical-inspector">${encounterPanel}<div class="map-inspector-section-head"><span>PEÇAS NO TABULEIRO</span><b>${tokens.length}</b></div><div class="map-piece-list">${rows||'<p class="panel-subtitle">Nenhum personagem está posicionado. Crie a ficha de um aventureiro para colocá-lo no mapa.</p>'}</div>${selectedPanel}<div class="map-inspector-tip">${isMaster()?'Selecione uma miniatura e escolha Mover peça. Depois clique no destino livre.':'Sua miniatura aparece com a base identificada; durante o seu turno, peça um movimento até uma casa livre.'}</div></aside>`;
+  }
   function renderTacticalMap(gs){
     const exploration=explorationData(gs),record=activeMapRecord(gs),template=mapTemplate(exploration.mapId),tokens=mapTokens(record,gs);
-    if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id|| (gs.encounter?'monster':null);
+    if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id||tokens[0]?.id||null;
     const selected=state.selectedMapToken||currentUserId(),markers=record.markers||[],cells=[];
+    const columnName=x=>String.fromCharCode(65+x);
     for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
-      const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y);
+      const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y&&!t.defeated);
       const marker=markers.find(m=>m.x===x&&m.y===y&&(isMaster()||((m.type==='door'||m.type==='altar')&&visible)||m.discovered));
-      const tokenHtml=cellTokens.map(t=>`<span class="map-token miniature ${t.kind==='monster'?'monster-token monster-phase-'+t.bossPhase+(t.defeated?' monster-defeated':''):'player-token mini-'+t.className} ${t.id===selected?'token-selected':''}" title="${esc(t.name)}">${t.kind==='player'?mapHeroSprite(t.className,t.equipment):mapMonsterSprite(t.templateId,t.name)}${t.kind==='monster'?`<span class="map-token-health"><i style="width:${Math.max(0,Math.min(100,t.hp/t.maxHp*100))}%"></i></span>`:''}<span class="miniature-sigil">${esc(t.sigil)}</span>${t.kind==='player'?`<span class="miniature-name">${esc(t.initials)}</span>`:''}</span>`).join('');
-      const markerIcon=marker?(marker.type==='treasure'?'🧰':marker.type==='trap'?'⚠️':marker.type==='door'?(marker.open?'🚪':'🔒'):(marker.discovered?'✧':'◇')):'';
+      const tokenHtml=cellTokens.map(t=>`<span class="map-token miniature ${t.kind==='monster'?'monster-token monster-phase-'+t.bossPhase+(t.defeated?' monster-defeated':''):'player-token mini-'+t.className} ${t.id===selected?'token-selected':''}" title="${esc(t.name)}" data-token-id="${esc(t.id)}" draggable="${isMaster()||t.kind==='player'&&t.id===currentUserId()?'true':'false'}" aria-label="${esc(t.name)} — arraste para mover">${t.kind==='player'?mapHeroSprite(t.className,t.equipment):mapMonsterSprite(t.templateId,t.name)}${t.kind==='monster'?`<span class="map-token-health"><i style="width:${Math.max(0,Math.min(100,t.hp/t.maxHp*100))}%"></i></span>`:''}<span class="miniature-sigil">${esc(t.sigil)}</span>${t.kind==='player'?`<span class="miniature-name">${esc(t.initials)}</span>`:''}</span>`).join('');
+      const markerIcon=marker?(marker.type==='treasure'?'🧰':marker.type==='trap'?'⚠':marker.type==='door'?(marker.open?'🚪':'▣'):(marker.discovered?'✧':'◇')):'';
       const markerHtml=marker?`<span class="map-marker marker-${marker.type} ${marker.open?'marker-open':''}" title="${esc(marker.type==='treasure'?'Baú':marker.type==='trap'?'Armadilha':marker.type==='door'?(marker.open?'Porta aberta':'Porta fechada'):'Altar antigo')}">${markerIcon}</span>`:'';
       const fogged=!visible,doorBlocked=marker?.type==='door'&&!marker.open,blocked=mapCellBlocked(template.id,x,y,record);
-      cells.push(`<button class="map-cell tile-${info.cls} ${fogged?'fogged':''} ${cellTokens.some(t=>t.id===selected)?'token-selected':''} ${blocked?'blocked':''} ${doorBlocked?'door-closed':''} ${marker?.type==='altar'?'altar-cell':''}" data-action="map-cell" data-x="${x}" data-y="${y}" ${fogged&&!isMaster()?'disabled':''} aria-label="Casa ${x+1}, linha ${y+1}: ${fogged?'não explorada':marker?.type==='door'?(marker.open?'porta aberta':'porta fechada'):marker?.type==='altar'?'altar':info.name}">${fogged?'?':`${info.glyph?`<span class="terrain-glyph">${info.glyph}</span>`:''}${markerHtml}${tokenHtml}`}</button>`);
+      // A célula é uma área transparente de clique/arraste. Nenhum desenho de grama, água ou pedra é
+      // repetido aqui: todo o cenário vem da imagem de fundo do tabuleiro.
+      const overlay=fogged?'<span class="map-fog-overlay" aria-hidden="true"></span>':`${blocked?'<span class="map-blocked-hint" aria-hidden="true"></span>':''}${markerHtml}${tokenHtml}`;
+      cells.push(`<button class="map-cell ${fogged?'fogged':''} ${cellTokens.some(t=>t.id===selected)?'token-selected':''} ${blocked?'blocked':''} ${doorBlocked?'door-closed':''} ${marker?.type==='altar'?'altar-cell':''}" data-action="map-cell" data-x="${x}" data-y="${y}" data-blocked="${blocked?'true':'false'}" ${fogged&&!isMaster()?'disabled':''} aria-label="Casa ${columnName(x)}${y+1}: ${fogged?'não explorada':info.name+(blocked?', bloqueada':'')}" title="${columnName(x)}${y+1} · ${visible?info.name+(blocked?' · passagem bloqueada':''):'Área desconhecida'}"><span class="map-cell-coordinate">${columnName(x)}${y+1}</span>${overlay}</button>`);
     }
     const options=tokens.map(t=>`<option value="${esc(t.id)}" ${selected===t.id?'selected':''}>${esc(t.name)}${t.kind==='monster'?' · Monstro':' · Aventureiro'}</option>`).join('');
     const presets=MAP_TEMPLATES.map(m=>`<button class="map-preset ${m.id===template.id?'active':''}" data-action="map-change" data-map-id="${m.id}" ${isMaster()?'':'disabled'}>${m.name}</button>`).join('');
-    const tools=isMaster()?`<div class="map-admin-tools"><label class="map-tool-select">Peça selecionada<select class="select" id="map-token-select">${options||'<option value="">Sem peças</option>'}</select></label><div class="map-tool-buttons"><button class="btn ${state.selectedMapTool==='move'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="move">Mover peça</button><button class="btn ${state.selectedMapTool==='reveal'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="reveal">Revelar área</button><button class="btn ${state.selectedMapTool==='treasure'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="treasure">Colocar baú</button><button class="btn ${state.selectedMapTool==='trap'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="trap">Colocar armadilha</button><button class="btn ${state.selectedMapTool==='door'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="door">Porta</button><button class="btn ${state.selectedMapTool==='altar'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="altar">Altar</button><button class="btn ${state.selectedMapTool==='erase'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="erase">Remover objeto</button><button class="btn btn-quiet btn-small" data-action="toggle-map-fog">${record.fogEnabled?'Desativar névoa':'Ativar névoa'}</button></div><p class="map-tool-hint">Selecione uma ferramenta e clique em uma casa livre. Com Porta, clique novamente para abrir/fechar a porta. Altar pode ser examinado pelos jogadores ao se aproximarem.</p></div>`:`<div class="notice map-player-help">Clique em uma casa explorada para mover seu personagem. Portas fechadas e altares podem ser examinados ao se aproximar; o mestre valida as interações. ${record.fogEnabled?'As áreas ainda não descobertas permanecem ocultas.':'O mapa está totalmente visível.'}</div>`;
-    const pendingMoves=isMaster()&&state.pendingMapMoves.length?`<div class="map-pending"><div class="small-caps">Solicitações de movimento</div>${state.pendingMapMoves.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>Casa ${Number(ev.payload?.x)+1}, linha ${Number(ev.payload?.y)+1}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-move" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-move" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
+    const tools=isMaster()?`<div class="map-admin-tools map-admin-tools-new"><label class="map-tool-select">Miniatura selecionada<select class="select" id="map-token-select">${options||'<option value="">Sem peças</option>'}</select></label><div class="map-tool-buttons"><button class="btn ${state.selectedMapTool==='move'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="move">Mover miniatura</button><button class="btn ${state.selectedMapTool==='reveal'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="reveal">Revelar área</button><button class="btn ${state.selectedMapTool==='treasure'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="treasure">Baú</button><button class="btn ${state.selectedMapTool==='trap'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="trap">Armadilha</button><button class="btn ${state.selectedMapTool==='door'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="door">Porta</button><button class="btn ${state.selectedMapTool==='altar'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="altar">Altar</button><button class="btn ${state.selectedMapTool==='erase'?'btn-primary':'btn-secondary'} btn-small" data-action="map-tool" data-tool="erase">Apagar objeto</button><button class="btn btn-quiet btn-small" data-action="toggle-map-fog">${record.fogEnabled?'Desativar névoa':'Ativar névoa'}</button></div><p class="map-tool-hint">O cenário é uma ilustração contínua; a grade transparente serve apenas para coordenadas e movimento. Selecione uma peça e clique no destino, ou arraste a própria miniatura. Obstáculos e portas fechadas continuam bloqueando a passagem.</p></div>`:`<div class="notice map-player-help">Arraste sua miniatura para uma casa livre ou selecione um destino no tabuleiro para solicitar movimento. A grade é discreta e fica sobre a ilustração do cenário. ${record.fogEnabled?'As áreas desconhecidas permanecem cobertas pela névoa.':'Todo o cenário está visível.'}</div>`;
+    const pendingMoves=isMaster()&&state.pendingMapMoves.length?`<div class="map-pending"><div class="small-caps">Solicitações de movimento</div>${state.pendingMapMoves.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>Casa ${String.fromCharCode(65+Number(ev.payload?.x||0))}${Number(ev.payload?.y||0)+1}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-move" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-move" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
     const pendingInteractions=isMaster()&&state.pendingMapInteractions.length?`<div class="map-pending"><div class="small-caps">Interações aguardando aprovação</div>${state.pendingMapInteractions.slice(-5).map(ev=>{const who=state.members.find(m=>m.user_id===ev.actor_id);return `<div class="map-request-row"><span><strong>${esc(who?.character?.name||who?.display_name||'Aventureiro')}</strong><small>${ev.payload?.action==='open_door'?'Deseja abrir uma porta':'Deseja examinar um altar'}</small></span><span class="map-request-actions"><button class="btn btn-primary btn-small" data-action="approve-map-interaction" data-id="${ev.id}">Aprovar</button><button class="btn btn-quiet btn-small" data-action="reject-map-interaction" data-id="${ev.id}">Recusar</button></span></div>`}).join('')}</div>`:'';
-    return `<section class="panel tactical-map-panel"><div class="row between"><div><div class="small-caps">Exploração compartilhada</div><h3 style="margin:5px 0 0">Mapa tático</h3><p class="panel-subtitle" style="margin:5px 0 0">${esc(template.subtitle)} · ${MAP_WIDTH} × ${MAP_HEIGHT} casas</p></div><span class="tag gold">${tokens.length} peça(s)</span></div><div class="map-scene-banner"><img src="${mapArtworkFor(template.id)}" alt="Paisagem de ${esc(template.name)}" loading="lazy"><span>${esc(template.name)}</span></div><div class="map-presets">${presets}</div>${tools}<div class="map-coordinate-guide"><span>Linhas 1–8 · Colunas 1–10</span><span>Exemplo: coluna 3, linha 2</span></div><div class="map-board-wrap"><div class="map-board-layout"><div class="map-axis map-axis-side">${Array.from({length:MAP_HEIGHT},(_,i)=>`<span>${i+1}</span>`).join('')}</div><div class="map-board map-${template.theme} ${gs.encounter&&!gs.encounter.defeated?'battle-active':''}" style="--map-cols:${MAP_WIDTH}">${cells.join('')}</div></div><div class="map-axis map-axis-bottom">${Array.from({length:MAP_WIDTH},(_,i)=>`<span>${i+1}</span>`).join('')}</div></div><div class="map-legend"><span><i class="legend-token">⚔</i> Aventureiro</span><span><i class="legend-token">🐉</i> Criaturas</span><span>🌳 Obstáculo</span><span>💧 Água</span><span>🔒 Porta fechada</span><span>✧ Altar</span><span>🧰 Baú</span><span>⚠️ Armadilha</span></div>${pendingMoves}${pendingInteractions}<p class="map-footnote">Movimento: até 4 casas por turno em combate. Árvores, rochas, água profunda, muros e portas fechadas bloqueiam a passagem; o caminho é calculado casa a casa. Cada monstro é uma peça separada com barra de HP. O mestre valida os pedidos dos jogadores.</p><div class="notice map-howto"><strong>Como ler o tabuleiro:</strong> as colunas são numeradas de 1 a 10 e as linhas de 1 a 8. Casas escurecidas são bloqueadas. Clique numa peça para selecioná-la e numa casa livre para solicitar ou realizar movimento. Durante o combate, apenas a peça do turno ativo pode se deslocar.</div></section>`;
+    return `<section class="panel tactical-map-panel tactical-map-v2101"><div class="tactical-map-heading"><div><div class="small-caps">CAMPO DE AVENTURA · REINO DE AETHRA</div><h3>Mapa tático</h3><p>${esc(template.subtitle)}</p></div><div class="tactical-map-heading-meta"><span>${MAP_WIDTH} × ${MAP_HEIGHT} CASAS</span><span>${tokens.length} MINIATURA(S)</span><span class="${gs.encounter&&!gs.encounter.defeated?'in-combat':''}">${gs.encounter&&!gs.encounter.defeated?'COMBATE ATIVO':'EXPLORAÇÃO'}</span></div></div><div class="map-presets map-presets-new">${presets}</div>${tools}<div class="tactical-map-workspace"><div class="tactical-board-column"><div class="tactical-board-caption"><div><strong>CENÁRIO ILUSTRADO</strong><span>${esc(template.name)} · grade discreta A–J / 1–8</span></div><span class="tactical-scale">VISÃO SUPERIOR</span></div><div class="map-board-wrap map-board-wrap-new"><div class="map-board-layout map-board-layout-new"><div class="map-axis map-axis-side">${Array.from({length:MAP_HEIGHT},(_,i)=>`<span>${i+1}</span>`).join('')}</div><div class="map-board map-${template.theme} ${gs.encounter&&!gs.encounter.defeated?'battle-active':''}" style="--map-cols:${MAP_WIDTH};--board-image:url('${mapBoardArtworkFor(template.id)}')" role="grid" aria-label="Cenário ilustrado de ${esc(template.name)}">${cells.join('')}</div></div><div class="map-axis map-axis-bottom">${Array.from({length:MAP_WIDTH},(_,i)=>`<span>${columnName(i)}</span>`).join('')}</div></div><div class="map-legend map-legend-new"><span><i class="legend-swatch open"></i>Passagem livre</span><span><i class="legend-swatch blocked"></i>Casa bloqueada pela regra do terreno</span><span><i class="legend-swatch fog"></i>Não explorado</span><span><i class="legend-swatch adventurer"></i>Aventureiro</span><span><i class="legend-swatch enemy"></i>Criatura hostil</span></div></div>${mapInspector(gs,tokens,selected,template)}</div>${pendingMoves}${pendingInteractions}<p class="map-footnote map-footnote-new">O desenho do cenário ocupa todo o tabuleiro; a grade sobreposta só indica coordenadas e áreas de movimento. Arraste uma miniatura ou selecione-a e clique no destino. Movimento em combate: até 4 casas por turno, respeitando obstáculos e peças ocupadas.</p></section>`;
   }
-  function mapCellOccupied(record,gs,x,y,exceptId){return mapTokens(record,gs).some(t=>t.id!==exceptId&&t.position.x===x&&t.position.y===y)}
+  function mapCellOccupied(record,gs,x,y,exceptId){return mapTokens(record,gs).some(t=>t.id!==exceptId&&!t.defeated&&t.position.x===x&&t.position.y===y)}
   function mapVisibleReveal(record,x,y){addRevealedAround(record,x,y,1)}
   async function requestMapMove(x,y){
     if(!state.backendReady)throw new Error('Para solicitar movimento de outro jogador, conecte esta campanha ao Supabase. No modo local, apenas o mestre controla o mapa.');
@@ -1197,7 +1260,7 @@
     if(requestMapId&&requestMapId!==ex.mapId)throw new Error('O mapa mudou antes da aprovação. Solicite novamente no mapa atual.');
     if(mapCellBlocked(ex.mapId,x,y,rec))throw new Error('Não é possível mover uma peça para um obstáculo ou porta fechada.');
     if(mapCellOccupied(rec,gs,x,y,tokenId))throw new Error('Outra peça já ocupa esta casa.');
-    const start=mapTokenPosition(tokenId,rec,ex.mapId),occupied=mapTokens(rec,gs).filter(t=>t.id!==tokenId).map(t=>t.position),distance=mapPathDistance(ex.mapId,start,{x,y},occupied,rec);
+    const start=mapTokenPosition(tokenId,rec,ex.mapId),occupied=mapTokens(rec,gs).filter(t=>t.id!==tokenId&&!t.defeated).map(t=>t.position),distance=mapPathDistance(ex.mapId,start,{x,y},occupied,rec);
     if(!Number.isFinite(distance))throw new Error('Não existe um caminho livre até essa casa.');
     if(distance===0)throw new Error('A peça já está nesta casa.');
     let encounter=gs.encounter?cloneData(gs.encounter):null;
@@ -1521,8 +1584,19 @@
     const avg=participants.reduce((n,m)=>n+normalizeCharacter(m.character).level,0)/participants.length;
     const enemies=selected.map((t,i)=>{const gap=Math.max(0,avg-Number(t.level||1)),scale=1+Math.min(2.5,gap*.055),boss=/CHEFE/.test(t.threat||''),e={...t,id:`enemy-${Date.now()}-${i}-${Math.random().toString(36).slice(2,6)}`,templateId:t.id,hp:Math.round(t.hp*(boss?1.35:1.18)*scale),maxHp:Math.round(t.maxHp*(boss?1.35:1.18)*scale),defense:t.defense+Math.floor(gap*.12)+1,attackBonus:t.attackBonus+Math.floor(gap*.16)+1,damageBonus:t.damageBonus+1,defeated:false,bossPhase:1};if(['drakthar','vharzun'].includes(t.id)){e.baseDefense=e.defense;e.baseAttackBonus=e.attackBonus;Object.assign(e,applyBossPhase(e))}return e});
     const first=enemies[0],enc={...first,id:crypto.randomUUID?crypto.randomUUID():`enc-${Date.now()}`,enemies,round:1,turnIndex:0,specialUsed:false,breathPhases:[],defeated:false,xpAwarded:false,lootAwarded:false,participantIds:participants.map(m=>m.user_id),xpReward:enemies.reduce((n,e)=>n+Number(e.xpReward||0),0),hp:enemies.reduce((n,e)=>n+e.hp,0),maxHp:enemies.reduce((n,e)=>n+e.maxHp,0),movementUsed:{}};
-    enc.turnOrder=buildTurnOrder(enc,state.members);const ex=explorationData(gs),rec=activeMapRecord(gs),spawns=[{x:7,y:2},{x:8,y:3},{x:6,y:3},{x:8,y:5},{x:5,y:2},{x:7,y:6}];
-    enemies.forEach((e,i)=>{let pos=spawns[i];for(let tries=0;tries<80&&(mapCellBlocked(ex.mapId,pos.x,pos.y,rec)||Object.values(rec.tokens).some(v=>v.x===pos.x&&v.y===pos.y));tries++)pos={x:(pos.x+1)%MAP_WIDTH,y:(pos.y+1)%MAP_HEIGHT};rec.tokens[e.id]=pos});setActiveMapRecord(ex,rec);
+    enc.turnOrder=buildTurnOrder(enc,state.members);const ex=explorationData(gs),rec=activeMapRecord(gs);
+    const partyTokens=mapTokens(rec,{...gs,encounter:null}).filter(t=>t.kind==='player');
+    const occupied=new Set(partyTokens.map(t=>`${t.position.x},${t.position.y}`));
+    const spawnCandidates=[];
+    for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
+      const key=`${x},${y}`;if(occupied.has(key)||mapCellBlocked(ex.mapId,x,y,rec))continue;
+      const nearest=partyTokens.length?Math.min(...partyTokens.map(t=>Math.abs(t.position.x-x)+Math.abs(t.position.y-y))):0;
+      spawnCandidates.push({x,y,score:nearest*5+(y<=3?5:0)+(x<=4?2:0)});
+    }
+    spawnCandidates.sort((a,b)=>b.score-a.score||a.y-b.y||a.x-b.x);
+    if(spawnCandidates.length<enemies.length)throw new Error('Este mapa não possui casas livres suficientes para posicionar todas as criaturas. Escolha outro mapa ou reduza o grupo inimigo.');
+    enemies.forEach((enemy,i)=>{const pos=spawnCandidates[i];rec.tokens[enemy.id]={x:pos.x,y:pos.y};occupied.add(`${pos.x},${pos.y}`)});
+    setActiveMapRecord(ex,rec);
     await updateGameState({encounter:enc,partyState,exploration:ex});await createEvent('encounter_started',{monster:enemies.map(e=>e.name).join(', '),enemies:enemies.map(e=>({id:e.id,name:e.name})),round:1,turn_order:enc.turnOrder});toast(`Encontro iniciado: ${enemies.length} criatura(s).`);
   }
   function renderEncounterModal(){
@@ -1612,6 +1686,29 @@
   }
   function playDiceSound(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const now=ctx.currentTime;for(let i=0;i<5;i++){const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(260+i*65,now+i*.075);gain.gain.setValueAtTime(.0001,now+i*.075);gain.gain.exponentialRampToValueAtTime(.045,now+i*.075+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+i*.075+.065);osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*.075);osc.stop(now+i*.075+.07)}setTimeout(()=>ctx.close(),800)}catch(e){}}
 
+  // Arrastar miniaturas diretamente sobre o cenário ilustrado. O clique em casas continua disponível,
+  // inclusive para dispositivos móveis que não oferecem drag-and-drop.
+  document.addEventListener('dragstart',e=>{
+    const piece=e.target.closest('.map-token[draggable="true"]');if(!piece)return;
+    state.draggingMapToken=piece.dataset.tokenId||null;
+    if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',state.draggingMapToken||'')}
+    piece.classList.add('dragging');
+  });
+  document.addEventListener('dragend',e=>{e.target.closest('.map-token')?.classList.remove('dragging');state.draggingMapToken=null;document.querySelectorAll('.map-cell.drop-target').forEach(cell=>cell.classList.remove('drop-target'))});
+  document.addEventListener('dragover',e=>{const cell=e.target.closest('.map-cell');if(!cell||!state.draggingMapToken)return;e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move';cell.classList.add('drop-target')});
+  document.addEventListener('dragleave',e=>{const cell=e.target.closest('.map-cell');if(cell&&!cell.contains(e.relatedTarget))cell.classList.remove('drop-target')});
+  document.addEventListener('drop',async e=>{
+    const cell=e.target.closest('.map-cell');if(!cell||!state.draggingMapToken)return;
+    e.preventDefault();e.stopPropagation();
+    const tokenId=state.draggingMapToken,x=Number(cell.dataset.x),y=Number(cell.dataset.y);state.draggingMapToken=null;
+    document.querySelectorAll('.map-cell.drop-target').forEach(item=>item.classList.remove('drop-target'));
+    try{
+      if(isMaster()){state.selectedMapToken=tokenId;state.selectedMapTool='move';await moveMapToken(tokenId,x,y)}
+      else if(tokenId===currentUserId())await requestMapMove(x,y);
+      else throw new Error('Você só pode arrastar a miniatura do seu próprio personagem.');
+    }catch(err){toast(err.message,'error')}
+    finally{document.querySelectorAll('.map-token.dragging').forEach(item=>item.classList.remove('dragging'))}
+  });
   // Ações da interface
   document.addEventListener('click',async e=>{
     const btn=e.target.closest('[data-action]');if(!btn)return;const action=btn.dataset.action;
@@ -1672,9 +1769,10 @@
       else if(action==='open-damage'){
         modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog"><div class="modal-head"><div><h2>Registrar ataque</h2><p>Informe o dano causado. O mestre confirma e aplica o valor à criatura.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="damage-form"><div class="field"><label for="damage-amount">DANO DECLARADO</label><input class="input" type="number" id="damage-amount" min="1" max="10000" value="12" required></div><div class="field"><label for="damage-note">AÇÃO (OPCIONAL)</label><input class="input" id="damage-note" placeholder="Ex.: Golpe poderoso com espada"></div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button class="btn btn-primary" type="submit">Enviar ao mestre</button></div></form></section></div>`;
       }
-      else if(action==='end-encounter'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode encerrar o encontro.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);delete rec.tokens.monster;await updateGameState({encounter:null,exploration:setActiveMapRecord(ex,rec)});toast('Encontro encerrado.')}
+      else if(action==='end-encounter'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode encerrar o encontro.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);for(const enemy of (gs.encounter?.enemies||[]))if(enemy.id)delete rec.tokens[enemy.id];delete rec.tokens.monster;await updateGameState({encounter:null,exploration:setActiveMapRecord(ex,rec)});toast('Encontro encerrado.')}
       else if(action==='map-change'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode trocar o mapa.');const id=btn.dataset.mapId;if(!MAP_TEMPLATES.some(m=>m.id===id))throw new Error('Mapa não encontrado.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs);ex.mapId=id;state.selectedMapToken=state.members.find(m=>m.role==='player'&&m.character)?.user_id||null;state.selectedMapTool='move';await updateGameState({exploration:ex});await createEvent('session_note',{kind:'map',text:`O mapa mudou para ${mapTemplate(id).name}.`})}
       else if(action==='map-tool'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode selecionar ferramentas do mapa.');state.selectedMapTool=btn.dataset.tool||'move';render()}
+      else if(action==='map-select-token'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode selecionar peças do mapa.');state.selectedMapToken=btn.dataset.tokenId||null;state.selectedMapTool='move';render()}
       else if(action==='toggle-map-fog'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode controlar a névoa de guerra.');const gs=state.campaign.game_state||defaultGameState(),ex=explorationData(gs),rec=activeMapRecord(gs);rec.fogEnabled=!rec.fogEnabled;if(rec.fogEnabled){mapTokens(rec,gs).filter(t=>t.kind==='player').forEach(t=>addRevealedAround(rec,t.position.x,t.position.y,1))}await updateGameState({exploration:setActiveMapRecord(ex,rec)});toast(rec.fogEnabled?'Névoa de guerra ativada.':'Mapa totalmente revelado.')}
       else if(action==='map-cell'){await handleMapCellClick(btn)}
       else if(action==='approve-map-move'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode aprovar movimentos.');const ev=state.pendingMapMoves.find(x=>x.id===btn.dataset.id);if(!ev)throw new Error('Solicitação não encontrada.');try{await moveMapToken(ev.actor_id,Number(ev.payload.x),Number(ev.payload.y),ev.id,ev.payload.map_id)}catch(err){await createEvent('session_note',{kind:'map',request_id:ev.id,accepted:false,text:`Movimento recusado: ${err.message}`});state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);throw err}state.pendingMapMoves=state.pendingMapMoves.filter(x=>x.id!==ev.id);render()}

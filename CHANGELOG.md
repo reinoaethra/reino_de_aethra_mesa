@@ -350,13 +350,33 @@ A sintaxe e os arquivos foram verificados localmente. O fluxo de e-mail requer u
 - Produzido adendo PDF v2.9 para o Livro do Mestre, separado do pacote público do site.
 - Verificações estáticas realizadas; não houve execução no Supabase do usuário, teste visual em navegador nem sessão multiplayer real.
 
-## v2.10 — Manual de iniciação e reformulação tática
+## v2.10 — Manual de iniciação e preparação de encontros
 - Adicionado o livro **Primeiros Passos em Aethra**, para ensinar desde o início o papel do mestre e dos jogadores, testes, missões, Cena Interativa, mapa tático e combate.
 - Adicionada a versão Markdown e o PDF diagramado do manual.
-- O seletor de encontro agora permite marcar até seis criaturas; cada inimigo possui miniatura, posição, HP e entrada própria na iniciativa.
-- Combate passa a percorrer os turnos individuais dos monstros e termina quando todas as criaturas do grupo são derrotadas.
-- Espólios e objetivos de combate consideram as criaturas do grupo.
+- O seletor de encontro passou a permitir marcar até seis criaturas; cada inimigo possui dados individuais de HP, posição e iniciativa.
 - Adicionados os mapas de cavernas de Umbrafunda, Gruta das Brasas e Abismo de Cristal.
 - Adicionadas instruções na interface para Cena Interativa, objetivos de missão e coordenadas do tabuleiro.
 - Os STL enviados foram considerados referências de linguagem visual; os arquivos originais não são incluídos no pacote publicado.
+- **Nota de correção:** a v2.10 preparou dados e fluxo para encontros múltiplos, mas manteve a apresentação visual antiga do Mapa Tático. A substituição efetiva do tabuleiro foi concluída na v2.10.1.
 - Sem alterações no schema do Supabase; `config.js` permanece individual e deve ser preservado.
+
+## v2.10.1 — Correção real do Mapa Tático
+
+- Substituída a apresentação herdada do tabuleiro por uma nova composição com painel lateral de peças e estado do combate.
+- Terrenos agora recebem ilustrações próprias dentro das casas: grama, trilha, árvores, água, rochas, casas, colunas, muros, gelo e lava conforme a região.
+- Coordenadas alfanuméricas A1–J8 e casas bloqueadas com marcação visual explícita.
+- Lista lateral selecionável com miniaturas, identificação, coordenadas e barras de HP.
+- Criaturas novas são posicionadas em casas transitáveis, evitando as casas ocupadas pelo grupo e por outros monstros.
+- Peças derrotadas não bloqueiam caminhos nem casas.
+- Corrigidos também o dimensionamento responsivo do tabuleiro, a legenda e o fechamento de janelas após criar campanha/personagem.
+- Teste local de interface confirmou 80 casas, 10 colunas visíveis, seleção de peças, dois monstros em casas distintas e ausência de erros JavaScript no fluxo simulado. Em viewport de 390 px, as dez colunas também permanecem visíveis sem alargar o painel do mapa. Esse teste não substitui validação com o Supabase real ou multiplayer remoto.
+- Sem alteração de schema ou migração SQL.
+
+
+## v2.10.2 — Fundo ilustrado e miniaturas arrastáveis
+- Substituído o mosaico de terrenos por uma ilustração contínua no fundo do tabuleiro.
+- Grade transparente de 10 × 8 mantida apenas para coordenadas e interação.
+- Miniaturas podem ser arrastadas; mestre move qualquer peça e jogadores somente a própria miniatura.
+- Névoa de guerra, portas, colisões e limite de movimento preservados.
+- Novos fundos 5:4 adicionados para os cinco reinos e para mapas de ruínas.
+- Nenhuma alteração de banco de dados.
