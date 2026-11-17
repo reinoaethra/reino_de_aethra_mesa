@@ -110,7 +110,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 **Limites importantes:** a conta só sincroniza campanhas criadas/participadas no Supabase. Campanhas criadas anteriormente no modo local (`localStorage`) não são enviadas automaticamente à nuvem. Uma sessão visitante não pode ser recuperada em outro dispositivo até que o jogador conclua o vínculo do e-mail e defina uma senha. No novo dispositivo, entre na conta antes de criar um personagem ou entrar em uma campanha como visitante.
 
-### Personagens, NPCs e criaturas ilustrados (v0.8)
+### Personagens, NPCs e criaturas ilustrados (v0.9)
 
 - Retratos WebP próprios para as oito classes jogáveis: Guerreiro, Arcano, Patrulheiro, Paladino, Assassino, Clérigo, Druida e Invocador.
 - Retratos para os três NPCs da primeira aventura: Ilyra Avelorn, Tovin Ferromar e Irmão Cael.
@@ -121,7 +121,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Efeitos visuais e sonoros para ataques físicos, habilidades, curas e ações de monstros.
 - Imagens locais na pasta `assets/portraits`; o jogo não depende de hospedagem externa para carregar retratos.
 
-### Exploração visual (base v0.7, aprimorada na v0.8)
+### Exploração visual (base v0.7, aprimorada na v0.9)
 
 - Miniaturas visuais por classe para os aventureiros, agora com retratos ilustrados, iniciais e símbolos.
 - Animação suave de ociosidade das miniaturas e destaque da criatura no mapa.
@@ -200,7 +200,7 @@ Escolha **somente o caminho que corresponde à situação do seu banco**:
 
 | Situação | O que executar |
 |---|---|
-| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.8. |
+| Projeto Supabase novo, sem tabelas de Aethra | Execute somente `supabase-schema.sql` que acompanha a v0.9. |
 | Banco já na v0.6 | Faça backup e execute `supabase-migration-v0.7.sql` uma vez. |
 | Banco já na v0.5 | Execute `supabase-migration-v0.6.sql` e depois `supabase-migration-v0.7.sql`. |
 | Banco já na v0.4 | Execute, nesta ordem, `supabase-migration-v0.5.sql`, `supabase-migration-v0.6.sql` e `supabase-migration-v0.7.sql`. |
@@ -229,7 +229,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v0.8).
+1. Baixe o ZIP da versão nova (v0.9).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -254,20 +254,20 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; a v0.8 mantém o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; a v0.9 mantém o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
 | `supabase-migration-v0.6.sql` | Adiciona a função segura de solicitação de movimento para mapas táticos. |
 | `supabase-migration-v0.7.sql` | Adiciona a função segura de solicitação de abertura de portas e inspeção de altares. |
 | `assets/portraits/preview-sheet.jpg` | Folha de contato com os retratos do projeto. |
-| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.8. |
+| `assets/portraits/` | Retratos WebP das classes, NPCs e criaturas utilizados na v0.9. |
 | `GUIA-PERSONAGENS-NPCS-CRIATURAS.md` | Guia dos retratos, miniaturas, criaturas e substituição de imagens. |
 | `GUIA-MAPA-E-EXPLORACAO.md` | Manual dos mapas, movimentos, névoa, objetos e interações. |
 | `GUIA-LOGIN-E-PROGRESSO.md` | Vincular e-mail, criar senha, entrar em outro aparelho e recuperar a conta. |
 | `GUIA-DA-PRIMEIRA-AVENTURA.md` | Roteiro para conduzir a primeira aventura, usar o painel narrativo e consultar as limitações atuais. |
 | `CHANGELOG.md` | Histórico das versões. |
-| `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo atualizações da v0.8. |
+| `REGRAS-DE-COMBATE.md` | Regras de combate e criaturas, incluindo atualizações da v0.9. |
 | `GUIA-SUPABASE-DO-ZERO.md` | Tutorial do Supabase para iniciantes. |
 | `GUIA-GITHUB-PAGES-DO-ZERO.md` | Tutorial de publicação no GitHub Pages. |
 | `CHECKLIST-DA-PRIMEIRA-PARTIDA.md` | Lista de conferência para a primeira sessão. |
@@ -276,7 +276,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 
 ## 11. Testes técnicos realizados nesta entrega
 
-Foram executadas verificações de sintaxe JavaScript (`node --check`), existência e formato dos 16 retratos WebP, referências dos arquivos de imagem, equilíbrio básico das chaves CSS/HTML e integridade do pacote ZIP. Não foi feito teste visual completo em navegador nem teste multiplayer com Supabase real nesta entrega. O SQL não foi alterado na v0.8 e, por isso, não foi necessário executá-lo ou criar uma migração nova.
+Foram executadas verificações de sintaxe JavaScript (`node --check`), existência e formato dos 16 retratos WebP, referências dos arquivos de imagem, equilíbrio básico das chaves CSS/HTML e integridade do pacote ZIP. Não foi feito teste visual completo em navegador nem teste multiplayer com Supabase real nesta entrega. O SQL não foi alterado na v0.9 e, por isso, não foi necessário executá-lo ou criar uma migração nova.
 
 Antes de usar uma campanha importante, siga o roteiro de teste e confirme os resultados com pelo menos dois navegadores.
 
@@ -301,4 +301,19 @@ Preserve a Project URL e a Publishable key que já estão no seu `config.js`.
 
 ---
 
-**Reino de Aethra v0.8 — Os aventureiros agora aparecem com retratos próprios e efeitos de combate, mantendo contas e progresso entre dispositivos.**
+**Reino de Aethra v0.9 — Os aventureiros agora aparecem com retratos próprios e efeitos de combate, mantendo contas e progresso entre dispositivos.**
+
+
+## 13. Novidades da versão 0.9 — movimento e combate visual
+
+A v0.9 aprimora a linguagem visual dos mapas táticos sem alterar o formato do banco de dados. As peças de aventureiros recebem animação de repouso e respiração sutil; peças selecionadas recebem uma aura; criaturas recebem animação de postura; e, durante encontros ativos, o tabuleiro utiliza uma apresentação de combate. Os efeitos de ataque físico, magia, cura e ação de monstro foram refinados com animações próprias.
+
+### Atualização
+- Não há migração SQL nesta versão.
+- Substitua os arquivos do site pelos arquivos desta versão.
+- Envie a pasta `assets/portraits/` inteira, mantendo os nomes dos arquivos.
+- Preserve seu `config.js` com a URL e a Publishable key do seu projeto Supabase.
+- Faça backup do ZIP da versão anterior antes de publicar.
+
+### Limite técnico desta etapa
+As animações desta versão são efeitos 2D feitos com CSS sobre os retratos existentes. Não são spritesheets quadro a quadro, esqueletos 2D, modelos 3D ou captura de movimento. A movimentação entre casas continua sendo controlada pelas regras do mapa e pelo estado sincronizado da campanha.

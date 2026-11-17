@@ -1,5 +1,16 @@
 # Histórico de versões — Reino de Aethra
 
+## v0.9 — Movimento e combate visual
+- Animações CSS de repouso e respiração para retratos de aventureiros.
+- Aura animada para peça selecionada.
+- Postura animada de criaturas e apresentação de tabuleiro durante encontros.
+- Efeitos de impacto, magia, cura e ação de monstros refinados.
+- Respeito à preferência `prefers-reduced-motion`.
+- Nenhuma alteração no banco de dados; nenhuma migração SQL necessária.
+- Documentação atualizada com instruções de atualização e limites das animações.
+
+# Histórico de versões — Reino de Aethra
+
 ## v0.8 — Retratos, bestiário visual e efeitos de combate
 
 - Criados 16 retratos WebP locais: oito classes, três NPCs e cinco criaturas.
