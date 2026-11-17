@@ -1,3 +1,12 @@
+## v2.6 — cenários ilustrados durante a campanha
+
+- Adicionadas seis artes de ambiente locais em WebP: vila ancestral de Eldoria, forjas de Drakmor, arquivos de cristal de Nivéria, porto de Thalassor, templo de Solária e ruínas antigas.
+- A narração da sessão agora apresenta uma paisagem contextual baseada na localização e no mapa ativo, sem alterar o texto nem o estado da campanha.
+- O painel do mapa tático ganhou uma faixa ilustrada que acompanha o mapa regional selecionado.
+- As artes são carregadas localmente, com `loading=lazy` e otimização WebP; não dependem de links externos nem de serviços de imagem.
+- Mantidos mapas em grade, névoa de guerra, peças, marcadores, combate e sincronização; nenhuma migração SQL é necessária.
+- `config.js` preservado. Verificações estáticas de JavaScript, HTML, CSS, imagens e integridade do ZIP; sem teste visual em navegador ou multiplayer real com Supabase.
+
 ## v2.5 — atlas visual e Livro do Mestre em PDF
 
 - Criadas cinco ilustrações originais dos reinos, em WebP otimizado, para Eldoria, Drakmor, Nivéria, Thalassor e Solária.

@@ -351,3 +351,16 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @media(max-width:1050px){.realm-strip-illustrated{grid-template-columns:repeat(3,minmax(0,1fr))}.realm-card-illustrated{min-height:230px}}
 @media(max-width:700px){.realm-strip-illustrated{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.realm-card-illustrated{min-height:205px}.realm-card-copy{padding:14px 12px}.realm-card-copy strong{font-size:16px}.realm-card-copy p{font-size:9px}.realm-choice-grid{grid-template-columns:1fr}.realm-choice-card{min-height:130px}.realm-choice-card>img{min-height:130px}}
 @media(max-width:390px){.realm-strip-illustrated{grid-template-columns:1fr}.realm-card-illustrated{min-height:185px}}
+
+
+/* v2.6 — cenários ilustrados durante a campanha */
+.narrative-box{isolation:isolate;background:linear-gradient(100deg,rgba(9,14,23,.96),rgba(11,17,27,.78) 55%,rgba(11,17,27,.48));}
+.scene-artwork{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.scene-artwork img{width:100%;height:100%;object-fit:cover;object-position:center 48%;opacity:.72;filter:saturate(.88);}
+.narrative-box:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(7,12,20,.94) 0%,rgba(7,12,20,.78) 43%,rgba(7,12,20,.24) 100%),linear-gradient(0deg,rgba(7,12,20,.48),transparent 60%);pointer-events:none;}
+.narrative-box .label,.narrative-box h3,.narrative-box p{position:relative;z-index:2;}
+.map-scene-banner{height:150px;position:relative;margin:14px 0 12px;border:1px solid rgba(212,177,109,.2);border-radius:12px;overflow:hidden;background:#111a24;}
+.map-scene-banner img{width:100%;height:100%;object-fit:cover;object-position:center 48%;display:block;filter:saturate(.88);}
+.map-scene-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,10,17,.82),transparent 72%),linear-gradient(90deg,rgba(5,10,17,.28),transparent 65%);}
+.map-scene-banner span{position:absolute;z-index:1;left:15px;bottom:12px;color:#f1dfba;font:600 15px var(--serif);text-shadow:0 2px 8px #000;}
+@media(max-width:620px){.narrative-box{min-height:220px;padding:20px}.scene-artwork img{object-position:58% center}.map-scene-banner{height:118px}.map-scene-banner span{font-size:13px;}}

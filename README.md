@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.5 — atlas ilustrado dos cinco reinos e Livro do Mestre em PDF**  
+**Versão do jogo: 2.6 — cenários ilustrados durante a campanha**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -35,11 +35,19 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
 18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
 19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
-19. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+20. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.5
+## 2. O que está incluído na versão 2.6
+
+### Novidades da v2.6 — cenários ilustrados durante a campanha
+
+- A narração da sessão apresenta uma paisagem contextual de acordo com a localização atual e o mapa ativo.
+- O mapa tático mostra uma faixa ilustrada para a região ou ambiente selecionado.
+- Seis cenários em WebP estão incluídos em `assets/scenes/`: vila de Eldoria, forja de Drakmor, arquivos de Nivéria, porto de Thalassor, templo de Solária e ruínas antigas.
+- As imagens são locais, carregadas sob demanda e não exigem serviço externo.
+- Nenhuma migração SQL é necessária; as imagens não alteram o estado salvo das campanhas.
 
 ### Novidades da v2.5 — atlas visual e Livro do Mestre
 
