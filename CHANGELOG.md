@@ -1,5 +1,17 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.4 — Equipamento por raridade e combate aprimorado
+
+- Cores de raridade para arma, armadura e escudo equipados; aceita `rarity` ou `raridade` e cor opcional `color`.
+- Barra compacta de HP nas peças de monstros do mapa.
+- Drakthar recebe auras visuais por fase e efeito flamejante para ataques de sopro identificados.
+- A miniatura do monstro permanece no mapa após derrota, com animação de queda e estado visual derrotado.
+- Painel de encontro apresenta barra de HP crítica/ferida e sinalização de vitória.
+- Interface de equipamento informa a raridade registrada no item.
+- Guia `GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md`.
+- Nenhuma alteração no esquema do Supabase; nenhuma migração SQL necessária.
+
+
 ## v1.2 — Equipamentos visíveis e criaturas vetoriais
 
 - Exibição visual de arma, armadura e escudo equipados nas miniaturas de aventureiros.

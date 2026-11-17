@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.3 — animações reativas de combate**  
+**Versão do jogo: 1.4 — equipamento por raridade e combate aprimorado**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -26,16 +26,28 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — conhecer as miniaturas animadas do mapa e suas limitações.
 9. **[GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md](GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md)** — entender a representação visual de armas, armaduras, escudos e monstros no tabuleiro.
 10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
-11. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-12. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-13. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-14. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
+12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+13. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+14. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+15. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.3
+## 2. O que está incluído na versão 1.4
 
-### Novidades da v1.3 — combate reativo
+### Novidades da v1.4 — equipamento e combate aprimorados
+
+- Armas, armaduras e escudos podem receber raridade (`comum`, `incomum`, `raro`, `epico` ou `lendario`) e cor visual correspondente na miniatura. A raridade pode ser informada no próprio objeto do item como `rarity` ou `raridade`.
+- A cor do equipamento no mapa acompanha a raridade; itens também podem definir uma cor personalizada no campo `color`.
+- Monstros exibem uma pequena barra de HP diretamente sobre a peça do mapa; a barra acompanha o HP compartilhado da campanha.
+- Drakthar recebe efeitos de aura diferentes nas fases avançadas e uma reação de sopro flamejante quando a ação do chefe é identificada como ataque de área/chamas.
+- A peça do monstro permanece no mapa após a derrota para exibir a animação de queda; o painel de combate também sinaliza a vitória.
+- Barras de vida do encontro mudam de aparência quando a criatura está ferida ou em estado crítico.
+- As animações respeitam `prefers-reduced-motion`.
+- Nenhuma migração SQL nova: os dados de raridade são metadados opcionais nos objetos de equipamento existentes.
+
+### Recursos preservados da v1.3 — combate reativo
 
 - Miniaturas do mapa reagem ao resultado de ações: ataque, habilidade/magia, cura, erro e dano recebido.
 - O alvo atingido recebe uma reação visual; ataques de área do chefe podem destacar todos os aventureiros afetados.
@@ -44,7 +56,6 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 - Respeita `prefers-reduced-motion`.
 
 ### Recursos preservados da v1.2 — equipamento e criaturas
- — equipamento e criaturas
 
 - Equipamento inicial (arma, armadura e escudo, quando equipado) é representado visualmente nas miniaturas do tabuleiro.
 - Goblin das Cinzas, Lobo Cinzento, Espectro da Ruptura, Campeão Orc e Drakthar recebem silhuetas vetoriais próprias no mapa.
@@ -257,7 +268,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.2).
+1. Baixe o ZIP da versão nova (v1.4).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -282,7 +293,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9, v1.0, v1.1 e v1.2 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.4 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -361,4 +372,9 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.2 — equipamento visível, criaturas vetoriais e continuidade das campanhas.**
+**Reino de Aethra v1.4 — equipamento por raridade, criaturas e combate aprimorados.**
+
+
+## 16. Versão 1.4 — equipamento e combate aprimorados
+
+A v1.4 acrescenta leitura visual de raridade aos itens equipados, barras de HP nas peças de monstros, estados visuais para chefes em fases avançadas e animação de derrota. A raridade é um metadado opcional do item e não altera atributos, dano, defesa ou regras. Consulte `GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md` para aplicar esses metadados e compreender os limites da atualização.
