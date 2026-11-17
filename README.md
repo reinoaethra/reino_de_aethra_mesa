@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 1.6 — progressão narrativa, novos arcos, bestiário e livros ampliados**  
+**Versão do jogo: 1.7 — mapas regionais, recompensas de missão e campanha expandida**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -28,30 +28,37 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
 11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
 12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md)** — consultar os oito capítulos principais, sete missões secundárias, novos monstros e a progressão automática por combate.
+13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md)** — consultar mapas regionais, novos monstros, entrega de recompensas e livros ampliados.
 14. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
 15. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
 16. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 1.6
+## 2. O que está incluído na versão 1.7
 
-### Novidades da v1.6 — progressão, campanha e livros
+### Novidades da v1.7 — mapas, recompensas e livros
 
-- A campanha principal agora possui oito missões (capítulos I a VIII), prolongando a jornada até Drakmor e a Prisão Celestial. O conjunto possui sete missões secundárias.
-- Novo arco de Drakmor: Cidadela de Braseiro, Forja dos Juramentos, Mestre Ferreiro Brann e Malgor, General das Cinzas.
-- Seis novas criaturas selecionáveis: Sabueso das Brasas, Guardião das Raízes, Saqueador Afogado, Revenante da Geada, Escorpião do Sol Partido e Malgor, General das Cinzas. Todas possuem ficha de combate e silhueta vetorial própria.
-- A derrota de criaturas específicas pode concluir objetivos correspondentes automaticamente quando a missão estiver ativa e o mestre ativo confirmar o fim do encontro. A regra cobre inimigos de vários arcos, incluindo Aranha de Umbrafunda, Cultista, Sereia, Draco de Cristal, Cavaleiro Oco, lobos, espectros, Sabuesos, Malgor, Saqueador e Revenante.
-- A revelação do novo NPC Brann atualiza o objetivo de encontro da missão principal de Drakmor.
-- Quatro capítulos de consulta em cada um dos sete livros: conteúdo adicional para o Livro do Mestre, Bestiário, Grandes Chefes, Atlas, Grimório, Arsenal e Manual do Aventureiro.
-- Cenas narrativas preparadas para a Cidadela de Braseiro, Forja dos Juramentos, acampamento de Malgor e Prisão Celestial.
-- Campanhas antigas recebem apenas IDs de missões ausentes; o progresso salvo de objetivos existentes é preservado.
-- Nenhuma alteração no esquema do Supabase; nenhuma migração SQL é necessária.
+- Quatro mapas táticos regionais: Recife das Vozes (Thalassor), Galeria Prismática (Nivéria), Altar do Sol Partido (Solária) e Cidadela de Braseiro (Drakmor).
+- Quatro cenas preparadas para apresentar esses locais.
+- Três criaturas novas com fichas e silhuetas vetoriais próprias: Caranguejo-Catedral, Sentinela Prismática e Acólito do Sol Partido.
+- Objetivos de missões podem avançar quando o mestre controlador confirma a derrota das novas criaturas.
+- Missões selecionadas agora possuem entrega de recompensas: o mestre adiciona moedas e itens aos inventários dos personagens participantes; o registro evita repetir a entrega.
+- Cada um dos sete livros recebe um quinto capítulo de consulta.
+- Nenhuma migração SQL; os novos dados usam o JSON de campanha já existente.
 
-**Como funciona a automação:** somente os objetivos ligados a criaturas mapeadas são concluídos automaticamente, após o mestre validar a derrota. A missão precisa estar aceita/ativa. Exploração, pistas, itens, diálogos e objetivos finais continuam sob controle do mestre; a derrota de um monstro não conclui a missão inteira se restarem outros objetivos.
+**Limites das recompensas:** apenas `main-01` a `main-07`, `side-01`, `side-04`, `side-05` e `side-06` possuem pacotes automáticos. A missão final `main-08` e as demais secundárias continuam com entrega manual. XP por conclusão de missão também continua manual; o botão distribui apenas moedas e itens.
 
-**Sobre os livros:** cada volume agora possui quatro capítulos de consulta, mas ainda não é uma obra completa diagramada. PDFs editoriais, ilustrações próprias em cada capítulo, tabelas completas e regras mecânicas de itens/magias ainda precisam de desenvolvimento. O Livro do Mestre continua no frontend e não deve armazenar segredos privados.
+**Como funciona a progressão:** a missão precisa estar aceita/ativa e o mestre controlador precisa validar a derrota. Objetivos de investigação, exploração, diálogo e escolhas continuam sob controle do mestre.
+
+**Sobre os livros:** cada volume possui cinco capítulos de consulta, mas ainda não é uma obra completa diagramada. PDFs editoriais, ilustrações próprias por capítulo e tabelas completas ainda precisam ser desenvolvidos. O Livro do Mestre continua no frontend e não deve armazenar segredos privados.
+
+### Recursos preservados da v1.6 — campanha e progressão
+
+- Oito missões principais e sete secundárias, com arcos até Drakmor e a Prisão Celestial.
+- A derrota de criaturas específicas pode concluir objetivos correspondentes automaticamente quando a missão estiver ativa.
+- O NPC Brann atualiza o objetivo de apresentação da missão de Drakmor.
+- Cenas narrativas para a Cidadela de Braseiro, Forja dos Juramentos, acampamento de Malgor e Prisão Celestial.
 
 ### Novidades da v1.4 — equipamento e combate aprimorados
 
@@ -285,7 +292,7 @@ Também é possível preencher a URL e a chave no botão de configurações dent
 
 ## 8. Atualizar uma versão já publicada
 
-1. Baixe o ZIP da versão nova (v1.6).
+1. Baixe o ZIP da versão nova (v1.7).
 2. Extraia o conteúdo para uma pasta.
 3. Confira se a versão nova inclui um arquivo de migração SQL.
 4. Faça backup do banco antes de executar a migração indicada.
@@ -310,7 +317,7 @@ O plano Free do Supabase pode pausar projetos com pouca atividade durante sete d
 | `styles.css` | Cores, tipografia, layout, responsividade e animações. |
 | `app.js` | Interface, personagens, campanha, dados, combate e sincronização. |
 | `config.js` | Project URL e Publishable key do Supabase. |
-| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.6 mantêm o mesmo esquema. |
+| `supabase-schema.sql` | Instalação completa do banco v0.7; v0.9 a v1.7 mantêm o mesmo esquema. |
 | `supabase-migration-v0.3.sql` | Atualiza banco v0.2 para v0.3. |
 | `supabase-migration-v0.4.sql` | Atualiza banco v0.3 para v0.4. |
 | `supabase-migration-v0.5.sql` | Ajusta o estado inicial de campanhas novas em banco v0.4, sem alterar campanhas existentes. |
@@ -389,7 +396,7 @@ A v1.2 adiciona camadas visuais para arma, armadura e escudo às miniaturas dos 
 - Não foram alteradas tabelas, políticas ou funções do Supabase. Nenhuma migração SQL é necessária.
 - Foram verificadas sintaxe JavaScript, estrutura CSS, presença das cinco criaturas vetoriais, camadas de equipamento e integridade do ZIP. Não foi realizado teste visual completo em navegador nem teste multiplayer com Supabase real.
 
-**Reino de Aethra v1.6 — progressão narrativa, novos arcos e biblioteca ampliada.**
+**Reino de Aethra v1.7 — mapas regionais, recompensas e biblioteca ampliada.**
 
 
 ## 16. Versão 1.4 — equipamento e combate aprimorados
@@ -409,3 +416,14 @@ A biblioteca agora possui conteúdo inicial escrito, mas os volumes completos, i
 A v1.6 amplia a crônica para oito missões principais e sete secundárias, introduz Drakmor como novo arco jogável e acrescenta seis criaturas ao bestiário. A derrota de inimigos associados a objetivos pode atualizar automaticamente o diário da campanha, desde que a missão esteja ativa e o mestre ativo valide o encontro. O novo NPC Brann também atualiza o objetivo de apresentação da missão de Drakmor. Os sete livros recebem um quarto capítulo de consulta cada.
 
 A automação é intencionalmente limitada a eventos claros e identificáveis; objetivos de exploração, investigação, itens, escolhas e conclusão dos capítulos continuam manuais. Não há migração SQL nesta versão. Consulte `GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.6.md`.
+
+
+## 19. Versão 1.7 — mapas regionais e recompensas
+
+A v1.7 acrescenta quatro mapas táticos regionais: Recife das Vozes (Thalassor), Galeria Prismática (Nivéria), Altar do Sol Partido (Solária) e Cidadela de Braseiro (Drakmor). Cada mapa tem terreno, bloqueios e posições iniciais para a companhia. Também foram adicionadas cenas narrativas correspondentes.
+
+O bestiário recebe Caranguejo-Catedral, Sentinela Prismática e Acólito do Sol Partido, com fichas e habilidades. A derrota das criaturas mapeadas pode avançar objetivos de missões secundárias e principais.
+
+Quando uma missão com pacote automático estiver concluída, o mestre pode entregar a recompensa à companhia pelo botão exibido na missão. O jogo acrescenta moedas e itens ao inventário compartilhado de cada personagem participante e registra a entrega no diário. A marca `rewardClaimed` impede uma segunda entrega pela mesma missão. Nem todas as missões possuem pacote automático; nesses casos, o mestre continua responsável pela entrega manual. XP de conclusão de missão ainda deve ser distribuído manualmente.
+
+Cada um dos sete livros passa a ter cinco capítulos de consulta. Não há migração SQL: o estado adicional fica no JSON da campanha já existente.

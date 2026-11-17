@@ -1,5 +1,16 @@
 # Histórico de versões — Reino de Aethra
 
+## v1.7 — Mapas regionais, recompensas e biblioteca
+
+- Quatro mapas táticos novos: Recife das Vozes (Thalassor), Galeria Prismática (Nivéria), Altar do Sol Partido (Solária) e Cidadela de Braseiro (Drakmor).
+- Novas cenas preparadas para os quatro locais regionais.
+- Três criaturas adicionadas ao bestiário: Caranguejo-Catedral, Sentinela Prismática e Acólito do Sol Partido.
+- Derrotas das novas criaturas podem atualizar objetivos associados a missões existentes.
+- Entrega de recompensas de missão pelo mestre: moedas e itens são adicionados ao inventário de cada personagem participante; entrega fica registrada e protegida contra repetição.
+- Pacotes automáticos disponíveis apenas para missões selecionadas; XP de conclusão, recompensas não mapeadas e missões finais permanecem sob controle manual do mestre.
+- Quinto capítulo de consulta adicionado a cada um dos sete livros.
+- Nenhuma migração SQL; campanhas existentes mantêm o mesmo esquema e recebem apenas dados opcionais no JSON da campanha.
+
 ## v1.6 — Progressão narrativa, novos arcos e livros ampliados
 
 - Campanha ampliada para oito missões principais e sete secundárias.
