@@ -1,6 +1,6 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.7 — exploração interativa e acontecimentos**  
+**Versão do jogo: 2.8 — cenas exploráveis, objetos interativos e livros ampliados**  
 **Idioma:** português (Brasil)  
 **Formato:** aplicação web estática para navegador  
 **Hospedagem da interface:** GitHub Pages  
@@ -36,13 +36,27 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
 19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
 21. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
-22. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+22. **[GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md](GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md)** — movimento narrativo, objetos persistentes, rotinas de NPCs e atualizações da biblioteca.
+23. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
-## 2. O que está incluído na versão 2.7
+## 2. O que está incluído na versão 2.8
 
-### Novidades da v2.7 — exploração interativa
+### Novidades da v2.8 — cenas exploráveis e biblioteca ampliada
+
+- Cena de exploração com grade 5×4 e marcador da companhia; o mestre controlador move o grupo por passos narrativos.
+- Objetos interativos contextuais por mapa: portas, baús e mecanismos em Eldoria, Drakmor, Nivéria, Thalassor, Solária e ruínas.
+- Estado de portas, baús e mecanismos persistido em `worldExploration.objectStates`; baús abertos não podem ser abertos novamente pelo mesmo estado da campanha.
+- Posição da companhia salva por região em `worldExploration.positions`.
+- NPCs revelados apresentam localização sugerida em uma rotina cíclica conforme o turno narrativo. A rotina é uma sugestão de cena, não simulação autônoma em tempo real.
+- Interações validadas pelo mestre controlador, registradas no diário e publicadas como evento de sessão.
+- Sete livros da biblioteca receberam um capítulo novo: Mestre, Bestiário, Chefes, Atlas, Grimório, Arsenal e Manual do Aventureiro.
+- Livro do Mestre atualizado em PDF separado, com regras de exploração, objetos, NPCs, cenas e preparação de encontros.
+- Nenhuma migração SQL necessária; dados adicionados ao JSON da campanha.
+- A tela de acesso, criação de conta e início da campanha não foi reformulada nesta versão, conforme planejamento da próxima etapa.
+
+### Novidades da v2.7 — exploração interativa — exploração interativa
 
 - Painel de exploração contextual com pontos de interesse: tavernas, oficinas, mercados, santuários, bibliotecas, portos, templos, forjas e ruínas.
 - Cada ponto abre uma descrição e uma pista narrativa. O mestre controlador pode registrar a descoberta; o registro é salvo no estado da campanha e no diário.

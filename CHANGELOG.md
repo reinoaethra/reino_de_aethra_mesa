@@ -1,3 +1,15 @@
+## v2.8 — cenas exploráveis e livros ampliados
+
+- Cena de exploração com grade 5×4, marcador da companhia e controles direcionais de deslocamento narrativo para o mestre controlador.
+- Portas, baús e mecanismos específicos por mapa; estados salvos na campanha e interações registradas no diário.
+- Baús não podem ser reabertos depois de marcados como abertos.
+- NPCs revelados exibem localização sugerida em rotinas cíclicas conforme o turno narrativo.
+- Os sete livros da biblioteca receberam capítulo de v2.8 sobre exploração, habitats, arenas, rotas, magia aplicada e objetos de cenário.
+- Novo Livro do Mestre em PDF, edição 2.8, entregue separadamente do pacote público.
+- Dados persistidos em `worldExploration`; nenhuma migração SQL necessária.
+- A página inicial de acesso, criação de conta e início da campanha foi intencionalmente mantida para uma atualização posterior.
+- Validações estáticas: `node --check`, HTML parser, CSS e integridade do ZIP. Não houve teste visual em navegador nem multiplayer real com Supabase.
+
 ## v2.7 — exploração interativa e acontecimentos
 
 - Adicionado painel de exploração com pontos de interesse contextuais por mapa: taverna, oficina, mercado, santuário, biblioteca, porto, templo, forja e ruínas.
