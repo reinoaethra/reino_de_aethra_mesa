@@ -841,3 +841,41 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .map-door-item p{margin:0;color:#99a6b1;font-size:8px;line-height:1.45}
 .map-legend-new{display:flex;flex-wrap:wrap;gap:8px 14px}
 .map-legend-new>span{display:inline-flex;align-items:center;gap:5px;line-height:1.3}
+
+
+/* v3.0.2 — mapas do mestre como fundo real; o código do terreno só controla a passagem. */
+.map-board-layout-new .map-board.map-board-image{
+  width:100%;min-width:560px;max-width:960px;height:auto;aspect-ratio:var(--map-aspect,1.25);
+  grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));
+  gap:0;padding:0;border:0;border-radius:4px;overflow:hidden;
+  background-color:#101820;background-repeat:no-repeat;background-position:center;background-size:100% 100%;
+  box-shadow:0 8px 22px rgba(0,0,0,.34);
+}
+.map-board-layout-new .map-board.map-board-image .map-cell{
+  min-height:0;aspect-ratio:auto;border:0;border-radius:0;background:transparent!important;
+  box-shadow:none;isolation:isolate;overflow:visible;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell:before{content:none!important;display:none!important}
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-grass,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-path,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-tree,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-water,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-rock,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-house,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-column,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-wall{background:transparent!important}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked{filter:none;cursor:not-allowed}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked:after{
+  content:"";position:absolute;inset:0;z-index:1;background:rgba(3,7,10,.68);pointer-events:none;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked:hover:not(:disabled){filter:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.map-board-layout-new .map-board.map-board-image .map-cell.fogged{background:rgba(8,15,23,.94)!important}
+.map-board-layout-new .map-board.map-board-image .map-cell .map-terrain-art,
+.map-board-layout-new .map-board.map-board-image .map-cell .tile-art,
+.map-board-layout-new .map-board.map-board-image .map-cell .map-blocked-hint{display:none!important}
+.map-board-layout-new .map-board.map-board-image .map-cell-coordinate{opacity:.6;font-size:6px;background:rgba(5,9,12,.42);border-color:rgba(255,255,255,.12)}
+.map-board-layout-new .map-board.map-board-image .map-cell:not(.blocked):not(.fogged):hover:not(:disabled){filter:brightness(1.06);box-shadow:inset 0 0 0 2px rgba(244,213,151,.82);z-index:5}
+@media(max-width:720px){
+  .map-board-layout-new .map-board.map-board-image{min-width:520px}
+  .map-board-layout-new .map-cell-coordinate{font-size:5px;opacity:.5}
+}

@@ -1,8 +1,8 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 3.0.1 — atualização de lançamento e melhorias do tabuleiro**  
+**Versão do jogo: 3.0.2 — mapas do mestre e movimentação diagonal**  
 **Idioma:** português (Brasil)  
-**Formato:** aplicação web estática para navegador · pacote de lançamento v3.0.1  
+**Formato:** aplicação web estática para navegador · pacote de atualização v3.0.2  
 **Hospedagem da interface:** GitHub Pages  
 **Banco de dados e multiplayer:** Supabase
 
@@ -66,7 +66,9 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. Versão oficial 3.0 — pronta para iniciar as partidas
 
-A v3.0 foi a edição oficial inicial. A v3.0.1 é a atualização de manutenção e experiência de mesa: corrige o fechamento dos diálogos de login e logout, redesenha os mapas como plantas superiores de salas e corredores, com entradas e saídas acessíveis, portas persistentes e Pontos de Interesse em coordenadas; a interface ocupa a largura disponível do navegador. As estátuas das miniaturas permanecem fixas.
+A v3.0 foi a edição oficial inicial. A v3.0.1 corrigiu os diálogos e modernizou os tabuleiros. A v3.0.2 integra os onze mapas preparados pelo mestre, usa suas imagens próprias como fundos, escurece casas bloqueadas sem símbolos de terreno e habilita movimentação diagonal com prevenção de corte de cantos.
+
+A v3.0.1 é a atualização de manutenção e experiência de mesa: corrige o fechamento dos diálogos de login e logout, redesenha os mapas como plantas superiores de salas e corredores, com entradas e saídas acessíveis, portas persistentes e Pontos de Interesse em coordenadas; a interface ocupa a largura disponível do navegador. As estátuas das miniaturas permanecem fixas.
 
 Para instalações já conectadas ao Supabase, execute uma vez `supabase-migration-v3.0.1.sql` para liberar os pedidos remotos nos onze tabuleiros. Em instalações novas, use o `supabase-schema.sql` atualizado. Preserve seu `config.js`; não apague nem recrie tabelas ou campanhas.
 
@@ -658,3 +660,7 @@ A v2.12 preserva as miniaturas estáticas das oito classes e melhora a leitura d
 Chefes e criaturas grandes reservam a área inteira de suas bases: exemplos incluem bases 2×2, 3×2 e 3×3. O início do encontro procura espaço livre para cada base; movimento e caminho também verificam todas as casas ocupadas. Se a base não couber no mapa, o sistema informa o tamanho exigido. As estátuas são estáticas, sem animações ou posturas alternativas. Nenhuma migração SQL é necessária.
 
 Consulte `GUIA-MINIATURAS-DE-MESA-V2.12.md` e `ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf`.
+
+44. **[NOTAS-DE-LANCAMENTO-V3.0.2.md](NOTAS-DE-LANCAMENTO-V3.0.2.md)** — mapas importados e movimentação diagonal.
+45. **[GUIA-DE-ATUALIZACAO-V3.0.2.md](GUIA-DE-ATUALIZACAO-V3.0.2.md)** — instalação da v3.0.2.
+46. **[CHECKLIST-PUBLICACAO-V3.0.2.md](CHECKLIST-PUBLICACAO-V3.0.2.md)** — verificações após publicar.

@@ -1,3 +1,20 @@
+# v3.0.2 — mapas preparados pelo mestre e movimento diagonal
+
+- Integrados ao jogo os 11 mapas do projeto enviado pelo mestre, com suas imagens originais, plantas 10×8, terrenos, portas, entradas, saídas e Pontos de Interesse.
+- As imagens de cada mapa agora são o fundo do tabuleiro tático. O código de terreno continua controlando a passagem, mas não desenha ícones de árvores, água, rochas, muros, pisos ou edificações por cima da imagem.
+- As casas não caminháveis recebem somente uma camada escura sem símbolo, mantendo o desenho do mapa visível.
+- A movimentação agora aceita as oito direções. Cada movimento diagonal conta como uma casa, dentro do limite atual de quatro casas por turno.
+- Regra anti-corte de canto: uma diagonal só é válida quando as duas casas ortogonais que formam o canto estão livres. Portas fechadas, obstáculos, limites do mapa e peças ocupadas continuam bloqueando o deslocamento.
+- A mesma validação de caminho diagonal é aplicada ao pedido do jogador e à confirmação do mestre.
+- Não há alteração de banco de dados nem migração SQL nesta atualização. O `config.js`, a autenticação e o progresso das campanhas são preservados.
+
+## Validação local
+
+- Os 11 mapas importados conferem com as 80 casas de cada layout e possuem imagens locais válidas.
+- Entradas, saídas, portas e Pontos de Interesse foram verificados quanto às coordenadas.
+- Testes de caminho cobrem diagonais livres, bloqueios de canto, portas abertas/fechadas e diagonais em sequência.
+- A suíte de regressão da v3.0.1 continua aprovada.
+
 # v3.0.1 — tabuleiros exploráveis e guias de condução
 
 - Corrigido o fechamento dos modais de login e saída da conta após os eventos de autenticação e também após o carregamento das campanhas.
