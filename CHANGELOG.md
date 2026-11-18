@@ -1,3 +1,16 @@
+# v3.0.1 — tabuleiros exploráveis e guias de condução
+
+- Corrigido o fechamento dos modais de login e saída da conta após os eventos de autenticação e também após o carregamento das campanhas.
+- Ampliado o layout para aproveitar a largura disponível no navegador, com adaptação responsiva para tablets e celulares.
+- Mapas táticos agora usam plantas superiores de salas, corredores, terrenos, bloqueios, portas, entradas e saídas, em vez de depender de uma paisagem frontal como fundo do tabuleiro.
+- Adicionados pontos de interesse interativos com coordenadas, descrição, interação sugerida, teste, resultado e observação reservada ao mestre.
+- Painel do tabuleiro apresenta portas padrão e adicionais com nome, localização, estado e descrição; portas desenhadas diretamente na planta também são cadastradas automaticamente. Mapas antigos identificam padrões incompletos e solicitam que o mestre grave as portas antes de os jogadores interagirem.
+- Corrigidas as casas de saída para que não fiquem sobre água ou paredes; portas explícitas agora abrem vãos em paredes e edificações sem deixar a casa permanentemente bloqueada.
+- Acrescentada a migração `supabase-migration-v3.0.1.sql` para atualizar as funções RPC de movimento e interação nos projetos Supabase já existentes.
+- Criados três PDFs separados: Manual de Cena Interativa e Pontos de Interesse (12 páginas), Manual do Mapa Tático (10 páginas) e Roteiro do Mestre Iniciante (15 páginas).
+- Mantidas as estátuas estáticas, peças multicelulares, dados das campanhas e configuração `config.js`.
+- Testes estáticos e direcionados aprovados; a migração Supabase e o multiplayer real precisam ser verificados no projeto publicado.
+
 # v3.0 — lançamento oficial para as primeiras partidas
 
 - Separação de armazenamento: sessões visitantes e campanhas locais ficam limitadas à aba; contas permanentes continuam persistidas para login em outros dispositivos. Cache antigo de visitante em armazenamento permanente não é recuperado por uma nova sessão.

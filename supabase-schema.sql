@@ -640,7 +640,7 @@ begin
     raise exception 'Crie seu personagem antes de solicitar movimento.';
   end if;
 
-  if p_map_id is null or p_map_id not in ('eldoria-road', 'brumafolha', 'watchtower', 'root-sanctuary') then
+  if p_map_id is null or p_map_id not in ('eldoria-road', 'brumafolha', 'watchtower', 'root-sanctuary', 'thalassor-reef', 'niveria-crystal', 'solaria-dais', 'drakmor-citadel', 'umbrafunda-cavern', 'drakmor-lava-cave', 'niveria-deep-cave') then
     raise exception 'Mapa não reconhecido.';
   end if;
   if p_x is null or p_y is null or p_x < 0 or p_x > 9 or p_y < 0 or p_y > 7 then
@@ -710,7 +710,7 @@ begin
   ) then
     raise exception 'Crie seu personagem antes de interagir com objetos.';
   end if;
-  if p_map_id is null or p_map_id not in ('eldoria-road', 'brumafolha', 'watchtower', 'root-sanctuary') then
+  if p_map_id is null or p_map_id not in ('eldoria-road', 'brumafolha', 'watchtower', 'root-sanctuary', 'thalassor-reef', 'niveria-crystal', 'solaria-dais', 'drakmor-citadel', 'umbrafunda-cavern', 'drakmor-lava-cave', 'niveria-deep-cave') then
     raise exception 'Mapa não reconhecido.';
   end if;
   if p_marker_id is null or length(p_marker_id) > 80 then

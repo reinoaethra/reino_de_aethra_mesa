@@ -1,8 +1,8 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 3.0 — lançamento oficial para as primeiras partidas**  
+**Versão do jogo: 3.0.1 — atualização de lançamento e melhorias do tabuleiro**  
 **Idioma:** português (Brasil)  
-**Formato:** aplicação web estática para navegador · pacote de lançamento v3.0  
+**Formato:** aplicação web estática para navegador · pacote de lançamento v3.0.1  
 **Hospedagem da interface:** GitHub Pages  
 **Banco de dados e multiplayer:** Supabase
 
@@ -51,18 +51,24 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 33. **[GUIA-MINIATURAS-DE-MESA-V2.12.md](GUIA-MINIATURAS-DE-MESA-V2.12.md)** — estátuas, equipamento visual e bases de chefes multicelulares.
 34. **[ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf](ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf)** — complemento ilustrado com equipamentos e regras de bases ampliadas.
 35. **[ATLAS-MINIATURAS-V2.12.png](ATLAS-MINIATURAS-V2.12.png)** — prancha de referência das classes e principais modelos de monstros e chefes.
-36. **[NOTAS-DE-LANCAMENTO-V3.0.md](NOTAS-DE-LANCAMENTO-V3.0.md)** — mudanças da edição oficial.
-37. **[CHECKLIST-DE-LANCAMENTO-V3.0.md](CHECKLIST-DE-LANCAMENTO-V3.0.md)** — validação antes da primeira partida real.
-38. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+36. **[NOTAS-DE-LANCAMENTO-V3.0.md](NOTAS-DE-LANCAMENTO-V3.0.md)** — mudanças da edição oficial 3.0.
+37. **[GUIA-DE-ATUALIZACAO-V3.0.1.md](GUIA-DE-ATUALIZACAO-V3.0.1.md)** — como instalar a atualização de lançamento.
+38. **[NOTAS-DE-LANCAMENTO-V3.0.1.md](NOTAS-DE-LANCAMENTO-V3.0.1.md)** — correções de login/logout, tabuleiros e documentação.
+39. **[CHECKLIST-DE-PUBLICACAO-V3.0.1.md](CHECKLIST-DE-PUBLICACAO-V3.0.1.md)** — teste sugerido após publicar os arquivos.
+40. **[MANUAL-CENA-INTERATIVA-E-PONTOS-DE-INTERESSE-V3.0.1.pdf](MANUAL-CENA-INTERATIVA-E-PONTOS-DE-INTERESSE-V3.0.1.pdf)** — manual detalhado de cenas e descobertas.
+41. **[MANUAL-MAPA-TATICO-V3.0.1.pdf](MANUAL-MAPA-TATICO-V3.0.1.pdf)** — manual de tabuleiros, portas, movimento e combate espacial.
+42. **[ROTEIRO-DO-MESTRE-INICIANTE-PRIMEIRA-AVENTURA-V3.0.1.pdf](ROTEIRO-DO-MESTRE-INICIANTE-PRIMEIRA-AVENTURA-V3.0.1.pdf)** — roteiro detalhado para preparar e conduzir as primeiras sessões.
+43. **[supabase-migration-v3.0.1.sql](supabase-migration-v3.0.1.sql)** — ampliação da lista de mapas permitidos nos pedidos remotos.
+44. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
 
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
 
 ## 2. Versão oficial 3.0 — pronta para iniciar as partidas
 
-A v3.0 consolida o conteúdo das versões anteriores e corrige a passagem entre visitante e conta permanente, o fechamento dos formulários de criação e a validação de turnos de combate. Ações fora do turno são recusadas com explicação; aventureiros sem HP não recebem turnos; a derrota do grupo é apresentada separadamente da vitória contra os monstros. As miniaturas continuam como estátuas fixas, com efeitos de combate ao redor, sem mudanças de postura.
+A v3.0 foi a edição oficial inicial. A v3.0.1 é a atualização de manutenção e experiência de mesa: corrige o fechamento dos diálogos de login e logout, redesenha os mapas como plantas superiores de salas e corredores, com entradas e saídas acessíveis, portas persistentes e Pontos de Interesse em coordenadas; a interface ocupa a largura disponível do navegador. As estátuas das miniaturas permanecem fixas.
 
-Leia `NOTAS-DE-LANCAMENTO-V3.0.md` e siga `CHECKLIST-DE-LANCAMENTO-V3.0.md` antes da primeira sessão oficial. Preserve seu `config.js`; a v3.0 não exige migração SQL.
+Para instalações já conectadas ao Supabase, execute uma vez `supabase-migration-v3.0.1.sql` para liberar os pedidos remotos nos onze tabuleiros. Em instalações novas, use o `supabase-schema.sql` atualizado. Preserve seu `config.js`; não apague nem recrie tabelas ou campanhas.
 
 ## 2. O que está incluído na versão 2.10.2 (base visual preservada)
 
