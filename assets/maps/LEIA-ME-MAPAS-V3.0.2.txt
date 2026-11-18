@@ -1,0 +1,7 @@
+MAPAS TÁTICOS — REINO DE AETHRA v3.0.2
+
+Esta pasta contém os onze cenários enviados pelo mestre.
+- maps-data.js: layouts, imagens associadas, portas, entradas, saídas e Pontos de Interesse.
+- *.webp: fundos visuais dos tabuleiros.
+
+Os layouts têm 10 colunas x 8 linhas. Códigos do terreno controlam apenas a passagem. O desenho visual é fornecido pela imagem; as casas bloqueadas recebem uma camada escura no jogo.
