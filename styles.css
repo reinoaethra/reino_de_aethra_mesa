@@ -748,3 +748,37 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 
 .map-piece-thumb .monster-sprite{filter:grayscale(1) saturate(.1) contrast(1.08) drop-shadow(0 2px 2px #000)}
 .encounter-art-thumb .monster-sprite{filter:grayscale(1) saturate(.1) contrast(1.08) drop-shadow(0 2px 2px #000)}
+
+
+/* v3.0 — acabamento de lançamento e estátuas realmente estáticas */
+:root{--gold-soft:rgba(212,177,109,.12);--panel-edge:rgba(212,177,109,.24)}
+.btn,.icon-button,.account-button,.nav-link,.text-button{transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
+.btn:not(:disabled):active,.icon-button:not(:disabled):active{transform:translateY(1px) scale(.99)}
+.btn:disabled,button:disabled{cursor:not-allowed;opacity:.48;filter:saturate(.55)}
+.panel,.turn-tracker,.battle-card{border-color:var(--panel-edge);box-shadow:0 12px 32px rgba(0,0,0,.18)}
+.panel:focus-within,.panel:hover{border-color:rgba(212,177,109,.32)}
+.turn-token{transition:border-color .2s ease,background .2s ease,opacity .2s ease}
+.turn-token.active{border-color:rgba(240,215,155,.82);background:linear-gradient(110deg,rgba(212,177,109,.18),rgba(212,177,109,.045));box-shadow:0 0 22px rgba(212,177,109,.12),inset 0 0 0 1px rgba(212,177,109,.08)}
+.turn-token.out-of-action{opacity:.38;filter:grayscale(.8);text-decoration:line-through;text-decoration-color:rgba(230,150,130,.65)}
+.notice-danger{background:rgba(146,43,48,.16)!important;border-color:rgba(220,100,100,.36)!important;color:#f0b8b2!important}
+.battle-card.battle-defeat{border-color:rgba(210,85,85,.5);background:linear-gradient(145deg,rgba(63,25,30,.66),rgba(18,21,30,.97))}
+.battle-card.battle-defeat .battle-art{filter:grayscale(.55) brightness(.68)}
+.battle-card.battle-defeat .battle-content>h3:after{content:' · DERROTA';font:700 9px var(--sans);letter-spacing:1px;color:#ef9d96;vertical-align:middle}
+.modal-backdrop{overscroll-behavior:contain}
+.modal{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(212,177,109,.48) rgba(255,255,255,.04)}
+.modal-actions .btn{min-height:40px}
+.combat-fx-critical{border-color:rgba(255,202,105,.9);box-shadow:0 0 62px rgba(255,176,65,.32),0 25px 70px rgba(0,0,0,.5)}
+.combat-fx-critical .combat-fx-symbol{color:#ffe3a0;background:rgba(255,173,57,.2)}
+.combat-fx-miss{border-color:rgba(146,175,203,.66);box-shadow:0 0 44px rgba(112,157,197,.18),0 25px 70px rgba(0,0,0,.5)}
+.combat-fx-miss .combat-fx-symbol{color:#b9d1e7;background:rgba(104,151,192,.14)}
+/* As miniaturas são esculturas: efeitos ficam no cenário/UI, nunca alteram sua postura. */
+.map-token.miniature,.map-token.miniature .map-token-art,.map-token.monster-token,.map-token.monster-token .monster-sprite,.map-token.monster-token .monster-creature{animation:none!important;will-change:auto!important}
+.map-token.miniature .hero-sprite,.map-token.miniature .hero-sprite *,.map-token.monster-token .monster-sprite *{animation:none!important}
+.map-token.token-attack .hero-sprite .sprite-body,.map-token.token-cast .hero-sprite .sprite-body,.map-token.token-miss .hero-sprite .sprite-body,.map-token.token-monster-attack .monster-sprite .monster-creature{animation:none!important;transform:none!important}
+.map-token.token-hit{animation:none!important;filter:brightness(1.48) drop-shadow(0 0 8px rgba(255,125,85,.85))!important}
+.map-token.token-hit:after{animation:tokenImpactRing .55s ease-out both!important}
+.map-token.monster-defeated{animation:none!important;filter:grayscale(.82) brightness(.65)!important;opacity:.58}
+.map-token.monster-defeated .monster-creature{animation:none!important;transform:none!important;opacity:.7}
+.map-token.monster-defeated:before{animation:none!important;opacity:0}
+@media(max-width:620px){.modal-backdrop{align-items:end;padding:8px}.modal{width:100%;max-height:min(92dvh,850px);border-radius:18px 18px 12px 12px;padding:18px}.modal.wide{width:100%}.modal-actions{position:sticky;bottom:-18px;padding:12px 0 2px;background:linear-gradient(180deg,rgba(16,24,36,0),#101824 35%);flex-wrap:wrap}.modal-actions .btn{flex:1}.turn-order{gap:6px}.turn-token{min-width:120px}.battle-controls .combat-target-label{min-width:100%}}
+@media(prefers-reduced-motion:reduce){.btn,.icon-button,.account-button,.nav-link,.text-button{transition:none!important}.combat-fx,.combat-fx-symbol{animation:none!important}}

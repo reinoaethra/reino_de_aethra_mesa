@@ -1,6 +1,6 @@
-# Guia de login e progresso entre dispositivos — Reino de Aethra v0.8
+# Guia de login e progresso entre dispositivos — Reino de Aethra v3.0
 
-Este guia ensina, passo a passo, como fazer um jogador começar no computador e continuar no celular ou tablet usando o mesmo e-mail e senha.
+Este guia explica como usar o visitante, salvar uma conta permanente e entrar com ela em computador, celular ou tablet. A regra oficial da v3.0 é: visitante é temporário; conta permanente pode ser usada em qualquer dispositivo.
 
 > **Ideia principal:** na primeira abertura, Aethra cria um acesso visitante para que a pessoa possa experimentar o jogo sem preencher cadastro. Quando o jogador escolhe **Salvar progresso**, o aplicativo vincula um e-mail à identidade visitante que já está usando. Depois de confirmar o e-mail e criar uma senha, a mesma identidade pode ser acessada em outros dispositivos. Não é criada uma segunda ficha.
 
@@ -108,7 +108,7 @@ O Supabase precisa enviar a mensagem de confirmação e as mensagens de recupera
 
 Quando aparecer a mensagem de conta criada, o vínculo estará concluído. A conta permanente conserva o mesmo identificador Supabase do acesso visitante original; esse é o motivo de a ficha e as campanhas continuarem associadas à pessoa.
 
-**Não saia da conta visitante, não limpe os dados do navegador e não troque de dispositivo antes de concluir a confirmação e a criação da senha.**
+**Não feche a aba nem limpe os dados do navegador antes de concluir a confirmação e a criação da senha.** Até concluir esse processo, o acesso ainda é temporário.
 
 ## Parte C — Continuar no celular ou tablet
 
@@ -127,9 +127,11 @@ Depois de concluir a Parte B:
 
 O aplicativo consulta o Supabase e mostra as campanhas às quais essa conta pertence. A ficha e os dados salvos são carregados do banco, não da memória do computador antigo.
 
-### Muito importante ao usar um aparelho novo
+### Já usei este aparelho como visitante: posso entrar na minha conta?
 
-Faça login **antes** de criar um personagem ou entrar na campanha usando o acesso visitante recém-criado nesse aparelho. A versão atual evita misturar automaticamente duas identidades que tenham dados diferentes. Se você já criou uma ficha como visitante no novo aparelho, não tente entrar na conta por cima dela; primeiro decida qual progresso deve ser preservado.
+**Sim.** Essa é uma correção da v3.0. O acesso visitante e a conta permanente são identidades diferentes. Se o celular foi usado antes como visitante, abra **Conta → Já tenho uma conta**, informe o e-mail e a senha da conta permanente e entre normalmente. O contexto e os dados locais temporários do visitante deste aparelho serão descartados e a lista de campanhas da conta permanente será carregada. Não é necessário clicar em “Salvar progresso” no visitante antigo.
+
+O visitante é temporário e fica guardado apenas na aba atual. Ao fechar a aba, o navegador deixa de restaurar aquela sessão visitante. Uma conta permanente, por sua vez, permanece salva no aparelho e pode ser autenticada em outros dispositivos.
 
 ## Parte D — Esqueci minha senha
 
@@ -146,7 +148,7 @@ Se o link abrir um erro de URL não permitida, revise a Parte A, etapa 5.
 
 ## Parte E — Como o progresso é preservado
 
-- O Supabase Auth mantém a identidade da conta.
+- O Supabase Auth mantém a identidade da conta permanente. A sessão visitante não é restaurada depois que a aba é encerrada; dados locais antigos gravados por versões anteriores em armazenamento permanente são descartados na atualização, e registros temporários já enviados ao banco podem permanecer sem uma sessão reutilizável, mas não são carregados por um novo visitante.
 - As tabelas de Aethra relacionam campanhas, membros e personagens ao identificador do usuário (`auth.uid()`).
 - O vínculo do acesso visitante usa o mesmo identificador, em vez de criar outro usuário.
 - Ao fazer login em outro dispositivo, o navegador recebe a mesma identidade e pode consultar as campanhas autorizadas pelas políticas RLS.
@@ -182,6 +184,6 @@ Se a campanha não aparecer, não crie outra campanha para “corrigir”. Verif
 - Site URL e Redirect URLs: <https://supabase.com/docs/guides/auth/redirect-urls>
 
 
-## Compatibilidade com a v0.8
+## Compatibilidade com a edição oficial v3.0
 
-O fluxo de visitante, confirmação de e-mail, criação de senha, login e recuperação continua igual na v0.8. Não é necessária migração SQL para essa atualização. Depois de publicar a v0.8, faça o teste com computador e celular descrito no checklist.
+Na v3.0, as sessões visitantes ficam limitadas à aba atual e as contas permanentes continuam disponíveis entre dispositivos. Um aparelho que já foi usado como visitante pode entrar em uma conta existente sem salvar o visitante antigo. Não é necessária migração SQL para essa atualização. Antes de iniciar a campanha oficial, execute os passos de `CHECKLIST-DE-LANCAMENTO-V3.0.md`.

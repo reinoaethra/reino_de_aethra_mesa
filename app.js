@@ -1,4 +1,4 @@
-/* Reino de Aethra v2.12 — estátuas de mesa, equipamento visual e bases de chefes multicelulares.
+/* Reino de Aethra v3.0 — lançamento oficial, campanha, combate e contas visitante/permanente.
  * Modo local funciona sem backend. Para salas reais, configure Supabase e aplique o schema/migration.
  */
 (() => {
@@ -598,13 +598,44 @@
     return {...encounter,bossPhase:phase,bossPhaseName:names[phase],bossPhaseDescription:descriptions[phase],defense:(Number(encounter.baseDefense)||18)+(phase-1)*(encounter.templateId==='vharzun'?5:1),attackBonus:(Number(encounter.baseAttackBonus)||8)+(phase-1)*(encounter.templateId==='vharzun'?8:1)};
   }
   function activeCombatTurn(encounter){return encounter?.turnOrder?.[Number(encounter.turnIndex)||0]||null}
-  function isPlayersCombatTurn(){const turn=activeCombatTurn(state.campaign?.game_state?.encounter);return !!turn&&turn.kind==='player'&&turn.user_id===currentUserId()}
-  function advanceCombatTurn(encounter){const order=encounter.turnOrder||[];if(!order.length)return {...encounter,turnIndex:0,round:(encounter.round||1)+1};let index=Number(encounter.turnIndex)||0,round=Number(encounter.round)||1;for(let tries=0;tries<=order.length;tries++){index++;if(index>=order.length){index=0;round++}const turn=order[index],enemy=turn?.kind==='monster'?(encounter.enemies||[]).find(e=>e.id===turn.id):null;if(!enemy||(!enemy.defeated&&Number(enemy.hp)>0))return {...encounter,turnIndex:index,round}}return {...encounter,turnOrder:[],turnIndex:0,round,defeated:true}}
-  function buildTurnOrder(encounter,members){
+  function combatantAvailable(turn,encounter,partyState={}){
+    if(!turn)return false;
+    if(turn.kind==='monster'){const enemy=(encounter?.enemies||[]).find(e=>e.id===turn.id);return !!enemy&&!enemy.defeated&&Number(enemy.hp)>0}
+    if(turn.kind==='player'){
+      const vitals=partyState[turn.user_id];
+      if(vitals&&vitals.hp!==undefined&&vitals.hp!==null)return Number(vitals.hp)>0;
+      const member=state.members.find(m=>m.user_id===turn.user_id);
+      return !!member?.character&&normalizeCharacter(member.character).hp>0;
+    }
+    return true;
+  }
+  function isPlayersCombatTurn(){
+    const encounter=state.campaign?.game_state?.encounter,turn=activeCombatTurn(encounter);
+    if(!turn||turn.kind!=='player'||turn.user_id!==currentUserId())return false;
+    const character=state.member?.character;
+    return !character||currentPartyVitals(currentUserId(),character).hp>0;
+  }
+  function advanceCombatTurn(encounter,partyState=state.campaign?.game_state?.partyState||{}){
+    const order=encounter.turnOrder||[];let index=Number(encounter.turnIndex)||0,round=Number(encounter.round)||1;
+    const livingPlayers=state.members.some(m=>m.role==='player'&&m.character&&combatantAvailable({kind:'player',user_id:m.user_id},encounter,partyState));
+    const livingEnemies=(encounter.enemies||[]).some(e=>!e.defeated&&Number(e.hp)>0);
+    if(!livingPlayers&&livingEnemies)return {...encounter,turnOrder:[],turnIndex:0,round,partyDefeated:true,defeated:false};
+    if(!livingEnemies)return {...encounter,turnOrder:[],turnIndex:0,round,partyDefeated:false,defeated:true};
+    if(!order.length)return {...encounter,turnIndex:0,round:round+1,partyDefeated:!livingPlayers&&livingEnemies,defeated:!livingEnemies||!!encounter.defeated};
+    index=Math.min(Math.max(-1,index),order.length-1);
+    for(let tries=0;tries<order.length;tries++){
+      index++;if(index>=order.length){index=0;round++}
+      const turn=order[index];if(combatantAvailable(turn,encounter,partyState))return {...encounter,turnIndex:index,round,partyDefeated:false};
+    }
+    const rebuilt=buildTurnOrder(encounter,state.members,partyState);
+    if(rebuilt.length)return {...encounter,turnOrder:rebuilt,turnIndex:0,round:round+1,partyDefeated:false};
+    return {...encounter,turnOrder:[],turnIndex:0,round,partyDefeated:!livingPlayers&&livingEnemies,defeated:!livingEnemies||!!encounter.defeated};
+  }
+  function buildTurnOrder(encounter,members,partyState={}){
     const order=[];
-    members.filter(m=>m.role==='player'&&m.character).forEach(m=>{const c=normalizeCharacter(m.character);order.push({kind:'player',user_id:m.user_id,name:c.name||m.display_name,initiative:secureDie(20)+attrMod(c.attributes.destreza)})});
+    members.filter(m=>m.role==='player'&&m.character&&Number(partyState[m.user_id]?.hp??normalizeCharacter(m.character).hp)>0).forEach(m=>{const c=normalizeCharacter(m.character);order.push({kind:'player',user_id:m.user_id,name:c.name||m.display_name,initiative:secureDie(20)+attrMod(c.attributes.destreza)})});
     const enemies=Array.isArray(encounter.enemies)&&encounter.enemies.length?encounter.enemies:[{id:'monster',name:encounter.name,initiativeBonus:encounter.initiativeBonus}];enemies.filter(e=>!e.defeated&&Number(e.hp)>0).forEach(e=>order.push({kind:'monster',id:e.id,name:e.name,initiative:secureDie(20)+(Number(e.initiativeBonus)||0)}));
-    return order.sort((a,b)=>b.initiative-a.initiative||a.name.localeCompare(b.name));
+    return order.sort((a,b)=>b.initiative-a.initiative||String(a.name||'').localeCompare(String(b.name||'')));
   }
   function primaryAttributeForClass(className){return ({Guerreiro:'forca',Paladino:'forca',Patrulheiro:'destreza',Assassino:'destreza',Arcano:'inteligencia',Invocador:'inteligencia',Clérigo:'sabedoria',Druida:'sabedoria'})[className]||'forca'}
   function localGrantXp(character,amount){
@@ -724,8 +755,43 @@
     instanceId:null, lastSyncAt:null, rollQueue:Promise.resolve(), combatQueue:Promise.resolve(), isRefreshing:false,
     localCampaigns:readLocalCampaigns(), currentBook:null, accountMode:'home'
   };
-  function readLocalCampaigns(){try{return JSON.parse(localStorage.getItem(KEYS.local)||'[]')}catch{return []}}
-  function writeLocalCampaigns(){localStorage.setItem(KEYS.local,JSON.stringify(state.localCampaigns))}
+  function readLocalCampaigns(){
+    try{
+      // Campanhas locais antigas em localStorage eram de visitantes e não devem sobreviver a uma sessão nova.
+      const raw=sessionStorage.getItem(KEYS.local);
+      localStorage.removeItem(KEYS.local);
+      return JSON.parse(raw||'[]');
+    }catch{localStorage.removeItem(KEYS.local);return []}
+  }
+  function writeLocalCampaigns(){sessionStorage.setItem(KEYS.local,JSON.stringify(state.localCampaigns));localStorage.removeItem(KEYS.local)}
+  function storedAuthUser(serialized){
+    try{const value=JSON.parse(serialized);return value?.user||value?.currentSession?.user||value?.session?.user||null}catch{return null}
+  }
+  function createAuthStorage(){
+    // Visitantes ficam apenas nesta aba; contas permanentes permanecem no aparelho e podem autenticar em outro dispositivo.
+    return {
+      async getItem(key){
+        const temporary=sessionStorage.getItem(key);
+        if(temporary!==null)return temporary;
+        const persistent=localStorage.getItem(key);
+        if(persistent!==null&&storedAuthUser(persistent)?.is_anonymous){sessionStorage.setItem(key,persistent);localStorage.removeItem(key)}
+        return persistent;
+      },
+      async setItem(key,value){
+        const temporary=!!storedAuthUser(value)?.is_anonymous;
+        const destination=temporary?sessionStorage:localStorage;
+        const other=temporary?localStorage:sessionStorage;
+        other.removeItem(key);destination.setItem(key,value);
+      },
+      async removeItem(key){localStorage.removeItem(key);sessionStorage.removeItem(key)}
+    };
+  }
+  function getActiveCampaignId(){return (isAnonymousUser()||!state.backendReady?sessionStorage:localStorage).getItem(KEYS.active)}
+  function setActiveCampaignId(id){
+    const temporary=isAnonymousUser()||!state.backendReady,destination=temporary?sessionStorage:localStorage,other=temporary?localStorage:sessionStorage;
+    other.removeItem(KEYS.active);destination.setItem(KEYS.active,id);
+  }
+  function clearActiveCampaignId(){localStorage.removeItem(KEYS.active);sessionStorage.removeItem(KEYS.active)}
   function esc(value=''){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function toast(message,type='ok'){const node=document.createElement('div');node.className='toast '+(type==='error'?'error':'');node.textContent=message;toastRoot.append(node);setTimeout(()=>node.remove(),3800)}
   function setConnection(label,online=false){const el=$('#connection-status');if(!el)return;el.innerHTML=`<i></i> ${esc(label)}`;el.classList.toggle('offline',!online)}
@@ -752,11 +818,17 @@
     else{label.textContent='Conta ✓';button.title=state.user?.email||'Conta sincronizada';}
   }
   function authRedirectUrl(){return `${location.origin}${location.pathname}`}
+  function discardTemporaryProgress(){
+    // Remove tanto o cache temporário atual quanto qualquer sobra de versões antigas.
+    sessionStorage.removeItem(KEYS.local);
+    localStorage.removeItem(KEYS.local);
+    state.localCampaigns=[];
+  }
   function clearCampaignContext(){
     if(state.channel&&state.backend)state.backend.removeChannel(state.channel);
     state.channel=null;state.channelPresence=[];state.campaign=null;state.member=null;state.members=[];state.events=[];
     state.pendingDamage=[];state.pendingMapMoves=[];state.pendingMapInteractions=[];state.processed=new Set();state.cloudCampaigns=[];
-    localStorage.removeItem(KEYS.active);state.view='campaigns';
+    clearActiveCampaignId();state.view='campaigns';
   }
   function handleAuthStateChange(event,session){
     const oldId=state.user?.id;const nextUser=session?.user||null;
@@ -785,8 +857,9 @@
     state.user=data.user||state.user;localStorage.removeItem(KEYS.pendingLinkEmail);state.accountMode='profile';render();toast('Conta criada! A mesma ficha agora pode ser acessada em outros dispositivos.');
   }
   async function signInExistingAccount(email,password){
-    if(state.user?.is_anonymous&&state.member?.campaign_id)throw new Error('Esta sessão visitante já está ligada a uma campanha neste dispositivo. Volte e escolha “Salvar progresso” para vincular o e-mail sem perder a ficha.');
+    const wasVisitor=isAnonymousUser();
     const {data,error}=await state.backend.auth.signInWithPassword({email:email.trim().toLowerCase(),password});if(error)throw error;
+    if(wasVisitor)discardTemporaryProgress();
     state.user=data.user;clearCampaignContext();state.modal=null;state.view='campaigns';await loadCloudCampaigns();render();toast('Login realizado. Suas campanhas vinculadas à conta foram carregadas.');
   }
   async function sendPasswordReset(email){
@@ -802,10 +875,11 @@
   }
   async function signOutAccount(){
     if(!state.backendReady)throw new Error('Supabase não está conectado.');
-    await state.backend.auth.signOut();
+    const {error:signOutError}=await state.backend.auth.signOut();if(signOutError)throw signOutError;
     localStorage.removeItem(KEYS.pendingLinkEmail);
+    discardTemporaryProgress();
     const {data,error}=await state.backend.auth.signInAnonymously();if(error)throw error;
-    clearCampaignContext();state.user=data.user;state.accountMode='home';state.modal=null;render();toast('Você saiu da conta neste dispositivo.');
+    clearCampaignContext();state.user=data.user;state.accountMode='home';state.modal=null;render();toast('Você saiu da conta neste dispositivo. Um novo acesso visitante foi iniciado.');
   }
   function isMaster(){return state.member?.role==='master'}
   function isMasterController(){
@@ -826,11 +900,11 @@
     render();
     const cfg=loadConfig();
     if(cfg?.url&&cfg?.key){try{await connectSupabase(cfg.url,cfg.key,true)}catch(e){console.warn(e);setConnection('Modo local',false)}}
-    const active=localStorage.getItem(KEYS.active);
+    const active=getActiveCampaignId();
     if(active&&!state.campaign){
       const found=state.localCampaigns.find(c=>c.id===active);
       if(found){state.campaign=found;state.member=found.members.find(m=>m.user_id==='local-user')||found.members[0]||null;state.members=found.members;state.events=found.events||[]}
-      else if(state.backendReady){try{await openCloudCampaign(active)}catch(e){console.warn('Não foi possível restaurar a última campanha',e)}}
+      else if(state.backendReady){try{await openCloudCampaign(active)}catch(e){console.warn('Não foi possível restaurar a última campanha',e);clearActiveCampaignId()}}
     }
     if(state.backendReady&&pendingLinkConfirmed()){state.accountMode='set-password';state.modal='account';}
     if(state.backendReady&&new URLSearchParams(location.hash.replace(/^#/, '')).get('type')==='recovery'){state.accountMode='recovery-password';state.modal='account';}
@@ -842,12 +916,14 @@
   function loadConfig(){try{const saved=JSON.parse(localStorage.getItem(KEYS.config)||'null');if(saved?.url&&saved?.key)return saved}catch{}const deployed=window.AETHRA_CONFIG||{};return{url:deployed.supabaseUrl||'',key:deployed.supabasePublicKey||deployed.supabaseAnonKey||''}}
   async function connectSupabase(url,key,silent=false){
     if(!window.supabase?.createClient)throw new Error('Não foi possível carregar a biblioteca do Supabase. Verifique sua conexão com a internet.');
-    const client=window.supabase.createClient(url.trim(),key.trim(),{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    const client=window.supabase.createClient(url.trim(),key.trim(),{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:createAuthStorage()}});
     let {data:{session}}=await client.auth.getSession();
     if(!session){const result=await client.auth.signInAnonymously();if(result.error)throw result.error;session=result.data.session}
     const schemaCheck=await client.from('campaigns').select('id').limit(1);
     if(schemaCheck.error){const detail=schemaCheck.error.message||'tabela campaigns indisponível';throw new Error(`A autenticação funcionou, mas o banco de Aethra ainda não está pronto (${detail}). Execute o arquivo supabase-schema.sql no SQL Editor do Supabase e tente novamente.`)}
     state.backend=client;state.user=session.user;state.backendReady=true;state.realtimeStatus='disconnected';
+    // Um identificador antigo em localStorage pode pertencer a outro visitante; nunca o adote como a sessão atual.
+    if(isAnonymousUser())localStorage.removeItem(KEYS.active);
     if(state.authSubscription?.unsubscribe)state.authSubscription.unsubscribe();
     const {data:{subscription}}=client.auth.onAuthStateChange((event,nextSession)=>handleAuthStateChange(event,nextSession));
     state.authSubscription=subscription;
@@ -912,7 +988,7 @@
   }
   function renderLibrary(){
     app.innerHTML=`<div class="page-header"><div><div class="page-kicker">Conhecimento preservado</div><h1 class="page-title">Biblioteca de Aethra</h1><p>Livros de consulta para mestres e aventureiros. A biblioteca acompanha a expansão das crônicas de Aethra.</p></div><button class="btn btn-secondary" data-action="go-home">← Voltar ao início</button></div>
-      <div class="notice"><strong>Edição v2.9:</strong> a biblioteca reúne os capítulos mais recentes sobre exploração regional e condução de cenas. O Livro do Mestre também possui uma edição diagramada em PDF para consulta durante as sessões. O PDF é um material separado e deve ser guardado pelo mestre; não o publique no repositório público do site. A biblioteca do navegador não oferece proteção real contra acesso ao conteúdo.</div>
+      <div class="notice"><strong>Edição de lançamento v3.0:</strong> a biblioteca reúne os capítulos mais recentes sobre exploração regional e condução de cenas. O Livro do Mestre também possui uma edição diagramada em PDF para consulta durante as sessões. O PDF é um material separado e deve ser guardado pelo mestre; não o publique no repositório público do site. A biblioteca do navegador não oferece proteção real contra acesso ao conteúdo.</div>
       <div class="library-grid" style="margin-top:18px">${BOOKS.filter(b=>b.id!=='master'||isMaster()).map(b=>`<article class="book-card"><div class="book-cover"><span>${b.icon}</span></div><div class="book-body"><span class="tag ${b.access==='Mestre'?'gold':'green'}">${b.access==='Mestre'?'Reservado ao mestre':'Consulta geral'}</span><h3>${b.title}</h3><p>${b.desc}</p><div class="book-card-actions"><button class="btn btn-secondary btn-small" data-action="open-book" data-book="${b.id}">Abrir livro →</button></div></div></article>`).join('')}</div>`;
   }
   async function loadCloudCampaigns(){
@@ -936,18 +1012,20 @@
   async function createCampaign(name,description){
     if(state.backendReady){
       const {data,error}=await state.backend.rpc('create_campaign',{p_name:name,p_description:description});if(error)throw error;
+      // O modal é removido antes das leituras/atualizações assíncronas que redesenham o salão.
+      closeModal();
       const c=normalizeCampaign(data);await openCloudCampaign(c.id);return;
     }
     const code='AETHRA-'+Math.random().toString(36).slice(2,6).toUpperCase();
     const c={id:'local-'+Date.now(),code,name,description,status:'paused',owner_id:'local-user',game_state:defaultGameState(),members:[{id:'local-master',campaign_id:null,user_id:'local-user',display_name:'Mestre da Crônica',role:'master',character:null,status:'online'}],events:[],created_at:new Date().toISOString()};
-    c.members[0].campaign_id=c.id;state.localCampaigns.unshift(c);writeLocalCampaigns();state.campaign=c;state.member=c.members[0];state.members=c.members;state.events=[];localStorage.setItem(KEYS.active,c.id);state.view='lobby';closeModal();render();toast('Campanha criada. Compartilhe o código com seus jogadores.');
+    c.members[0].campaign_id=c.id;state.localCampaigns.unshift(c);writeLocalCampaigns();state.campaign=c;state.member=c.members[0];state.members=c.members;state.events=[];setActiveCampaignId(c.id);state.view='lobby';closeModal();render();toast('Campanha criada. Compartilhe o código com seus jogadores.');
   }
   function normalizeCampaign(c){return c?.campaign||c}
   async function joinCampaign(code,displayName){
     if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);return}
     const c=state.localCampaigns.find(x=>x.code.toUpperCase()===code.toUpperCase());if(!c)throw new Error('Código não encontrado no modo local. Para convidar pessoas de outros computadores, conecte o Supabase.');
     let m=c.members.find(x=>x.user_id==='local-user');if(!m){m={id:'local-player-'+Date.now(),campaign_id:c.id,user_id:'local-user',display_name:displayName,role:'player',character:null,status:'online'};c.members.push(m)}else m.display_name=displayName;
-    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);writeLocalCampaigns();state.view='lobby';closeModal();render();toast('Você entrou na campanha.');
+    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);setActiveCampaignId(c.id);writeLocalCampaigns();state.view='lobby';closeModal();render();toast('Você entrou na campanha.');
   }
   function pendingDamageFrom(events){const resolved=new Set(events.filter(e=>['damage_applied','damage_rejected'].includes(e.event_type)).map(e=>e.payload?.request_id).filter(Boolean));return events.filter(e=>e.event_type==='damage_request'&&!resolved.has(e.id))}
   async function openCloudCampaign(id){
@@ -959,7 +1037,7 @@
     if(ce)throw ce;if(me)throw me;if(ee)throw ee;
     state.campaign=c;state.members=members||[];state.member=state.members.find(m=>m.user_id===state.user.id)||null;state.events=(events||[]).reverse();state.pendingDamage=pendingDamageFrom(state.events);state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);state.processed=new Set(state.events.map(ev=>ev.id));state.lastSyncAt=new Date().toISOString();
     if(!state.member)throw new Error('Sua conta não está registrada como participante desta campanha. Entre novamente usando o código de convite.');
-    localStorage.setItem(KEYS.active,id);state.view=c.status==='active'?'session':'lobby';closeModal();subscribeCampaign();render();
+    setActiveCampaignId(id);state.view=c.status==='active'?'session':'lobby';closeModal();subscribeCampaign();render();
   }
   async function refreshCloudCampaign(options={}){
     if(!state.backendReady||!state.campaign||state.isRefreshing)return;
@@ -1025,7 +1103,6 @@
     }
     if(ev.event_type==='damage_applied'||ev.event_type==='damage_rejected')state.pendingDamage=state.pendingDamage.filter(item=>item.id!==ev.payload?.request_id);
     if(ev.event_type==='damage_applied')showCombatFX({damage:ev.payload?.amount,description:`${ev.payload?.amount||0} de dano em ${ev.payload?.monster||'a criatura'}`});
-    if(ev.event_type==='damage_applied')showCombatFX({damage:ev.payload?.amount,description:`${ev.payload?.amount||0} de dano em ${ev.payload?.monster||'a criatura'}`});
     if(ev.event_type==='map_move_request'){if(!state.pendingMapMoves.some(item=>item.id===ev.id))state.pendingMapMoves.push(ev);if(isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} solicitou movimento no mapa.`)}
     if(ev.event_type==='session_note'&&ev.payload?.kind==='map'&&ev.payload?.request_id)state.pendingMapMoves=state.pendingMapMoves.filter(item=>item.id!==ev.payload.request_id);
     if(ev.event_type==='map_interaction_request'){if(!state.pendingMapInteractions.some(item=>item.id===ev.id))state.pendingMapInteractions.push(ev);if(isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} deseja interagir com um objeto do mapa.`)}
@@ -1034,6 +1111,8 @@
     if(ev.event_type==='dice_prompt'&&ev.payload?.target_user_ids?.includes(currentUserId()))toast(`O mestre solicitou um D20: ${ev.payload.reason||'Realize seu teste.'}`);
     if(ev.event_type==='dice_result')showDice(ev.payload?.result,ev.payload?.player_name||'Aventureiro');
     if(ev.event_type==='combat_action_result'){if(Number.isInteger(ev.payload?.natural))showDice(ev.payload.natural,ev.payload?.player_name||'Aventureiro');showCombatFX(ev.payload);}
+    if(ev.event_type==='combat_action_rejected'&&ev.payload?.actor_id===currentUserId())toast(ev.payload.reason||'Sua ação não foi aceita.','error');
+    if(ev.event_type==='party_defeated')toast('A companhia foi derrotada. O mestre pode encerrar ou narrar as consequências.','error');
     if(ev.event_type==='monster_attack_result'){if(Number.isInteger(ev.payload?.natural))showDice(ev.payload.natural,ev.payload?.monster||'Monstro');showCombatFX({...ev.payload,monsterAction:true});}
     render();
   }
@@ -1068,23 +1147,37 @@
     const pending=state.events.filter(ev=>ev.event_type==='combat_action_request'&&ev.actor_id===current.user_id&&ev.payload?.encounter_id===enc.id&&Number(ev.payload?.round)===Number(enc.round)&&Number(ev.payload?.turn_index)===Number(enc.turnIndex));
     pending.forEach(ev=>{state.combatQueue=state.combatQueue.then(()=>processCombatAction(ev)).catch(err=>{console.error(err);toast(err.message||'Não foi possível recuperar uma ação de combate.','error')})});
   }
+  async function rejectCombatAction(ev,reason){
+    await createEvent('combat_action_rejected',{request_id:ev.id,actor_id:ev.actor_id,reason:String(reason||'Ação não permitida.')});
+  }
   async function processCombatAction(ev){
     if(!isMasterController())return;
     const gs=state.campaign?.game_state||defaultGameState();const enc=gs.encounter;
-    if(!enc?.id||ev.payload?.encounter_id!==enc.id)return;
     if(state.events.some(item=>['combat_action_result','combat_action_rejected'].includes(item.event_type)&&item.payload?.request_id===ev.id))return;
-    const turn=activeCombatTurn(enc);if(!turn||turn.kind!=='player'||turn.user_id!==ev.actor_id||Number(ev.payload?.round)!==Number(enc.round)||Number(ev.payload?.turn_index)!==Number(enc.turnIndex))return;
-    const member=state.members.find(m=>m.user_id===ev.actor_id);if(!member?.character)throw new Error('O personagem desta ação não foi encontrado.');
-    const character=normalizeCharacter(member.character);const partyState={...(gs.partyState||{})};const vitals=currentPartyVitals(ev.actor_id,character);const rule=classRule(character);const enemies=Array.isArray(enc.enemies)&&enc.enemies.length?enc.enemies:[{id:'monster',...enc}];const targetTurn=activeCombatTurn(enc);const targetEnemy=enemies.find(e=>e.id===ev.payload?.target_id)||enemies.find(e=>e.id===targetTurn?.targetId)||enemies.find(e=>e.id===targetTurn?.id)||enemies.find(e=>!e.defeated&&Number(e.hp)>0)||enc;
+    if(!enc?.id||ev.payload?.encounter_id!==enc.id){await rejectCombatAction(ev,'Esse encontro já foi encerrado ou substituído.');return;}
+    if(enc.defeated||enc.partyDefeated){await rejectCombatAction(ev,'O encontro já terminou.');return;}
+    const turn=activeCombatTurn(enc);
+    if(!turn||turn.kind!=='player'||turn.user_id!==ev.actor_id||Number(ev.payload?.round)!==Number(enc.round)||Number(ev.payload?.turn_index)!==Number(enc.turnIndex)){await rejectCombatAction(ev,'O turno mudou antes de sua ação chegar. Aguarde sua próxima vez.');return;}
+    const member=state.members.find(m=>m.user_id===ev.actor_id);if(!member?.character){await rejectCombatAction(ev,'A ficha deste aventureiro não foi encontrada.');return;}
+    const character=normalizeCharacter(member.character);const partyState={...(gs.partyState||{})};const vitals=currentPartyVitals(ev.actor_id,character);
+    if(vitals.hp<=0){await rejectCombatAction(ev,'Um aventureiro sem pontos de vida não pode agir.');return;}
+    const rule=classRule(character);const enemies=Array.isArray(enc.enemies)&&enc.enemies.length?enc.enemies:[enc];
+    const livingEnemies=enemies.filter(e=>!e.defeated&&Number(e.hp)>0);
+    const targetEnemy=ev.payload?.target_id?livingEnemies.find(e=>e.id===ev.payload.target_id):livingEnemies[0];
+    if(!targetEnemy){await rejectCombatAction(ev,ev.payload?.target_id?'O alvo escolhido não está mais ativo. Escolha outra criatura.':'Não há criatura ativa para receber essa ação.');return;}
+    const targetTurn=activeCombatTurn(enc);
     let natural=null,total=null,hit=null,damage=0,healing=0,description='',abilityUsed=vitals.abilityUsed;
     const action=ev.payload?.action||'attack';
     if(action==='item'){
       if(ev.payload?.item_id!=='pocao-cura')throw new Error('Item não disponível nesta versão.');
       const potion=vitals.inventory.find(item=>item.id==='pocao-cura'&&Number(item.qty)>0);if(!potion)throw new Error('Você não possui Poção de Cura.');
+      if(vitals.hp>=vitals.maxHp){await rejectCombatAction(ev,'Seus pontos de vida já estão completos; guarde a poção.');return;}
       const die=rollDamageDie(8);healing=die+2;const inventory=vitals.inventory.map(item=>item.id==='pocao-cura'?{...item,qty:Math.max(0,Number(item.qty)-1)}:item);
       partyState[ev.actor_id]={...vitals,hp:Math.min(vitals.maxHp,vitals.hp+healing),inventory};description=`${character.name} usou Poção de Cura e recuperou ${Math.min(healing,vitals.maxHp-vitals.hp)} HP.`;
     } else {
+      if(!['attack','ability'].includes(action)){await rejectCombatAction(ev,'Ação desconhecida.');return;}
       if(action==='ability'&&abilityUsed)throw new Error('Sua habilidade especial já foi utilizada neste encontro.');
+      if(action==='ability'&&rule.healing&&vitals.hp>=vitals.maxHp){await rejectCombatAction(ev,'Seus pontos de vida já estão completos; sua habilidade de cura não é necessária.');return;}
       if(action==='ability'&&ev.payload?.ability_id!==rule.abilityId)throw new Error('Habilidade não corresponde à classe deste personagem.');
       if(action==='ability'&&rule.healing){const die=rollDamageDie(rule.abilityDie);healing=die+attrMod(character.attributes[rule.attackAttribute]);partyState[ev.actor_id]={...vitals,hp:Math.min(vitals.maxHp,vitals.hp+Math.max(1,healing)),abilityUsed:true};description=`${character.name} usou ${rule.abilityName} e recuperou ${Math.min(Math.max(1,healing),vitals.maxHp-vitals.hp)} HP.`;}
       else {
@@ -1099,7 +1192,7 @@
     }
     const previousBossPhase=Number(targetEnemy.bossPhase)||1;if(['drakthar','vharzun'].includes(targetEnemy.templateId)){Object.assign(targetEnemy,applyBossPhase(targetEnemy));if(Array.isArray(enc.enemies)){enc.enemies=enc.enemies.map(e=>e.id===targetEnemy.id?targetEnemy:e);if(enc.enemies[0]?.id===targetEnemy.id){enc.bossPhase=targetEnemy.bossPhase;enc.bossPhaseName=targetEnemy.bossPhaseName;enc.bossPhaseDescription=targetEnemy.bossPhaseDescription;enc.defense=targetEnemy.defense;enc.attackBonus=targetEnemy.attackBonus}}}
     const bossPhaseChanged=['drakthar','vharzun'].includes(targetEnemy.templateId)&&Number(targetEnemy.bossPhase)!==previousBossPhase;if(bossPhaseChanged)description+=` ${targetEnemy.name} entra em ${targetEnemy.bossPhaseName}.`;
-    const allDefeated=Array.isArray(enc.enemies)?enc.enemies.every(e=>e.defeated||Number(e.hp)<=0):Number(enc.hp)<=0;const defeated=allDefeated;const next=defeated?{...enc,defeated:true,turnOrder:[],turnIndex:0}:advanceCombatTurn(enc);
+    const allDefeated=Array.isArray(enc.enemies)?enc.enemies.every(e=>e.defeated||Number(e.hp)<=0):Number(enc.hp)<=0;const defeated=allDefeated;const next=defeated?{...enc,defeated:true,partyDefeated:false,turnOrder:[],turnIndex:0}:advanceCombatTurn(enc,partyState);
     await updateGameState({encounter:next,partyState});
     await createEvent('combat_action_result',{request_id:ev.id,player_name:character.name,actor_id:ev.actor_id,action,natural,total,hit,damage,healing,description,monster_hp:targetEnemy.hp,enemy_id:targetEnemy.id,round:next.round,next_turn:activeCombatTurn(next)?.name||'—',boss_phase:next.bossPhase||null,boss_phase_changed:bossPhaseChanged});
     if(bossPhaseChanged)toast(enc.bossPhaseName,'error');
@@ -1113,17 +1206,23 @@
     if(!enc||enc.defeated||turn?.kind!=='monster')throw new Error('Não é o turno do monstro.');
     const partyState={...(gs.partyState||{})};
     const targets=state.members.filter(m=>m.role==='player'&&m.character).map(m=>({member:m,character:normalizeCharacter(m.character),vitals:currentPartyVitals(m.user_id,m.character)})).filter(x=>x.vitals.hp>0);
-    if(!targets.length)throw new Error('Não há aventureiros com HP para receber o ataque.');
+    if(!targets.length){
+      const defeated={...enc,turnOrder:[],turnIndex:0,partyDefeated:true};
+      await updateGameState({encounter:defeated,partyState});
+      await createEvent('party_defeated',{description:'Todos os aventureiros ficaram sem pontos de vida.'});
+      toast('A companhia foi derrotada. O mestre pode encerrar o encontro.','error');
+      return;
+    }
     
     const target=targets[secureDie(targets.length)-1];const natural=secureDie(20);let monsterBonus=Number(activeEnemy.attackBonus||0);if(activeEnemy.templateId==='goblin-cinzas'&&enc.turnOrder?.[0]?.kind==='monster')monsterBonus+=1;const total=natural+monsterBonus;const hit=natural===20||(natural!==1&&total>=target.vitals.defense);
     let damage=hit?rollDamageDie(Number(activeEnemy.damageDie)||6)+Number(activeEnemy.damageBonus||0):0;
     if(activeEnemy.templateId==='lobo-cinzento'&&hit&&natural>=18)damage+=rollDamageDie(6);
     if(activeEnemy.templateId==='campeao-orc'&&hit&&natural>=19)damage+=rollDamageDie(8);
-    if(['drakthar','vharzun'].includes(activeEnemy.templateId)&&natural>=17){const phase=Number(activeEnemy.bossPhase)||1;const used=Array.isArray(activeEnemy.breathPhases)?activeEnemy.breathPhases:[];if(!used.includes(phase)){const dice=phase+(activeEnemy.templateId==='vharzun'?3:1),bonus=phase*(activeEnemy.templateId==='vharzun'?12:2)+2;damage=rollDamageDie(activeEnemy.templateId==='vharzun'?12:8,dice)+bonus;const affected=[];targets.forEach(x=>{const amount=Math.min(x.vitals.hp,damage);partyState[x.member.user_id]={...x.vitals,hp:Math.max(0,x.vitals.hp-damage)};affected.push({name:x.character.name,damage:amount,hp:Math.max(0,x.vitals.hp-damage)})});activeEnemy.breathPhases=[...used,phase];activeEnemy.specialUsed=true;if(Array.isArray(enc.enemies))enc.enemies=enc.enemies.map(e=>e.id===activeEnemy.id?activeEnemy:e);const next=advanceCombatTurn(enc);await updateGameState({encounter:next,partyState});await createEvent('monster_attack_result',{monster:activeEnemy.name,special:activeEnemy.specialName,natural,affected,boss_phase:phase,description:`${activeEnemy.name} libera ${activeEnemy.specialName} na fase ${phase}!`});showDice(natural,activeEnemy.name);return}}
+    if(['drakthar','vharzun'].includes(activeEnemy.templateId)&&natural>=17){const phase=Number(activeEnemy.bossPhase)||1;const used=Array.isArray(activeEnemy.breathPhases)?activeEnemy.breathPhases:[];if(!used.includes(phase)){const dice=phase+(activeEnemy.templateId==='vharzun'?3:1),bonus=phase*(activeEnemy.templateId==='vharzun'?12:2)+2;damage=rollDamageDie(activeEnemy.templateId==='vharzun'?12:8,dice)+bonus;const affected=[];targets.forEach(x=>{const amount=Math.min(x.vitals.hp,damage);partyState[x.member.user_id]={...x.vitals,hp:Math.max(0,x.vitals.hp-damage)};affected.push({name:x.character.name,damage:amount,hp:Math.max(0,x.vitals.hp-damage)})});activeEnemy.breathPhases=[...used,phase];activeEnemy.specialUsed=true;if(Array.isArray(enc.enemies))enc.enemies=enc.enemies.map(e=>e.id===activeEnemy.id?activeEnemy:e);const next=advanceCombatTurn(enc,partyState);await updateGameState({encounter:next,partyState});await createEvent('monster_attack_result',{monster:activeEnemy.name,special:activeEnemy.specialName,natural,affected,boss_phase:phase,description:`${activeEnemy.name} libera ${activeEnemy.specialName} na fase ${phase}!`});showDice(natural,activeEnemy.name);return}}
     const targetState={...target.vitals,hp:Math.max(0,target.vitals.hp-damage)};let specialText='';
     if(activeEnemy.templateId==='espectro-ruptura'&&hit&&natural>=18){targetState.defensePenalty=1;targetState.defensePenaltyUntilRound=(Number(enc.round)||1)+1;specialText=' O toque debilitante reduz a Defesa do alvo em 1 até o fim da próxima rodada.';}
     partyState[target.member.user_id]=targetState;
-    const next=advanceCombatTurn(enc);await updateGameState({encounter:next,partyState});
+    const next=advanceCombatTurn(enc,partyState);await updateGameState({encounter:next,partyState});
     const abilityText=activeEnemy.templateId==='campeao-orc'&&hit&&natural>=19?' Golpe demolidor: dano adicional aplicado.':'';
     await createEvent('monster_attack_result',{monster:activeEnemy.name,target:target.character.name,target_user_id:target.member.user_id,natural,total,hit,damage,hp:Math.max(0,target.vitals.hp-damage),description:hit?`${activeEnemy.name} atinge ${target.character.name} e causa ${damage} de dano.${abilityText}${specialText}`:`${activeEnemy.name} ataca ${target.character.name}, mas erra.`});
     showDice(natural,activeEnemy.name);toast(hit?`O monstro causou ${damage} de dano a ${target.character.name}.`:'O monstro errou o ataque.');
@@ -1181,8 +1280,12 @@
   async function persistLocalCampaign(){const i=state.localCampaigns.findIndex(c=>c.id===state.campaign.id);if(i>=0){state.localCampaigns[i]=state.campaign;state.localCampaigns[i].members=state.members;state.localCampaigns[i].events=state.events;writeLocalCampaigns()}}
   async function saveCharacter(character){
     character=normalizeCharacter(character);
-    if(state.backendReady){const {error}=await state.backend.rpc('save_my_character',{p_campaign_id:state.campaign.id,p_character:character,p_display_name:character.name});if(error)throw error;await refreshCloudCampaign()}
-    else{state.member.character=character;state.member.display_name=character.name;state.member.status='online';state.members=state.campaign.members;await persistLocalCampaign()}
+    if(state.backendReady){
+      const {error}=await state.backend.rpc('save_my_character',{p_campaign_id:state.campaign.id,p_character:character,p_display_name:character.name});if(error)throw error;
+      // O fechamento precisa ocorrer antes do refresh: ele redesenha o salão via Realtime.
+      closeModal();state.view='lobby';
+      await refreshCloudCampaign();
+    }else{state.member.character=character;state.member.display_name=character.name;state.member.status='online';state.members=state.campaign.members;await persistLocalCampaign()}
     state.view='lobby';closeModal();render();toast('Personagem salvo na crônica.');
   }
 
@@ -1623,16 +1726,18 @@
   }
   function renderCombatTracker(enc){
     const turn=activeCombatTurn(enc);const order=enc.turnOrder||[];
-    return `<section class="panel turn-tracker"><div class="row between"><div><div class="small-caps">Ordem de iniciativa</div><h3 style="margin:6px 0 0">Rodada ${enc.round||1}</h3></div><span class="tag gold">${order.length} participante(s)</span></div><div class="turn-order">${order.map((t,i)=>`<div class="turn-token ${i===Number(enc.turnIndex||0)?'active':''}"><strong>${esc(t.name)}</strong><small>${t.kind==='monster'?'Criatura':'Aventureiro'} · Iniciativa ${t.initiative}</small></div>`).join('')}</div><div class="notice" style="margin-top:12px"><strong>Turno atual:</strong> ${esc(turn?.name||'—')} ${turn?.kind==='monster'?'(monstro)': '(jogador)'}</div>${isMaster()?`<div class="row" style="margin-top:10px">${turn?.kind==='monster'?'<button class="btn btn-danger btn-small" data-action="resolve-monster-turn">Resolver ação do monstro</button>':''}<button class="btn btn-secondary btn-small" data-action="advance-turn">Avançar / pular turno</button></div>`:''}</section>`;
+    const partyState=state.campaign?.game_state?.partyState||{};
+    return `<section class="panel turn-tracker"><div class="row between"><div><div class="small-caps">Ordem de iniciativa</div><h3 style="margin:6px 0 0">Rodada ${enc.round||1}</h3></div><span class="tag gold">${order.length} participante(s)</span></div><div class="turn-order">${order.map((t,i)=>{const unavailable=!combatantAvailable(t,enc,partyState);return `<div class="turn-token ${i===Number(enc.turnIndex||0)?'active':''} ${unavailable?'out-of-action':''}"><strong>${esc(t.name)}</strong><small>${t.kind==='monster'?'Criatura':'Aventureiro'} · Iniciativa ${t.initiative}${unavailable?' · fora de combate':''}</small></div>`}).join('')}</div><div class="notice ${enc.partyDefeated?'notice-danger':''}" style="margin-top:12px"><strong>${enc.partyDefeated?'A companhia foi derrotada.':enc.defeated?'Vitória da companhia.':turn?'Turno atual:':'Combate concluído:'}</strong> ${esc(turn?.name||(enc.partyDefeated?'O mestre pode encerrar o encontro.':enc.defeated?'Todas as criaturas foram derrotadas.':'—'))} ${turn?.kind==='monster'?'(monstro)':turn?.kind==='player'?'(jogador)':''}</div>${isMaster()?`<div class="row" style="margin-top:10px">${turn?.kind==='monster'?'<button class="btn btn-danger btn-small" data-action="resolve-monster-turn">Resolver ação do monstro</button>':''}<button class="btn btn-secondary btn-small" data-action="advance-turn" ${enc.partyDefeated?'disabled':''}>Avançar / pular turno</button></div>`:''}</section>`;
   }
   function renderBattleCard(enc){
-    const hp=Math.max(0,Math.min(100,enc.hp/Math.max(1,enc.maxHp)*100));const turn=activeCombatTurn(enc);const own=state.member?.character?normalizeCharacter(state.member.character):null;const ownVitals=own?currentPartyVitals(currentUserId(),own):null;const canAct=isPlayersCombatTurn()&&masterIsOnline()&&!enc.defeated&&Number(enc.hp)>0;const rule=classRule(own||{});const abilityUsed=ownVitals?.abilityUsed;
+    const hp=Math.max(0,Math.min(100,enc.hp/Math.max(1,enc.maxHp)*100));const turn=activeCombatTurn(enc);const own=state.member?.character?normalizeCharacter(state.member.character):null;const ownVitals=own?currentPartyVitals(currentUserId(),own):null;const canAct=isPlayersCombatTurn()&&masterIsOnline()&&!enc.defeated&&!enc.partyDefeated&&Number(enc.hp)>0&&Number(ownVitals?.hp)>0;const rule=classRule(own||{});const abilityUsed=ownVitals?.abilityUsed;
     let playerActions='';
-    if(enc.defeated||Number(enc.hp)<=0){playerActions='<div class="notice"><strong>Vitória!</strong> A criatura foi derrotada. O encontro está concluído.</div>'}
+    if(enc.partyDefeated){playerActions='<div class="notice notice-danger"><strong>Derrota.</strong> Todos os aventureiros estão sem pontos de vida. O mestre pode encerrar o encontro e preparar a recuperação da companhia.</div>'}
+    else if(enc.defeated||Number(enc.hp)<=0){playerActions='<div class="notice"><strong>Vitória!</strong> A criatura foi derrotada. O encontro está concluído.</div>'}
     else if(!isMaster()&&canAct){const living=(enc.enemies||[]).filter(e=>!e.defeated&&Number(e.hp)>0);playerActions=`<div class="battle-controls">${living.length>1?`<label class="combat-target-label">Alvo<select class="select" id="combat-target">${living.map(e=>`<option value="${esc(e.id)}">${esc(e.name)} · ${e.hp} HP</option>`).join('')}</select></label>`:''}<button class="btn btn-primary btn-small" data-action="combat-attack">Ataque básico</button><button class="btn btn-secondary btn-small" data-action="combat-ability" ${abilityUsed?'disabled':''}>${esc(rule.abilityName)}${abilityUsed?' · usada':''}</button><button class="btn btn-quiet btn-small" data-action="combat-potion" ${(ownVitals?.inventory||[]).some(i=>i.id==='pocao-cura'&&i.qty>0)?'':'disabled'}>Usar poção</button></div>`}
     else if(!isMaster())playerActions=`<div class="notice">${turn?.kind==='monster'?'O monstro está agindo. Aguarde o próximo turno.':turn?.user_id===currentUserId()?'Seu turno está disponível.':'Aguarde sua vez na ordem de iniciativa.'}</div>`;
     const enemyRoster=Array.isArray(enc.enemies)&&enc.enemies.length>1?`<div class="battle-enemy-roster"><h4>Criaturas deste encontro</h4>${enc.enemies.map(e=>`<div class="battle-enemy-row ${e.defeated?'defeated':''}"><span>${esc(e.name)}</span><strong>${Math.max(0,e.hp)} / ${e.maxHp} HP</strong><span>${e.defeated?'Derrotado':'Ativo'}</span></div>`).join('')}</div>`:'';
-    return `<section class="battle-card ${enc.defeated||Number(enc.hp)<=0?'battle-victory':''}"><div class="battle-art illustrated-battle-art">${portraitImage(enc.portrait||monsterPortrait(enc.templateId),enc.name,'battle-monster-portrait')}<div class="battle-art-shade"></div><span class="battle-art-title">${esc(enc.kind||'CRIATURA HOSTIL')}</span></div><div class="battle-content"><span class="tag red">${esc(enc.threat||'CRIATURA HOSTIL')}</span><h3>${esc(enc.name)}</h3>${['drakthar','vharzun'].includes(enc.templateId)?`<div class="boss-phase-panel boss-phase-${Number(enc.bossPhase)||1}"><strong>${esc(enc.bossPhaseName||'Fase I — O Devorador desperta')}</strong><small>${esc(enc.bossPhaseDescription||'O dragão ancestral observa a companhia.')}</small><span>${(enc.breathPhases||[]).length}/3 sopros ancestrais utilizados</span></div>`:''}<div class="row between"><span class="muted" style="font-size:9px">${esc(enc.kind||'Criatura desconhecida')} · Nível ${esc(enc.level||1)}</span><span class="muted" style="font-size:9px">Defesa ${esc(enc.defense||12)}</span></div><div class="hp-row"><strong>Pontos de vida</strong><strong>${enc.hp} / ${enc.maxHp} HP</strong></div><div class="hp-track hp-track-monster ${hp<=25?'hp-critical':hp<=50?'hp-wounded':''}"><div class="hp-fill" style="width:${hp}%"></div></div><p class="panel-subtitle" style="margin-top:10px"><strong>${esc(enc.specialName||'Instinto da criatura')}:</strong> ${esc(enc.specialDescription||'Age de acordo com seus instintos.')}</p><p class="panel-subtitle">Recompensa pela vitória: <strong>${Number(enc.xpReward)||0} XP</strong> + ouro e espólio individual. ${enc.lootAwarded?`<br><small>Espólio registrado: ${(enc.lootDrops||[]).map(x=>esc(x.name)+" x"+x.qty).join(", ")||"nenhum item adicional"}</small>`:""}</p>${enemyRoster}${playerActions}${isMaster()&&enc.defeated?'<div class="notice"><strong>Encontro concluído.</strong> Experiência distribuída.</div>':''}${isMaster()?`<div class="battle-controls">${(enc.enemies||[]).length>1?`<label class="combat-target-label">Alvo do dano manual<select class="select" id="master-target">${enc.enemies.filter(e=>!e.defeated).map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></label>`:''}<input class="input" id="master-damage" type="number" min="0" max="100000" value="10" aria-label="Dano manual"><button class="btn btn-danger btn-small" data-action="master-apply-damage">Aplicar dano manual</button><button class="btn btn-quiet btn-small" data-action="end-encounter">Encerrar</button></div>`:''}</div></section>`;
+    return `<section class="battle-card ${enc.partyDefeated?'battle-defeat':enc.defeated||Number(enc.hp)<=0?'battle-victory':''}"><div class="battle-art illustrated-battle-art">${portraitImage(enc.portrait||monsterPortrait(enc.templateId),enc.name,'battle-monster-portrait')}<div class="battle-art-shade"></div><span class="battle-art-title">${esc(enc.kind||'CRIATURA HOSTIL')}</span></div><div class="battle-content"><span class="tag red">${esc(enc.threat||'CRIATURA HOSTIL')}</span><h3>${esc(enc.name)}</h3>${['drakthar','vharzun'].includes(enc.templateId)?`<div class="boss-phase-panel boss-phase-${Number(enc.bossPhase)||1}"><strong>${esc(enc.bossPhaseName||'Fase I — O Devorador desperta')}</strong><small>${esc(enc.bossPhaseDescription||'O dragão ancestral observa a companhia.')}</small><span>${(enc.breathPhases||[]).length}/3 sopros ancestrais utilizados</span></div>`:''}<div class="row between"><span class="muted" style="font-size:9px">${esc(enc.kind||'Criatura desconhecida')} · Nível ${esc(enc.level||1)}</span><span class="muted" style="font-size:9px">Defesa ${esc(enc.defense||12)}</span></div><div class="hp-row"><strong>Pontos de vida</strong><strong>${enc.hp} / ${enc.maxHp} HP</strong></div><div class="hp-track hp-track-monster ${hp<=25?'hp-critical':hp<=50?'hp-wounded':''}"><div class="hp-fill" style="width:${hp}%"></div></div><p class="panel-subtitle" style="margin-top:10px"><strong>${esc(enc.specialName||'Instinto da criatura')}:</strong> ${esc(enc.specialDescription||'Age de acordo com seus instintos.')}</p><p class="panel-subtitle">Recompensa pela vitória: <strong>${Number(enc.xpReward)||0} XP</strong> + ouro e espólio individual. ${enc.lootAwarded?`<br><small>Espólio registrado: ${(enc.lootDrops||[]).map(x=>esc(x.name)+" x"+x.qty).join(", ")||"nenhum item adicional"}</small>`:""}</p>${enemyRoster}${playerActions}${isMaster()&&enc.defeated?'<div class="notice"><strong>Encontro concluído.</strong> Experiência distribuída.</div>':''}${isMaster()?`<div class="battle-controls">${(enc.enemies||[]).length>1?`<label class="combat-target-label">Alvo do dano manual<select class="select" id="master-target">${enc.enemies.filter(e=>!e.defeated).map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></label>`:''}<input class="input" id="master-damage" type="number" min="0" max="100000" value="10" aria-label="Dano manual"><button class="btn btn-danger btn-small" data-action="master-apply-damage">Aplicar dano manual</button><button class="btn btn-quiet btn-small" data-action="end-encounter">Encerrar</button></div>`:''}</div></section>`;
   }
   function renderInventoryModal(){
     const ch=state.member?.character?normalizeCharacter(state.member.character):null;if(!ch){toast('Crie um personagem para consultar o inventário.','error');return}
@@ -1642,7 +1747,7 @@
     const bag=vitals.inventory.map(item=>`<div class="member-row"><div class="avatar">${item.kind==='consumable'?'🧪':item.kind==='equipment'?'⚔':item.kind==='relic'?'✧':item.kind==='material'?'⚒':'🎒'}</div><div><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}${item.rarity&&item.rarity!=='Comum'?' · '+esc(item.rarity):''}${item.requiredLevel?' · Nível '+item.requiredLevel+'+':''}${item.requiredClasses?' · '+esc(item.requiredClasses.join('/')):''}</small></div><span class="spacer"></span><span class="tag">x${item.qty||0}</span>${['equipment','relic'].includes(item.kind)&&Number(item.qty)>0&&isMaster()&&isMasterController()?`<button class="btn btn-primary btn-small" data-action="equip-item" data-item-id="${esc(item.id)}">Equipar</button>`:''}</div>`).join('');
     modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head inventory-heading"><div class="inventory-hero-portrait">${portraitImage(ch.portrait||classPortrait(ch),ch.name)}</div><div><div class="page-kicker">Pertences do aventureiro</div><h2>Equipamentos e mochila</h2><p>${esc(ch.name)} · ${esc(ch.class)} · Nível ${ch.level}/50</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="stat-grid"><div class="stat-card"><small>HP atual</small><strong>${vitals.hp}/${vitals.maxHp}</strong></div><div class="stat-card"><small>Defesa efetiva</small><strong>${vitals.defense}</strong></div><div class="stat-card"><small>Bônus de ataque</small><strong>+${vitals.equipmentBonuses?.attack||0}</strong></div><div class="stat-card"><small>Ouro</small><strong>${vitals.coins} PO</strong></div></div><h3>Equipado</h3><div class="member-list">${equipped}</div>${vitals.equipmentBonuses?.setName?`<div class="notice"><strong>Conjunto ${esc(vitals.equipmentBonuses.setName)} completo:</strong> +${vitals.equipmentBonuses?.setBonus||1} Defesa e +${vitals.equipmentBonuses?.setBonus||1} no ataque. ${esc(vitals.equipmentBonuses?.setEffect||'')}</div>`:(vitals.equipmentBonuses?.setPieces?`<p class="panel-subtitle">Conjunto ${esc(vitals.equipmentBonuses.setProgressName||"")}: ${vitals.equipmentBonuses.setPieces}/3 peças equipadas. O bônus será ativado ao completar as três peças.</p>`:'')}<div class="divider"></div><h3>Mochila</h3><div class="member-list">${bag||'<p class="panel-subtitle">A mochila está vazia.</p>'}</div><div class="notice">Equipar ou retirar itens altera a Defesa e o dano-base da arma na campanha. Nesta versão, somente o mestre ativo confirma trocas para todos os participantes.</div></section></div>`;
   }
-  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Resultado: ${p.result}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'npc_revealed':{const npc=STORY_NPCS.find(n=>n.id===p.npc_id);title='Personagem apresentado';desc=npc?`${npc.name} · ${npc.role}`:'Um personagem do mundo foi apresentado.';break;}case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'map_move_request':title='Pedido de movimento';desc=`${p.player_name||'Aventureiro'} solicitou a casa ${Number(p.x)+1}, linha ${Number(p.y)+1}.`;break;case'session_note':title=p.kind==='quest'?'Progresso de missão':p.kind==='map'?'Exploração do mapa':p.kind==='trade'?'Comércio':p.kind==='choice'?'Decisão narrativa':p.kind==='equipment'?'Equipamento':p.kind==='loot'?'Espólio':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
+  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Resultado: ${p.result}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'npc_revealed':{const npc=STORY_NPCS.find(n=>n.id===p.npc_id);title='Personagem apresentado';desc=npc?`${npc.name} · ${npc.role}`:'Um personagem do mundo foi apresentado.';break;}case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'combat_action_rejected':title='Ação não realizada';desc=p.reason||'A ação foi recusada pela validação do combate.';break;case'party_defeated':title='Derrota da companhia';desc=p.description||'Todos os aventureiros ficaram sem pontos de vida.';break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'map_move_request':title='Pedido de movimento';desc=`${p.player_name||'Aventureiro'} solicitou a casa ${Number(p.x)+1}, linha ${Number(p.y)+1}.`;break;case'session_note':title=p.kind==='quest'?'Progresso de missão':p.kind==='map'?'Exploração do mapa':p.kind==='trade'?'Comércio':p.kind==='choice'?'Decisão narrativa':p.kind==='equipment'?'Equipamento':p.kind==='loot'?'Espólio':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
 
   function formatChatMessage(ev){const p=ev.payload||{};const mine=ev.actor_id===currentUserId();return `<div class="chat-message ${mine?'mine':''}"><div class="chat-message-meta"><strong>${esc(p.display_name||'Aventureiro')}</strong><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div><p>${esc(p.text||'')}</p></div>`}
 
@@ -1658,8 +1763,9 @@
     const gs=state.campaign.game_state||defaultGameState(),partyState={...(gs.partyState||{})};participants.forEach(m=>{const ch=normalizeCharacter(m.character),old=partyState[m.user_id]||{};partyState[m.user_id]={hp:Math.max(0,Math.min(Number(old.maxHp)||ch.maxHp,Number.isFinite(Number(old.hp))?Number(old.hp):ch.hp)),maxHp:Number(old.maxHp)||ch.maxHp,defense:ch.defense,inventory:Array.isArray(old.inventory)?old.inventory:ch.inventory,equipment:old.equipment||ch.equipment,baseDefense:old.baseDefense||ch.defense,coins:Number(old.coins)||0,abilityUsed:false}});
     const avg=participants.reduce((n,m)=>n+normalizeCharacter(m.character).level,0)/participants.length;
     const enemies=selected.map((t,i)=>{const gap=Math.max(0,avg-Number(t.level||1)),scale=1+Math.min(2.5,gap*.055),boss=/CHEFE/.test(t.threat||''),e={...t,id:`enemy-${Date.now()}-${i}-${Math.random().toString(36).slice(2,6)}`,templateId:t.id,footprint:creatureFootprint(t.id,boss),hp:Math.round(t.hp*(boss?1.35:1.18)*scale),maxHp:Math.round(t.maxHp*(boss?1.35:1.18)*scale),defense:t.defense+Math.floor(gap*.12)+1,attackBonus:t.attackBonus+Math.floor(gap*.16)+1,damageBonus:t.damageBonus+1,defeated:false,bossPhase:1};if(['drakthar','vharzun'].includes(t.id)){e.baseDefense=e.defense;e.baseAttackBonus=e.attackBonus;Object.assign(e,applyBossPhase(e))}return e});
-    const first=enemies[0],enc={...first,id:crypto.randomUUID?crypto.randomUUID():`enc-${Date.now()}`,enemies,round:1,turnIndex:0,specialUsed:false,breathPhases:[],defeated:false,xpAwarded:false,lootAwarded:false,participantIds:participants.map(m=>m.user_id),xpReward:enemies.reduce((n,e)=>n+Number(e.xpReward||0),0),hp:enemies.reduce((n,e)=>n+e.hp,0),maxHp:enemies.reduce((n,e)=>n+e.maxHp,0),movementUsed:{}};
-    enc.turnOrder=buildTurnOrder(enc,state.members);const ex=explorationData(gs),rec=activeMapRecord(gs);
+    const readyParticipants=participants.filter(m=>Number(partyState[m.user_id]?.hp)>0);if(!readyParticipants.length)throw new Error('Todos os aventureiros estão sem HP. Recupere a companhia antes de iniciar outro encontro.');
+    const first=enemies[0],enc={...first,id:crypto.randomUUID?crypto.randomUUID():`enc-${Date.now()}`,enemies,round:1,turnIndex:0,specialUsed:false,breathPhases:[],defeated:false,partyDefeated:false,xpAwarded:false,lootAwarded:false,participantIds:participants.map(m=>m.user_id),xpReward:enemies.reduce((n,e)=>n+Number(e.xpReward||0),0),hp:enemies.reduce((n,e)=>n+e.hp,0),maxHp:enemies.reduce((n,e)=>n+e.maxHp,0),movementUsed:{}};
+    enc.turnOrder=buildTurnOrder(enc,state.members,partyState);const ex=explorationData(gs),rec=activeMapRecord(gs);
     const partyTokens=mapTokens(rec,{...gs,encounter:null}).filter(t=>t.kind==='player');
     const occupiedCells=expandedOccupied(partyTokens),placed=[];
     for(const enemy of enemies){
@@ -1685,7 +1791,7 @@
     modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Solicitar teste de D20</h2><p>Escolha quem deverá rolar e explique o teste.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="roll-prompt-form"><div class="field"><label for="roll-target">QUEM DEVE ROLAR?</label><select class="select" id="roll-target"><option value="all">Todos os jogadores</option>${players.map(m=>`<option value="${esc(m.user_id)}">${esc(m.display_name||'Aventureiro')}</option>`).join('')}</select></div><div class="field"><label for="roll-reason">QUAL É O TESTE?</label><input class="input" id="roll-reason" maxlength="140" placeholder="Ex.: Teste de percepção para encontrar armadilhas" value="Teste de D20"></div><div class="notice">Cada jogador selecionado poderá responder uma única vez. O navegador do mestre calcula e publica o resultado.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button class="btn btn-primary" type="submit" ${players.length?'':'disabled'}>Solicitar rolagem</button></div></form></section></div>`;
   }
 
-  function renderCreateModal(){modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Criar uma nova campanha</h2><p>Você será o mestre e terá controle sobre esta crônica.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="create-form"><div class="field"><label for="campaign-name">NOME DA CAMPANHA</label><input class="input" id="campaign-name" maxlength="70" placeholder="Ex.: O Chamado da Deusa" required></div><div class="field"><label for="campaign-desc">DESCRIÇÃO (OPCIONAL)</label><textarea class="textarea" id="campaign-desc" maxlength="500" placeholder="Conte aos jogadores um pouco sobre a aventura..."></textarea></div><div class="notice">A campanha será salva ${state.backendReady?'no Supabase e poderá ser acessada por outros computadores.':'localmente neste navegador. Configure o Supabase para jogar com amigos pela internet.'}</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button class="btn btn-primary" type="submit">Criar campanha ✦</button></div></form></section></div>`}
+  function renderCreateModal(){modalRoot.innerHTML=`<div class="modal-backdrop" data-modal-kind="create" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Criar uma nova campanha</h2><p>Você será o mestre e terá controle sobre esta crônica.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="create-form"><div class="field"><label for="campaign-name">NOME DA CAMPANHA</label><input class="input" id="campaign-name" maxlength="70" placeholder="Ex.: O Chamado da Deusa" required></div><div class="field"><label for="campaign-desc">DESCRIÇÃO (OPCIONAL)</label><textarea class="textarea" id="campaign-desc" maxlength="500" placeholder="Conte aos jogadores um pouco sobre a aventura..."></textarea></div><div class="notice">A campanha será salva ${state.backendReady?'no Supabase e poderá ser acessada por outros computadores.':'localmente neste navegador. Configure o Supabase para jogar com amigos pela internet.'}</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button class="btn btn-primary" type="submit">Criar campanha ✦</button></div></form></section></div>`}
   function renderJoinModal(){modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Entrar em uma campanha</h2><p>Informe o código compartilhado pelo mestre.</p></div><button class="modal-close" data-action="close-modal">×</button></div><form id="join-form"><div class="field"><label for="join-code">CÓDIGO DA CAMPANHA</label><input class="input" id="join-code" placeholder="AETHRA-0000" value="${esc(state.prefillJoinCode||'')}" style="text-transform:uppercase;letter-spacing:2px" required></div><div class="field"><label for="join-name">NOME PARA EXIBIÇÃO</label><input class="input" id="join-name" maxlength="40" placeholder="Como os outros jogadores verão você?" required></div><div class="notice">Ao entrar, você aparecerá no salão dos aventureiros. Sua ficha poderá ser criada ou editada antes do início da sessão.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Cancelar</button><button type="submit" class="btn btn-primary">Entrar na campanha →</button></div></form></section></div>`}
   function renderCharacterModal(){const d=state.charDraft||newCharacterDraft(),step=state.charStep;const steps=['Identidade','Origem','Classe','Atributos','Resumo'];let body='';
     if(step===0)body=`<div class="field"><label for="char-name">NOME DO PERSONAGEM</label><input class="input" id="char-name" maxlength="40" placeholder="Ex.: Aldric, o Guardião" value="${esc(d.name)}"></div><div class="field"><label for="char-age">IDADE (OPCIONAL)</label><input class="input" id="char-age" type="number" min="1" max="999" placeholder="Ex.: 27" value="${esc(d.age||'')}"></div><div class="field"><label for="char-personality">PERSONALIDADE E HISTÓRIA</label><textarea class="textarea" id="char-personality" placeholder="Como seu personagem age? O que o trouxe até esta aventura?">${esc(d.personality||'')}</textarea><span class="hint">Não precisa escrever uma biografia inteira. Algumas ideias já ajudam o mestre a criar momentos personalizados.</span></div>`;
@@ -1693,7 +1799,7 @@
     if(step===2)body=`<h3>Escolha sua classe</h3><p class="panel-subtitle">Cada classe possui um retrato próprio, função no grupo e habilidade característica.</p><div class="class-art-grid">${CLASSES.map(c=>`<button type="button" class="class-art-card ${d.class===c[0]?'selected':''}" data-choice="class" data-value="${c[0]}"><span class="class-art-image">${portraitImage(classPortrait(c[0]),c[0])}<span class="class-art-symbol">${c[2]}</span></span><span class="class-art-copy"><strong>${c[0]}</strong><small>${c[1]}</small><em>${esc(classRule({class:c[0]}).abilityName)}</em></span></button>`).join('')}</div>`;
     if(step===3)body=`<h3>Distribua seus atributos</h3><p class="panel-subtitle">Você tem 24 pontos para distribuir. Cada atributo começa em 1 e pode chegar a 8 nesta criação inicial.</p><div class="notice" style="margin:12px 0">Pontos disponíveis: <strong id="points-left">${24-Object.values(d.attributes).reduce((a,b)=>a+b,0)}</strong> · Ajuste os controles para combinar com seu estilo.</div>${ATTRS.map(a=>`<div class="attribute-row"><div><strong>${a[1]}</strong><small>${a[2]}</small></div><input type="range" min="1" max="8" value="${d.attributes[a[0]]}" data-attribute="${a[0]}"><b id="attr-${a[0]}">${d.attributes[a[0]]}</b></div>`).join('')}`;
     if(step===4){const cl=CLASSES.find(x=>x[0]===d.class);const realm=REALMS.find(x=>x.name===d.realm);body=`<div class="character-art-preview"><div class="character-art-portrait">${portraitImage(classPortrait(d.class),d.name||d.class)}<span class="character-level-badge">NÍVEL 1</span></div><div class="character-art-summary"><span class="tag gold">Prévia da ficha</span><h2 class="page-title" style="margin:12px 0 6px">${esc(d.name||'Aventureiro sem nome')}</h2><p class="panel-subtitle">${esc(d.race)} · ${esc(d.class)} · ${esc(d.realm)}</p><p class="panel-subtitle">${esc(cl?.[1]||'')} ${realm?'Origem: '+esc(realm.subtitle)+'.':''}</p><div class="divider"></div><div class="stat-grid"><div class="stat-card"><small>HP Máximo</small><strong>${normalizeCharacter(d).maxHp}</strong></div><div class="stat-card"><small>Defesa</small><strong>${normalizeCharacter(d).defense}</strong></div><div class="stat-card"><small>Nível</small><strong>1</strong></div></div><div class="divider"></div><div class="stat-grid">${ATTRS.map(a=>`<div class="stat-card"><small>${a[1]}</small><strong>${d.attributes[a[0]]}</strong></div>`).join('')}</div><div class="divider"></div><p class="panel-subtitle"><strong>Habilidade:</strong> ${esc(classRule(d).abilityName)} — ${esc(classRule(d).abilityDescription)}</p><p class="panel-subtitle"><strong>Arma:</strong> ${esc(normalizeCharacter(d).equipment.weapon.name)} · <strong>Armadura:</strong> ${esc(normalizeCharacter(d).equipment.armor.name)}</p><p class="panel-subtitle"><strong>Personalidade:</strong> ${esc(d.personality||'Ainda não definida.')}</p></div></div><div class="notice" style="margin-top:14px">Sua ficha começa no nível 1. O sistema calcula HP, defesa, equipamento inicial e habilidade de classe. Durante o combate, HP e itens consumidos serão salvos na campanha.</div>`}
-    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Criação guiada de personagem</div><h2>${steps[step]} · Etapa ${step+1} de 5</h2><p>Leia as orientações e escolha com calma. Você poderá ajustar a ficha antes da aventura.</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="wizard-progress">${steps.map((_,i)=>`<span class="${i<=step?'done':''}"></span>`).join('')}</div><div id="char-step-body">${body}</div><div class="modal-actions"><button class="btn btn-quiet" data-action="char-prev" ${step===0?'disabled':''}>← Voltar</button><button class="btn btn-primary" data-action="char-next">${step===4?'Salvar personagem':'Continuar →'}</button></div></section></div>`;
+    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close" data-modal-kind="character"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Criação guiada de personagem</div><h2>${steps[step]} · Etapa ${step+1} de 5</h2><p>Leia as orientações e escolha com calma. Você poderá ajustar a ficha antes da aventura.</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="wizard-progress">${steps.map((_,i)=>`<span class="${i<=step?'done':''}"></span>`).join('')}</div><div id="char-step-body">${body}</div><div class="modal-actions"><button class="btn btn-quiet" data-action="char-prev" ${step===0?'disabled':''}>← Voltar</button><button class="btn btn-primary" data-action="char-next">${step===4?'Salvar personagem':'Continuar →'}</button></div></section></div>`;
   }
   function newCharacterDraft(){return{name:'',age:'',personality:'',realm:'Eldoria',race:'Humano',class:'Guerreiro',level:1,attributes:{forca:5,destreza:4,constituicao:5,inteligencia:3,sabedoria:4,carisma:3}}}
   function renderBookModal(){
@@ -1718,7 +1824,7 @@
       body=`<form id="account-recovery-password-form"><div class="field"><label for="account-password">NOVA SENHA</label><input class="input" id="account-password" type="password" minlength="8" autocomplete="new-password" required></div><div class="field"><label for="account-password-confirm">CONFIRMAR SENHA</label><input class="input" id="account-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div><div class="modal-actions"><button class="btn btn-primary" type="submit">Atualizar senha</button></div></form>`;
     }else if(state.accountMode==='login'){
       title='Entrar na conta';description='Use o mesmo e-mail e senha em computador, celular ou tablet.';
-      body=`<form id="account-login-form"><div class="field"><label for="account-email">E-MAIL</label><input class="input" id="account-email" type="email" autocomplete="username" required></div><div class="field"><label for="account-login-password">SENHA</label><input class="input" id="account-login-password" type="password" autocomplete="current-password" required></div><div class="row between"><button type="button" class="text-button" data-action="account-mode" data-mode="reset">Esqueci minha senha</button><button type="button" class="text-button" data-action="account-mode" data-mode="home">Voltar</button></div><div class="notice">Entre com a conta que foi criada ao salvar o progresso no dispositivo original. O personagem e as campanhas acompanham o mesmo e-mail.</div><div class="modal-actions"><button class="btn btn-primary" type="submit">Entrar</button></div></form>`;
+      body=`<form id="account-login-form"><div class="field"><label for="account-email">E-MAIL</label><input class="input" id="account-email" type="email" autocomplete="username" required></div><div class="field"><label for="account-login-password">SENHA</label><input class="input" id="account-login-password" type="password" autocomplete="current-password" required></div><div class="row between"><button type="button" class="text-button" data-action="account-mode" data-mode="reset">Esqueci minha senha</button><button type="button" class="text-button" data-action="account-mode" data-mode="home">Voltar</button></div><div class="notice">Entre com a conta criada ao salvar o progresso no outro dispositivo. Mesmo que este aparelho tenha sido usado como visitante, você pode entrar normalmente; o progresso visitante temporário será descartado e as campanhas da conta serão carregadas.</div><div class="modal-actions"><button class="btn btn-primary" type="submit">Entrar</button></div></form>`;
     }else if(state.accountMode==='reset'){
       title='Recuperar senha';description='Enviaremos instruções ao endereço informado.';
       body=`<form id="account-reset-form"><div class="field"><label for="account-email">E-MAIL DA CONTA</label><input class="input" id="account-email" type="email" autocomplete="email" required></div><div class="notice">O link de recuperação retornará para esta página do Reino de Aethra. Verifique também a caixa de spam.</div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="account-mode" data-mode="login">Voltar</button><button class="btn btn-primary" type="submit">Enviar recuperação</button></div></form>`;
@@ -1742,19 +1848,19 @@
     const findToken=name=>tokens.find(token=>(token.getAttribute('title')||'').trim()===(name||'').trim());
     const attacker=monsterAction?findToken(payload.monster):findToken(payload.player_name);
     const target=monsterAction?findToken(payload.target):tokens.find(token=>token.classList.contains('monster-token'));
-    const actionClass=Number(payload.healing)>0?'token-heal':payload.hit===false?'token-miss':monsterAction?'token-monster-attack':payload.action==='ability'?'token-cast':'token-attack';
-    const pulse=(token,cls)=>{if(!token)return;token.classList.remove('token-attack','token-cast','token-heal','token-miss','token-monster-attack','token-hit');void token.offsetWidth;token.classList.add(cls);window.setTimeout(()=>token.classList.remove(cls),1050)};
+    const actionClass=Number(payload.healing)>0?'token-heal':payload.hit===false?'token-miss':Number(payload.natural)===20?'token-critical':monsterAction?'token-monster-attack':payload.action==='ability'?'token-cast':'token-attack';
+    const pulse=(token,cls)=>{if(!token)return;token.classList.remove('token-attack','token-cast','token-heal','token-miss','token-monster-attack','token-hit','token-critical');void token.offsetWidth;token.classList.add(cls);window.setTimeout(()=>token.classList.remove(cls),1050)};
     pulse(attacker,actionClass);
     if(monsterAction&&attacker?.querySelector('.monster-drakthar')&&(/sopro|cinzas|chama/i.test(payload.description||'')||Array.isArray(payload.affected)&&payload.affected.length>1)){attacker.classList.add('token-boss-breath');window.setTimeout(()=>attacker.classList.remove('token-boss-breath'),1250)}
     if(monsterAction&&Array.isArray(payload.affected)){payload.affected.forEach(item=>pulse(findToken(item.name),'token-hit'))}
     else if(target&&Number(payload.damage)>0)pulse(target,'token-hit');
   }
   function showCombatFX(payload={}){
-    const healed=Number(payload.healing)>0;const monster=!!payload.monsterAction;const magic=payload.action==='ability'&&!healed;const kind=healed?'heal':monster?'monster':magic?'magic':'physical';
-    const title=healed?'Energia restauradora':monster?'Ataque da criatura':magic?'Poder arcano':'Golpe de combate';
+    const healed=Number(payload.healing)>0;const critical=Number(payload.natural)===20&&payload.hit!==false;const missed=payload.hit===false;const monster=!!payload.monsterAction;const magic=payload.action==='ability'&&!healed;const kind=healed?'heal':critical?'critical':missed?'miss':monster?'monster':magic?'magic':'physical';
+    const title=healed?'Energia restauradora':critical?'Acerto crítico!':missed?'Ataque evitado':monster?'Ataque da criatura':magic?'Poder arcano':'Golpe de combate';
     const detail=payload.description||((Number(payload.damage)||0)>0?`${payload.damage} de dano`:'Ação resolvida');
     animateMapCombat(payload,monster);
-    const node=document.createElement('div');node.className=`combat-fx combat-fx-${kind}`;node.innerHTML=`<span class="combat-fx-symbol">${healed?'✚':monster?'☠':magic?'✧':'⚔'}</span><span><strong>${esc(title)}</strong><small>${esc(detail)}</small></span>`;document.body.append(node);playCombatFXSound(kind);setTimeout(()=>node.remove(),2100);
+    const node=document.createElement('div');node.className=`combat-fx combat-fx-${kind}`;node.innerHTML=`<span class="combat-fx-symbol">${healed?'✚':critical?'✹':missed?'◌':monster?'☠':magic?'✧':'⚔'}</span><span><strong>${esc(title)}</strong><small>${esc(detail)}</small></span>`;document.body.append(node);playCombatFXSound(kind);setTimeout(()=>node.remove(),2100);
   }
   function playCombatFXSound(kind){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const now=ctx.currentTime;const tones=kind==='magic'?[540,720,900]:kind==='heal'?[440,554,660]:kind==='monster'?[130,98,73]:[210,145,110];tones.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=kind==='magic'?'sine':'triangle';o.frequency.setValueAtTime(f,now+i*.05);g.gain.setValueAtTime(.0001,now+i*.05);g.gain.exponentialRampToValueAtTime(.026,now+i*.05+.018);g.gain.exponentialRampToValueAtTime(.0001,now+i*.05+.14);o.connect(g);g.connect(ctx.destination);o.start(now+i*.05);o.stop(now+i*.05+.15)});setTimeout(()=>ctx.close(),650)}catch(e){}}
   function showDice(result,player){
@@ -1803,12 +1909,12 @@
       else if(action==='disconnect-backend')disconnectSupabase()
       else if(action==='open-book'){state.currentBook=btn.dataset.book;state.modal='book';render()}
       else if(action==='open-cloud-campaign'){await openCloudCampaign(btn.dataset.id)}
-      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);localStorage.setItem(KEYS.active,c.id);state.view=c.status==='active'?'session':'lobby';render()}}
+      else if(action==='open-local-campaign'){const c=localCampaignById(btn.dataset.id);if(c){state.campaign=c;state.member=c.members.find(m=>m.user_id==='local-user')||c.members[0];state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);setActiveCampaignId(c.id);state.view=c.status==='active'?'session':'lobby';closeModal();render()}}
       else if(action==='copy-code'){await navigator.clipboard?.writeText(state.campaign.code);toast('Código copiado.');}
       else if(action==='copy-invite'){const link=location.href.split('?')[0]+'?join='+encodeURIComponent(state.campaign.code);await navigator.clipboard?.writeText(link);toast('Link de convite copiado.');}
       else if(action==='create-character')openModal('character')
       else if(action==='char-prev'){if(state.charStep>0){state.charStep--;render()}}
-      else if(action==='char-save')await saveCharacter(state.charDraft)
+      else if(action==='char-save'){await saveCharacter(state.charDraft);closeModal();render()}
       else if(action==='start-session'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode iniciar a sessão.');await updateGameState({started:true},'active');state.view='session';render();toast('A sessão começou. Os aventureiros foram convocados!')}
       else if(action==='pause-session'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode encerrar a sessão.');await updateGameState({started:false,activeRollPrompt:null},'paused');state.view='lobby';render();toast('Crônica salva. A sessão foi encerrada.')}
       else if(action==='open-lobby'){state.view='lobby';render()}
@@ -1827,7 +1933,7 @@
       else if(action==='advance-turn'){
         if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode avançar turnos.');
         const enc=state.campaign.game_state?.encounter;if(!enc)throw new Error('Não existe combate ativo.');
-        const next=advanceCombatTurn(enc);await updateGameState({encounter:next});await createEvent('turn_advanced',{description:`Agora é o turno de ${activeCombatTurn(next)?.name||'—'}.`,round:next.round});
+        const next=advanceCombatTurn(enc,state.campaign.game_state?.partyState||{});await updateGameState({encounter:next});await createEvent('turn_advanced',{description:`Agora é o turno de ${activeCombatTurn(next)?.name||'—'}.`,round:next.round});
       }
       else if(action==='resolve-monster-turn')await resolveMonsterTurn();
       else if(action==='combat-attack'||action==='combat-ability'||action==='combat-potion'){
@@ -1906,6 +2012,10 @@
   });
   document.addEventListener('submit',async e=>{
     e.preventDefault();const form=e.target;
+    if(form.dataset.busy==='true')return;
+    form.dataset.busy='true';
+    const submitButton=form.querySelector('button[type="submit"],button:not([type])');
+    if(submitButton){submitButton.disabled=true;submitButton.dataset.originalText=submitButton.textContent;submitButton.textContent='Salvando…'}
     try{
       if(form.id==='settings-form'){const url=$('#sb-url').value,key=$('#sb-key').value;await connectSupabase(url,key);closeModal();render()}
       else if(form.id==='account-link-form'){await linkGuestAccount($('#account-email').value)}
@@ -1913,7 +2023,7 @@
       else if(form.id==='account-reset-form'){await sendPasswordReset($('#account-email').value)}
       else if(form.id==='account-set-password-form'){await finishAccountPassword($('#account-password').value,$('#account-password-confirm').value)}
       else if(form.id==='account-recovery-password-form'||form.id==='account-change-password-form'){await updateSignedInPassword($('#account-password').value,$('#account-password-confirm').value)}
-      else if(form.id==='create-form'){const name=$('#campaign-name').value.trim(),desc=$('#campaign-desc').value.trim();if(!name)throw new Error('Informe o nome da campanha.');await createCampaign(name,desc)}
+      else if(form.id==='create-form'){const name=$('#campaign-name').value.trim(),desc=$('#campaign-desc').value.trim();if(!name)throw new Error('Informe o nome da campanha.');await createCampaign(name,desc);closeModal();render()}
       else if(form.id==='join-form'){const code=$('#join-code').value.trim().toUpperCase(),name=$('#join-name').value.trim();state.prefillJoinCode=null;await joinCampaign(code,name)}
       else if(form.id==='damage-form'){const amount=Number($('#damage-amount').value),note=$('#damage-note').value.trim(),encounter=state.campaign.game_state?.encounter;if(!encounter?.id)throw new Error('Não existe um encontro ativo.');if(!amount||amount<1)throw new Error('Informe um valor de dano válido.');await createEvent('damage_request',{amount,note,encounter_id:encounter.id,player_name:state.member?.display_name||'Aventureiro'});closeModal();toast('Ataque enviado. O mestre validará o dano.')}
       else if(form.id==='roll-prompt-form'){const target=$('#roll-target').value,reason=$('#roll-reason').value.trim()||'Teste de D20';await requestRoll(target,reason);closeModal()}
@@ -1923,6 +2033,7 @@
       else if(form.id==='journal-form'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode registrar no diário.');const text=$('#journal-text').value.trim();if(!text)throw new Error('Escreva uma anotação antes de salvar.');await appendJournalEntry(text,'story');await createEvent('session_note',{kind:'journal',text});renderAdventureManagerModal();toast('Anotação adicionada ao diário.')}
       else if(form.id==='narration-form'){const text=$('#narration-text').value.trim();if(text){await updateGameState({narration:text});await createEvent('narration',{text});closeModal();toast('Narração compartilhada.') }}
     }catch(err){console.error(err);toast(err.message||'Erro ao enviar formulário.','error')}
+    finally{if(form.isConnected){form.dataset.busy='false';if(submitButton){submitButton.disabled=false;if(submitButton.dataset.originalText)submitButton.textContent=submitButton.dataset.originalText}}}
   });
 
   async function characterNext(){
@@ -1930,12 +2041,17 @@
     if(state.charStep===0){d.name=$('#char-name')?.value.trim()||d.name;d.age=$('#char-age')?.value||'';d.personality=$('#char-personality')?.value.trim()||'';if(!d.name)throw new Error('Escolha um nome para seu personagem.')}
     if(state.charStep===1&&(!d.realm||!d.race))throw new Error('Escolha um reino e uma raça.');
     if(state.charStep===2&&!d.class)throw new Error('Escolha uma classe.');
-    if(state.charStep===4){await saveCharacter(d);return}
+    if(state.charStep===4){await saveCharacter(d);closeModal();render();return}
     state.charStep++;renderCharacterModal();
   }
 
-  // Erros de validação de wizard são exibidos sem interromper o restante da interface.
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-action="char-next"]');if(!b)return;characterNext().catch(err=>toast(err.message,'error'))});
+  // O assistente também bloqueia cliques repetidos enquanto salva a ficha na nuvem.
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-action="char-next"]');if(!b||b.dataset.busy==='true')return;
+    b.dataset.busy='true';b.disabled=true;const original=b.textContent;b.textContent=state.charStep===4?'Salvando…':'Validando…';
+    characterNext().catch(err=>toast(err.message,'error')).finally(()=>{if(b.isConnected){b.dataset.busy='false';b.disabled=false;b.textContent=original}});
+  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.modal){closeModal();render()}});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.backendReady&&state.campaign)refreshCloudCampaign({silent:true})});
   window.addEventListener('online',()=>{if(state.backendReady&&state.campaign)refreshCloudCampaign({silent:true})});
   window.addEventListener('beforeunload',()=>{if(state.channel&&state.backend)state.backend.removeChannel(state.channel)});

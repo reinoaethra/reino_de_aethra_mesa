@@ -1,8 +1,8 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 2.11 — miniaturas de mesa para personagens, monstros e chefes**  
+**Versão do jogo: 3.0 — lançamento oficial para as primeiras partidas**  
 **Idioma:** português (Brasil)  
-**Formato:** aplicação web estática para navegador  
+**Formato:** aplicação web estática para navegador · pacote de lançamento v3.0  
 **Hospedagem da interface:** GitHub Pages  
 **Banco de dados e multiplayer:** Supabase
 
@@ -19,39 +19,50 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 1. **[GUIA-SUPABASE-DO-ZERO.md](GUIA-SUPABASE-DO-ZERO.md)** — criar a conta, criar o projeto, preparar o banco, habilitar acesso visitante e configurar a chave pública.
 2. **[GUIA-GITHUB-PAGES-DO-ZERO.md](GUIA-GITHUB-PAGES-DO-ZERO.md)** — criar um repositório e publicar o jogo gratuitamente.
 3. **[GUIA-LOGIN-E-PROGRESSO.md](GUIA-LOGIN-E-PROGRESSO.md)** — configurar confirmação de e-mail e transformar o acesso visitante em conta para continuar em outro dispositivo.
-4. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
-5. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
-6. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
-7. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
-8. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — referência histórica das miniaturas vetoriais das versões iniciais; as peças atuais são estátuas estáticas.
-9. **[GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md](GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md)** — entender a representação visual de armas, armaduras, escudos e monstros no tabuleiro.
-10. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
-11. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
-12. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
-13. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md)** — consultar mapas regionais, novos monstros, entrega de recompensas e livros ampliados.
-14. **[GUIA-INTERACOES-E-COMERCIO-V1.8.md](GUIA-INTERACOES-E-COMERCIO-V1.8.md)** — conduzir diálogos com escolhas persistentes e registrar compras/vendas.
-15. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
-16. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
-17. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
-18. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
-19. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
-20. **[GUIA-CENARIOS-ILUSTRADOS-V2.6.md](GUIA-CENARIOS-ILUSTRADOS-V2.6.md)** — referência das cenas regionais ilustradas.
-21. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
-22. **[GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md](GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md)** — movimento narrativo, objetos persistentes, rotinas de NPCs e atualizações da biblioteca.
-23. **[GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md](GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md)** — cenas regionais ilustradas, atualização dos sete livros e correção da criação de campanhas.
-24. **[supabase-migration-v2.9.sql](supabase-migration-v2.9.sql)** — corrige a geração do código de convite sem depender de `gen_random_bytes`.
-25. **[MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md](MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md)** — manual completo para quem nunca jogou RPG de mesa.
-26. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md)** — mapas, obstáculos, miniaturas e grupos de monstros.
-27. **[GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md](GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md)** — passo a passo de cenas e objetivos.
-28. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
-29. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md)** — registro da edição anterior do tabuleiro.
-30. **[GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md](GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md)** — fundo ilustrado, grade transparente e movimentação das miniaturas.
-31. **[GUIA-MINIATURAS-DE-MESA-V2.12.md](GUIA-MINIATURAS-DE-MESA-V2.12.md)** — estátuas, equipamento visual e bases de chefes multicelulares.
-32. **[ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf](ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf)** — complemento ilustrado com equipamentos e regras de bases ampliadas.
-33. **[ATLAS-MINIATURAS-V2.12.png](ATLAS-MINIATURAS-V2.12.png)** — prancha de referência das classes e principais modelos de monstros e chefes.
-34. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+4. **[GUIA-DE-LANCAMENTO-V3.0.md](GUIA-DE-LANCAMENTO-V3.0.md)** — entender o fluxo oficial de mestre, jogadores, visitantes e contas.
+5. **[CHECKLIST-DE-LANCAMENTO-V3.0.md](CHECKLIST-DE-LANCAMENTO-V3.0.md)** — verificar os dois aparelhos, formulários e regras de combate antes da estreia.
+6. **[CHECKLIST-DA-PRIMEIRA-PARTIDA.md](CHECKLIST-DA-PRIMEIRA-PARTIDA.md)** — conferir a instalação e realizar a primeira sessão de teste.
+7. **[TESTE-MULTIPLAYER.md](TESTE-MULTIPLAYER.md)** — testar com dois ou mais navegadores.
+8. **[REGRAS-DE-COMBATE.md](REGRAS-DE-COMBATE.md)** — consultar as regras de combate e progressão.
+9. **[GUIA-CHEFES-E-FASES.md](GUIA-CHEFES-E-FASES.md)** — entender as fases de Drakthar e os ataques de área.
+10. **[GUIA-MINIATURAS-ARTICULADAS.md](GUIA-MINIATURAS-ARTICULADAS.md)** — referência histórica das miniaturas vetoriais das versões iniciais; as peças atuais são estátuas estáticas.
+11. **[GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md](GUIA-EQUIPAMENTOS-E-CRIATURAS-V1.2.md)** — entender a representação visual de armas, armaduras, escudos e monstros no tabuleiro.
+12. **[GUIA-COMBATE-REATIVO-V1.3.md](GUIA-COMBATE-REATIVO-V1.3.md)** — entender as animações de ataque, magia, cura, impacto e erro.
+13. **[GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md](GUIA-EQUIPAMENTOS-E-COMBATE-V1.4.md)** — raridade visual dos itens, barras de vida, chefes e animações de derrota.
+14. **[GUIA-DA-PRIMEIRA-AVENTURA.md](GUIA-DA-PRIMEIRA-AVENTURA.md)** — conduzir o Capítulo I, apresentar NPCs, cenas e objetivos de missão.
+15. **[GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md](GUIA-CAMPANHA-BESTIARIO-LIVROS-V1.7.md)** — consultar mapas regionais, novos monstros, entrega de recompensas e livros ampliados.
+16. **[GUIA-INTERACOES-E-COMERCIO-V1.8.md](GUIA-INTERACOES-E-COMERCIO-V1.8.md)** — conduzir diálogos com escolhas persistentes e registrar compras/vendas.
+17. **[GUIA-MAPA-E-EXPLORACAO.md](GUIA-MAPA-E-EXPLORACAO.md)** — usar os mapas táticos, posicionar peças, névoa, baús e armadilhas.
+18. **[GUIA-PERSONAGENS-NPCS-CRIATURAS.md](GUIA-PERSONAGENS-NPCS-CRIATURAS.md)** — conhecer os retratos, substituir imagens e entender o bestiário ilustrado.
+19. **[GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md](GUIA-PROGRESSAO-NIVEL-50-E-RARIDADES-V2.2.md)** — progressão até o nível 50, raridades, conjuntos e atualização do Supabase.
+20. **[GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md](GUIA-ESPOLIOS-RELIQUIAS-EQUIPAMENTOS-V2.4.md)** — tabelas de espólio, relíquias, chefes e conjuntos.
+21. **[GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md](GUIA-ATLAS-VISUAL-E-LIVRO-DO-MESTRE-V2.5.md)** — imagens dos cinco reinos, atualização do site e orientações sobre o PDF privado.
+22. **[GUIA-CENARIOS-ILUSTRADOS-V2.6.md](GUIA-CENARIOS-ILUSTRADOS-V2.6.md)** — referência das cenas regionais ilustradas.
+23. **[GUIA-EXPLORACAO-INTERATIVA-V2.7.md](GUIA-EXPLORACAO-INTERATIVA-V2.7.md)** — pontos de interesse, NPCs, eventos e viagens.
+24. **[GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md](GUIA-CENAS-EXPLORAVEIS-E-LIVROS-V2.8.md)** — movimento narrativo, objetos persistentes, rotinas de NPCs e atualizações da biblioteca.
+25. **[GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md](GUIA-IDENTIDADE-VISUAL-E-CORRECOES-V2.9.md)** — cenas regionais ilustradas, atualização dos sete livros e correção da criação de campanhas.
+26. **[supabase-migration-v2.9.sql](supabase-migration-v2.9.sql)** — corrige a geração do código de convite sem depender de `gen_random_bytes`.
+27. **[MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md](MANUAL-PRIMEIROS-PASSOS-MESTRE-E-JOGADORES-V2.10.md)** — manual completo para quem nunca jogou RPG de mesa.
+28. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.md)** — mapas, obstáculos, miniaturas e grupos de monstros.
+29. **[GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md](GUIA-CENA-INTERATIVA-E-MISSOES-V2.10.md)** — passo a passo de cenas e objetivos.
+30. **[ADENDO-LIVRO-DO-MESTRE-V2.10.pdf](ADENDO-LIVRO-DO-MESTRE-V2.10.pdf)** — complemento da edição anterior do Livro do Mestre.
+31. **[GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md](GUIA-MAPA-TATICO-2D-E-ENCONTROS-V2.10.1.md)** — registro da edição anterior do tabuleiro.
+32. **[GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md](GUIA-MAPA-FUNDO-ILUSTRADO-V2.10.2.md)** — fundo ilustrado, grade transparente e movimentação das miniaturas.
+33. **[GUIA-MINIATURAS-DE-MESA-V2.12.md](GUIA-MINIATURAS-DE-MESA-V2.12.md)** — estátuas, equipamento visual e bases de chefes multicelulares.
+34. **[ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf](ADENDO-MINIATURAS-E-BASES-MULTICELULARES-V2.12.pdf)** — complemento ilustrado com equipamentos e regras de bases ampliadas.
+35. **[ATLAS-MINIATURAS-V2.12.png](ATLAS-MINIATURAS-V2.12.png)** — prancha de referência das classes e principais modelos de monstros e chefes.
+36. **[NOTAS-DE-LANCAMENTO-V3.0.md](NOTAS-DE-LANCAMENTO-V3.0.md)** — mudanças da edição oficial.
+37. **[CHECKLIST-DE-LANCAMENTO-V3.0.md](CHECKLIST-DE-LANCAMENTO-V3.0.md)** — validação antes da primeira partida real.
+38. **[SOLUCAO-DE-PROBLEMAS.md](SOLUCAO-DE-PROBLEMAS.md)** — procurar soluções para erros comuns.
+
 
 **Não é necessário instalar um programa de banco de dados no computador.** O Supabase é acessado pelo navegador. O GitHub também é acessado pelo navegador.
+
+## 2. Versão oficial 3.0 — pronta para iniciar as partidas
+
+A v3.0 consolida o conteúdo das versões anteriores e corrige a passagem entre visitante e conta permanente, o fechamento dos formulários de criação e a validação de turnos de combate. Ações fora do turno são recusadas com explicação; aventureiros sem HP não recebem turnos; a derrota do grupo é apresentada separadamente da vitória contra os monstros. As miniaturas continuam como estátuas fixas, com efeitos de combate ao redor, sem mudanças de postura.
+
+Leia `NOTAS-DE-LANCAMENTO-V3.0.md` e siga `CHECKLIST-DE-LANCAMENTO-V3.0.md` antes da primeira sessão oficial. Preserve seu `config.js`; a v3.0 não exige migração SQL.
 
 ## 2. O que está incluído na versão 2.10.2 (base visual preservada)
 
@@ -337,7 +348,7 @@ Consulte `GUIA-EQUIPAMENTOS-RARIDADES-CONJUNTOS-V2.1.md` para entender raridades
 - Ao entrar em outro dispositivo, a lista de campanhas ligadas à conta é carregada do Supabase.
 - A autenticação é administrada pelo Supabase Auth; não há senha armazenada manualmente nas tabelas do jogo.
 
-**Limites importantes:** a conta só sincroniza campanhas criadas/participadas no Supabase. Campanhas criadas anteriormente no modo local (`localStorage`) não são enviadas automaticamente à nuvem. Uma sessão visitante não pode ser recuperada em outro dispositivo até que o jogador conclua o vínculo do e-mail e defina uma senha. No novo dispositivo, entre na conta antes de criar um personagem ou entrar em uma campanha como visitante.
+**Limites importantes:** a conta só sincroniza campanhas criadas/participadas no Supabase. Campanhas criadas anteriormente no modo local (`localStorage`) não são enviadas automaticamente à nuvem. A sessão visitante é temporária e fica vinculada à aba atual; ao encerrar a aba, o acesso visitante deixa de ser recuperável. Ao escolher **Salvar progresso**, o jogador vincula esse acesso a um e-mail, confirma o endereço e define uma senha. Em outro dispositivo, pode entrar diretamente na conta permanente, mesmo que antes tenha testado o jogo como visitante naquele aparelho. O acesso visitante temporário desse aparelho é substituído e não bloqueia o login da conta.
 
 ### Personagens, NPCs e criaturas ilustrados (v0.9)
 
@@ -413,7 +424,7 @@ Abra [GUIA-SUPABASE-DO-ZERO.md](GUIA-SUPABASE-DO-ZERO.md). O guia explica como:
 - Copiar a Project URL e a Publishable key.
 - Preencher `config.js` sem expor uma chave secreta.
 
-Depois de publicar o site, abra também [GUIA-LOGIN-E-PROGRESSO.md](GUIA-LOGIN-E-PROGRESSO.md) para configurar login, confirmação de e-mail e URLs de retorno. **Faça o vínculo do e-mail no dispositivo original antes de tentar continuar em outro aparelho.**
+Depois de publicar o site, abra também [GUIA-LOGIN-E-PROGRESSO.md](GUIA-LOGIN-E-PROGRESSO.md) para configurar login, confirmação de e-mail e URLs de retorno. **Visitantes são temporários; contas salvas podem entrar em qualquer aparelho.** Se um aparelho já foi usado como visitante, escolha “Já tenho uma conta” e entre com as credenciais existentes.
 
 ### Passo B — GitHub Pages
 

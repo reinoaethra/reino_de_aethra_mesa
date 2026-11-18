@@ -1,3 +1,15 @@
+# v3.0 — lançamento oficial para as primeiras partidas
+
+- Separação de armazenamento: sessões visitantes e campanhas locais ficam limitadas à aba; contas permanentes continuam persistidas para login em outros dispositivos. Cache antigo de visitante em armazenamento permanente não é recuperado por uma nova sessão.
+- Removida a barreira que impedia uma sessão visitante de entrar em uma conta permanente já criada em outro aparelho; o login descarta o contexto temporário e carrega as campanhas da conta.
+- Corrigida a ordem de fechamento dos modais de campanha e ficha: as janelas são fechadas antes das atualizações assíncronas que redesenham o painel.
+- Protegidos os formulários contra envio duplicado durante gravações.
+- Reforçada a iniciativa: personagens sem HP e criaturas derrotadas são ignorados; derrota do grupo e vitória contra os inimigos têm estados distintos.
+- Melhoradas as respostas às ações de combate atrasadas ou inválidas, incluindo alvos já derrotados e tentativas de cura sem necessidade.
+- Removida a animação corporal das miniaturas; as estátuas permanecem fixas, enquanto brilhos, anéis e avisos visuais de combate continuam ativos.
+- Melhorias de legibilidade, estados de turno, telas de derrota, foco de teclado e experiência dos modais em telas pequenas.
+- Sem alteração de schema e sem migração SQL obrigatória. Preserve `config.js`.
+
 ## v2.8 — cenas exploráveis e livros ampliados
 
 - Cena de exploração com grade 5×4, marcador da companhia e controles direcionais de deslocamento narrativo para o mestre controlador.
