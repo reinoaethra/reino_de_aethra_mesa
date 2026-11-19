@@ -791,7 +791,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .tactical-map-panel{width:100%;max-width:none;box-sizing:border-box}
 .tactical-map-workspace{grid-template-columns:minmax(0,1fr) minmax(260px,310px);gap:clamp(12px,1.4vw,22px);align-items:start}
 .tactical-board-column,.map-board-wrap-new,.map-board-layout-new{min-width:0;width:100%;max-width:none;box-sizing:border-box}
-.tactical-map-v2101 .map-board-layout-new .map-board,.map-board-layout-new .map-board.board-map-grid{
+.tactical-map-v2101 .map-board-layout-new .map-board.board-map-grid:not(.map-board-image),.map-board-layout-new .map-board.board-map-grid:not(.map-board-image){
   width:100%;max-width:none;min-width:0;aspect-ratio:5/4;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));
   gap:0;padding:0;border:2px solid rgba(221,194,139,.58);border-radius:9px;overflow:hidden;
   background:#1b2425!important;background-image:none!important;box-shadow:0 15px 35px rgba(0,0,0,.42),inset 0 0 0 4px rgba(6,12,17,.55)
@@ -880,7 +880,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
   .map-board-layout-new .map-cell-coordinate{font-size:5px;opacity:.5}
 }
 
-/* v3.0.3 — imagens importadas são a fonte visual do tabuleiro; o terreno só controla colisão. */
+/* v3.0.4 — imagens oficiais renderizadas por camada img atrás da grade; terreno controla colisão. */
 .map-board-layout-new .map-board.map-board-image .board-map-cell,
 .map-board-layout-new .map-board.map-board-image .map-cell,
 .map-board-layout-new .map-board.map-board-image .map-cell.tile-grass,
@@ -932,3 +932,23 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .member-remove-btn { flex: 0 0 auto; white-space: nowrap; }
 
 .map-piece-thumb .monster-miniature-image,.encounter-art-thumb .monster-miniature-image{filter:grayscale(1) saturate(.08) contrast(1.12) drop-shadow(0 2px 2px #000)}
+
+
+/* v3.0.4 — a imagem oficial é um elemento real do DOM, por baixo da grade.
+   Isso evita que regras genéricas background-image:none!important escondam o cenário no GitHub Pages. */
+.map-board-layout-new .map-board.map-board-image{position:relative!important;background-color:transparent!important;background-position:center!important;background-size:100% 100%!important;isolation:isolate}
+.map-board-layout-new .map-board.map-board-image>.map-board-background{position:absolute!important;inset:0!important;display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill;z-index:0;pointer-events:none;user-select:none;border:0;border-radius:inherit}
+.map-board-layout-new .map-board.map-board-image>.map-cell{position:relative;z-index:1}
+.map-board-layout-new .map-board.map-board-image.map-image-missing{background:#182023!important}
+.map-board-layout-new .map-board.map-board-image.map-image-missing:after{content:"A imagem deste mapa não foi carregada. Verifique assets/maps-v3/";position:absolute;inset:10px 10px auto;z-index:5;padding:7px 10px;border:1px solid rgba(220,170,105,.5);border-radius:6px;background:rgba(20,15,12,.9);color:#f0c88e;font-size:9px;text-align:center;pointer-events:none}
+.encounter-art-thumb{position:relative;display:grid;place-items:center;padding:3px;background:radial-gradient(ellipse at 50% 78%,rgba(173,160,133,.18),transparent 68%),#17202a}
+.encounter-art-thumb .monster-miniature-wrap{display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden}
+.encounter-art-thumb .monster-miniature-image{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:grayscale(1) saturate(.08) contrast(1.12) drop-shadow(0 4px 4px rgba(0,0,0,.78))}
+.encounter-art-thumb .miniature-art-fallback{display:grid;place-items:center;width:100%;height:100%}
+.encounter-art-thumb .miniature-art-fallback .monster-sprite{width:85%;height:95%;max-height:110px}
+.battle-monster-stage{position:absolute;inset:0;display:grid;place-items:center;padding:8px 12px 20px;overflow:hidden}
+.battle-monster-stage .monster-miniature-wrap{display:grid;place-items:center;width:100%;height:100%;max-width:270px;max-height:245px}
+.battle-monster-stage .monster-miniature-image{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:grayscale(1) saturate(.08) contrast(1.15) drop-shadow(0 8px 8px rgba(0,0,0,.8))}
+.battle-monster-stage .miniature-art-fallback{display:grid;place-items:center;width:100%;height:100%}
+.battle-monster-stage .monster-sprite{width:70%;height:90%;max-height:220px}
+@media(max-width:760px){.battle-monster-stage{padding:4px 8px 18px}.battle-monster-stage .monster-miniature-wrap{max-width:210px;max-height:205px}}

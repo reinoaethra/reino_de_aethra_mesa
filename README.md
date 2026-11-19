@@ -1,8 +1,8 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 3.0.3 — mapas oficiais, miniaturas completas e gestão de campanhas**  
+**Versão do jogo: 3.0.4 — correção dos fundos e miniaturas exclusivas do bestiário**  
 **Idioma:** português (Brasil)  
-**Formato:** aplicação web estática para navegador · pacote de atualização v3.0.3  
+**Formato:** aplicação web estática para navegador · pacote de atualização v3.0.4  
 **Hospedagem da interface:** GitHub Pages  
 **Banco de dados e multiplayer:** Supabase
 
@@ -66,7 +66,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. Versão oficial 3.0 — pronta para iniciar as partidas
 
-A v3.0 foi a edição oficial inicial. A v3.0.1 corrigiu os diálogos e modernizou os tabuleiros. A v3.0.2 integrou os onze mapas preparados pelo mestre e a movimentação diagonal. A v3.0.3 passa a ler exclusivamente essa biblioteca nova, corrige a resolução dos fundos no GitHub Pages, adiciona miniaturas exclusivas para as criaturas e oferece exclusão de campanha pelo mestre, remoção de participantes e saída voluntária dos jogadores.
+A v3.0 foi a edição oficial inicial. A v3.0.1 corrigiu os diálogos e modernizou os tabuleiros. A v3.0.2 integrou os onze mapas preparados pelo mestre e a movimentação diagonal. A v3.0.3 passou a ler exclusivamente a biblioteca nova e introduziu a gestão de campanhas. A v3.0.4 corrige a exibição dos fundos ilustrados e faz o seletor de encontros, o combate e o tabuleiro usarem miniaturas individuais por criatura.
 
 A v3.0.1 é a atualização de manutenção e experiência de mesa: corrige o fechamento dos diálogos de login e logout, redesenha os mapas como plantas superiores de salas e corredores, com entradas e saídas acessíveis, portas persistentes e Pontos de Interesse em coordenadas; a interface ocupa a largura disponível do navegador. As estátuas das miniaturas permanecem fixas.
 
@@ -671,3 +671,15 @@ Consulte `GUIA-MINIATURAS-DE-MESA-V2.12.md` e `ADENDO-MINIATURAS-E-BASES-MULTICE
 A configuração oficial dos mapas é carregada de `assets/maps/maps-data.js` e das imagens em `assets/maps-v3/`. Os arquivos de mapa antigos foram removidos do pacote para impedir mistura de configurações. Para instalações existentes, execute `supabase-migration-v3.0.3.sql` uma única vez no SQL Editor do Supabase. O criador/mestre pode excluir a campanha; o mestre pode remover participantes jogadores; cada jogador pode sair voluntariamente. A ficha do jogador fica arquivada e é restaurada se ele retornar à campanha pelo código.
 
 **Documentos v3.0.3:** `NOTAS-DE-LANCAMENTO-V3.0.3.md`, `GUIA-DE-ATUALIZACAO-V3.0.3.md`, `CHECKLIST-PUBLICACAO-V3.0.3.md` e `supabase-migration-v3.0.3.sql`.
+
+
+## Correções v3.0.4 — fundos e miniaturas do bestiário
+
+- O fundo dos 11 mapas é carregado como imagem real por baixo da grade; a regra CSS que escondia a imagem deixou de se aplicar a mapas ilustrados.
+- A biblioteca `assets/maps/maps-data.js` continua sendo a fonte única dos mapas, com os arquivos de imagem em `assets/maps-v3/`.
+- As URLs dos fundos e miniaturas recebem cache-buster `v3.0.4`, evitando que o navegador continue mostrando arquivos anteriores.
+- O seletor “Iniciar Encontro” e o cartão do combate deixam de reutilizar retratos de personagens. Cada um dos 32 monstros/chefes tem um arquivo de miniatura próprio.
+- As 10 miniaturas raster já existentes foram preservadas; 22 criaturas têm miniaturas vetoriais monocromáticas independentes, com pedestal e silhuetas específicas. Vharzun possui imagem própria de dragão ancião.
+- Não há nova migração SQL nesta atualização. Preserve `config.js` e publique por inteiro `assets/maps-v3/` e `assets/minis/`.
+
+**Documentos v3.0.4:** `NOTAS-DE-LANCAMENTO-V3.0.4.md`, `GUIA-DE-ATUALIZACAO-V3.0.4.md` e `CHECKLIST-PUBLICACAO-V3.0.4.md`.
