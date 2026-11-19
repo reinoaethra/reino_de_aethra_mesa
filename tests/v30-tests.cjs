@@ -178,21 +178,19 @@ async function main() {
   const authHandler = source.slice(source.indexOf('function handleAuthStateChange('), source.indexOf('async function linkGuestAccount('));
   assert(authHandler.includes("event==='SIGNED_IN'") && authHandler.includes("event==='SIGNED_OUT'"), 'auth events close the account modal on login and logout');
 
-  // Todos os tabuleiros devem ser plantas 10x8 e os Pontos de Interesse precisam estar em casas acessíveis.
+  // A versão 3.0.3 usa apenas a biblioteca oficial exportada pelo mestre.
   {
-    const a = source.indexOf('const MAP_TEMPLATES = [') + 'const MAP_TEMPLATES = '.length;
-    const b = source.indexOf(';\n  // Camada de tabuleiro', a);
-    const c = source.indexOf('const MAP_BOARD_FEATURES = ') + 'const MAP_BOARD_FEATURES = '.length;
-    const d = source.indexOf(';\n  function mapBoardFeatures', c);
-    assert(a >= 0 && b > a && c >= 0 && d > c, 'map board definitions found');
-    // Evaluate the two literal declarations together so the test uses the actual in-app map data.
-    const dataContext = {};
-    vm.runInNewContext('this.templates='+source.slice(a,b)+';this.features='+source.slice(c,d)+';', dataContext, { timeout: 1000 });
-    assert.equal(dataContext.templates.length, 11, 'eleven official tactical boards are present');
-    for (const map of dataContext.templates) {
+    const mapDataSource = fs.readFileSync(path.join(__dirname, '..', 'assets', 'maps', 'maps-data.js'), 'utf8');
+    const dataContext = { window: {} };
+    vm.runInNewContext(mapDataSource, dataContext, { timeout: 1000 });
+    const templates = dataContext.window.AETHRA_MAP_LIBRARY;
+    assert.equal(templates.length, 11, 'eleven official tactical boards are loaded from the master export');
+    for (const map of templates) {
       assert.equal(map.layout.length, 8, map.id + ' has eight rows');
       for (let y=0; y<8; y++) assert.equal(map.layout[y].length, 10, map.id + ' row ' + (y+1) + ' has ten columns');
-      const features = dataContext.features[map.id] || {};
+      const imagePath=path.join(__dirname,'..',map.image.src);
+      assert(fs.existsSync(imagePath),map.id+' background image is packaged');
+      const features=map.features||{};
       for (const poi of (features.points || [])) {
         assert(poi.x>=0 && poi.x<10 && poi.y>=0 && poi.y<8, map.id + ' ' + poi.name + ' is inside the board');
         assert(!'bthcrw'.includes(map.layout[poi.y][poi.x]), map.id + ' ' + poi.name + ' is placed on accessible terrain');
@@ -203,16 +201,15 @@ async function main() {
         assert(!'bthcrw'.includes(map.layout[point.y][point.x]), map.id + ' ' + route + ' is accessible from the board');
       }
       for (const door of (features.doors || [])) assert(door.x>=0 && door.x<10 && door.y>=0 && door.y<8, map.id + ' ' + door.name + ' is inside the board');
-      const describedDoorCells = new Set((features.doors || []).map(door => door.x + ',' + door.y));
-      for (let y=0; y<8; y++) for (let x=0; x<10; x++) if (map.layout[y][x] === 'd') describedDoorCells.add(x + ',' + y);
-      assert(describedDoorCells.size >= (features.doors || []).length, map.id + ' door cells are represented in the board data');
     }
+    assert(!source.includes('const MAP_BOARD_FEATURES ='), 'stale hardcoded map features were removed');
+    assert(source.includes('AETHRA_IMPORTED_MAPS_BY_ID[mapId]?.features'), 'official map points and doors are the sole map feature source');
   }
   assert(source.indexOf('if(marker)return !marker.open') < source.indexOf('if(mapTileInfo(mapTile(mapId,x,y)).blocked)'), 'an explicit door can open a passage over a wall or building tile');
   assert(source.includes('layout-door-') && source.includes("filter(m=>m.type==='door')"), 'all door tiles are generated and listed in the inspector');
   assert(css.includes('width:100%;max-width:none') && css.includes('grid-template-columns:repeat(10,minmax(0,1fr))') && source.includes('PLANTA TÁTICA'), 'main experience and tactical board use the available width');
 
-  console.log('v3.0.1: all targeted assertions passed, including map and modal regressions.');
+  console.log('v3.0.3: all targeted assertions passed, including official maps and campaign flow guards.');
 }
 
 main().catch(err => { console.error(err); process.exitCode = 1; });

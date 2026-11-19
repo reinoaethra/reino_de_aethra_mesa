@@ -1,0 +1,5 @@
+MAPAS OFICIAIS — REINO DE AETHRA v3.0.3
+
+A biblioteca oficial está em maps-data.js e aponta somente para imagens em ../maps-v3/.
+Não copie imagens antigas para esta pasta e não substitua maps-data.js por versões anteriores.
+O carregamento dos mapas é feito antes de app.js pelo index.html.

@@ -79,9 +79,9 @@ assert.equal(context.pathDistance('test', { x: 0, y: 0 }, { x: 1, y: 1 }, [], op
 assert(app.includes('mapBoardFeatures(mapId){return AETHRA_IMPORTED_MAPS_BY_ID[mapId]?.features'), 'official imported POIs and doors override fallback data');
 assert(!app.includes('const terrainHtml=`<span class="map-terrain-art'), 'terrain icons are not rendered over uploaded map art');
 assert(app.includes("${blocked?'blocked':''}"), 'blocked state is still represented per cell');
-assert(app.includes('background-image:url(\'${template.image.src}\')') && css.includes('background-size:100% 100%'), 'tactical board supports a full image background');
+assert(app.includes('mapImageUrl?`background-image:url(\\\"${mapImageUrl}\\\")`:') && app.includes('new URL(template.image.src,document.baseURI)') && css.includes('background-size:100% 100%'), 'tactical board resolves official full background URLs for GitHub Pages');
 assert(css.includes('background:rgba(3,7,10,.68)'), 'blocked cells are darkened without terrain symbols');
 assert(app.includes('directions=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]'), 'pathfinding evaluates all eight adjacent directions');
 assert(app.includes('Diagonais contam como uma casa') && app.includes('dois espaços laterais'), 'movement UI explains diagonal costs and corner restrictions');
 
-console.log('v3.0.2: imported 11 maps, assets, blocked-cell overlay and diagonal pathfinding all passed.');
+console.log('v3.0.3: imported 11 official maps, resolved image assets, blocked overlay and diagonal pathfinding passed.');
