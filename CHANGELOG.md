@@ -1,3 +1,13 @@
+# v3.0.3 — mapas oficiais, miniaturas e gestão de campanhas
+
+- A biblioteca de mapas é lida exclusivamente do pacote multimapas enviado pelo mestre; as imagens foram incorporadas em `assets/maps-v3/` e os caminhos são resolvidos para GitHub Pages.
+- O catálogo antigo de mapas e o fallback estático de Pontos de Interesse foram removidos para impedir mistura entre versões.
+- Casas bloqueadas aparecem apenas escurecidas sobre a arte original.
+- Todas as 32 formas de criaturas e chefes possuem um arquivo de miniatura individual; nove receberam renderizações de estátuas em resina e as demais possuem peças SVG próprias com base e silhueta distinta.
+- O mestre criador pode excluir uma campanha; o mestre pode remover jogadores; jogadores podem sair voluntariamente. A ficha é arquivada e restaurada quando o mesmo usuário retorna pelo código.
+- A autorização dessas operações é validada em funções Supabase `SECURITY DEFINER`, com checagens no servidor.
+- Migração existente: `supabase-migration-v3.0.3.sql`.
+
 # v3.0.2 — mapas preparados pelo mestre e movimento diagonal
 
 - Integrados ao jogo os 11 mapas do projeto enviado pelo mestre, com suas imagens originais, plantas 10×8, terrenos, portas, entradas, saídas e Pontos de Interesse.

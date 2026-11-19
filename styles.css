@@ -879,3 +879,56 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
   .map-board-layout-new .map-board.map-board-image{min-width:520px}
   .map-board-layout-new .map-cell-coordinate{font-size:5px;opacity:.5}
 }
+
+/* v3.0.3 — imagens importadas são a fonte visual do tabuleiro; o terreno só controla colisão. */
+.map-board-layout-new .map-board.map-board-image .board-map-cell,
+.map-board-layout-new .map-board.map-board-image .map-cell,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-grass,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-floor,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-path,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-door,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-entrance,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-exit,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-tree,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-water,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-rock,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-house,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-column,
+.map-board-layout-new .map-board.map-board-image .map-cell.tile-wall {
+  background: transparent !important;
+  background-image: none !important;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked {
+  filter: none !important;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(2, 5, 8, .70);
+  pointer-events: none;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell.blocked:hover:not(:disabled) {
+  filter: none !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05) !important;
+}
+.map-board-layout-new .map-board.map-board-image .map-cell.door-closed {
+  background-image: none !important;
+  box-shadow: inset 0 0 0 2px rgba(214,174,100,.76);
+}
+.map-board-layout-new .map-token .monster-miniature-image {
+  object-fit: contain;
+  object-position: center bottom;
+  filter: grayscale(1) saturate(.08) contrast(1.12) drop-shadow(0 3px 3px rgba(0,0,0,.82));
+}
+.map-board-layout-new .map-token .miniature-art-fallback .monster-sprite {
+  position: absolute;
+  inset: -8% -8% 0;
+  width: 116%;
+  height: 112%;
+  filter: grayscale(1) saturate(.08) contrast(1.1) drop-shadow(0 3px 3px rgba(0,0,0,.82));
+}
+.member-remove-btn { flex: 0 0 auto; white-space: nowrap; }
+
+.map-piece-thumb .monster-miniature-image,.encounter-art-thumb .monster-miniature-image{filter:grayscale(1) saturate(.08) contrast(1.12) drop-shadow(0 2px 2px #000)}

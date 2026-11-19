@@ -1,8 +1,8 @@
 # Reino de Aethra — RPG de Mesa Virtual
 
-**Versão do jogo: 3.0.2 — mapas do mestre e movimentação diagonal**  
+**Versão do jogo: 3.0.3 — mapas oficiais, miniaturas completas e gestão de campanhas**  
 **Idioma:** português (Brasil)  
-**Formato:** aplicação web estática para navegador · pacote de atualização v3.0.2  
+**Formato:** aplicação web estática para navegador · pacote de atualização v3.0.3  
 **Hospedagem da interface:** GitHub Pages  
 **Banco de dados e multiplayer:** Supabase
 
@@ -66,7 +66,7 @@ Se você nunca criou um banco de dados, nunca publicou um site ou nunca usou o S
 
 ## 2. Versão oficial 3.0 — pronta para iniciar as partidas
 
-A v3.0 foi a edição oficial inicial. A v3.0.1 corrigiu os diálogos e modernizou os tabuleiros. A v3.0.2 integra os onze mapas preparados pelo mestre, usa suas imagens próprias como fundos, escurece casas bloqueadas sem símbolos de terreno e habilita movimentação diagonal com prevenção de corte de cantos.
+A v3.0 foi a edição oficial inicial. A v3.0.1 corrigiu os diálogos e modernizou os tabuleiros. A v3.0.2 integrou os onze mapas preparados pelo mestre e a movimentação diagonal. A v3.0.3 passa a ler exclusivamente essa biblioteca nova, corrige a resolução dos fundos no GitHub Pages, adiciona miniaturas exclusivas para as criaturas e oferece exclusão de campanha pelo mestre, remoção de participantes e saída voluntária dos jogadores.
 
 A v3.0.1 é a atualização de manutenção e experiência de mesa: corrige o fechamento dos diálogos de login e logout, redesenha os mapas como plantas superiores de salas e corredores, com entradas e saídas acessíveis, portas persistentes e Pontos de Interesse em coordenadas; a interface ocupa a largura disponível do navegador. As estátuas das miniaturas permanecem fixas.
 
@@ -664,3 +664,10 @@ Consulte `GUIA-MINIATURAS-DE-MESA-V2.12.md` e `ADENDO-MINIATURAS-E-BASES-MULTICE
 44. **[NOTAS-DE-LANCAMENTO-V3.0.2.md](NOTAS-DE-LANCAMENTO-V3.0.2.md)** — mapas importados e movimentação diagonal.
 45. **[GUIA-DE-ATUALIZACAO-V3.0.2.md](GUIA-DE-ATUALIZACAO-V3.0.2.md)** — instalação da v3.0.2.
 46. **[CHECKLIST-PUBLICACAO-V3.0.2.md](CHECKLIST-PUBLICACAO-V3.0.2.md)** — verificações após publicar.
+
+
+## Gestão de campanhas e mapas v3.0.3
+
+A configuração oficial dos mapas é carregada de `assets/maps/maps-data.js` e das imagens em `assets/maps-v3/`. Os arquivos de mapa antigos foram removidos do pacote para impedir mistura de configurações. Para instalações existentes, execute `supabase-migration-v3.0.3.sql` uma única vez no SQL Editor do Supabase. O criador/mestre pode excluir a campanha; o mestre pode remover participantes jogadores; cada jogador pode sair voluntariamente. A ficha do jogador fica arquivada e é restaurada se ele retornar à campanha pelo código.
+
+**Documentos v3.0.3:** `NOTAS-DE-LANCAMENTO-V3.0.3.md`, `GUIA-DE-ATUALIZACAO-V3.0.3.md`, `CHECKLIST-PUBLICACAO-V3.0.3.md` e `supabase-migration-v3.0.3.sql`.
