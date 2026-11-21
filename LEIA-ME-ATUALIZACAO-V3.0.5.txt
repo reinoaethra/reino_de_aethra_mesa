@@ -1,0 +1,29 @@
+REINO DE AETHRA — ATUALIZAÇÃO 3.0.5
+PACOTE DE ATUALIZAÇÃO ENXUTO (NÃO É O SITE COMPLETO)
+
+CONTEÚDO
+- index.html, app.js e styles.css: substituem os arquivos da raiz do site.
+- assets/minis/monsters/*.png: 22 miniaturas novas para as criaturas que ainda usavam artes provisórias.
+
+INSTALAÇÃO
+1. Faça uma cópia de segurança do repositório atual.
+2. Extraia este ZIP na pasta raiz do projeto GitHub Pages, mantendo a estrutura de pastas.
+3. Substitua index.html, app.js e styles.css quando o sistema perguntar.
+4. Copie/mescle os 22 PNGs para assets/minis/monsters/.
+5. NÃO apague os nove PNGs de monstros que já existiam nessa pasta, nem assets/minis/monster-goblin.png.
+6. Preserve config.js, assets/maps/, assets/maps-v3/ e os demais arquivos atuais.
+7. Publique as alterações e atualize o navegador com Ctrl+F5. No celular, feche a aba antiga e abra novamente.
+
+O QUE MUDA
+- As 32 criaturas do bestiário passam a ser resolvidas por miniaturas PNG próprias; as 10 miniaturas originais aprovadas são preservadas e este pacote adiciona as 22 restantes.
+- A mesma miniatura é usada no seletor “Iniciar Encontro”, no cartão de combate e na lista de criaturas com HP individual.
+- O cartão principal acompanha a criatura cujo turno está ativo. Durante o turno de um jogador, mantém a última criatura relevante; não fica preso a um inimigo já derrotado.
+- O fallback vetorial fica oculto quando a imagem PNG carrega, evitando que a forma antiga apareça sobre a miniatura.
+- O Devorador das Marés utiliza a escultura cinza-azulada aprovada.
+
+NÃO É NECESSÁRIO
+- Não execute SQL nesta atualização.
+- Não substitua config.js.
+- Não remova os SVGs antigos: o código atualizado passa a solicitar os PNGs.
+
+Este ZIP contém somente os arquivos necessários para aplicar a atualização sobre a versão 3.0.4 já publicada.
