@@ -1,0 +1,28 @@
+REINO DE AETHRA — ATUALIZAÇÃO INCREMENTAL v3.0.6
+
+OBJETIVO
+Substituir somente a imagem grande do monstro ativo no painel de combate por uma arte colorida panorâmica, enquadrada para não cortar asas, armas, caudas ou bases.
+
+AS MINIATURAS NÃO FORAM ALTERADAS.
+As peças cinza do tabuleiro, o seletor “Iniciar Encontro” e a lista compacta de criaturas continuam usando os mesmos arquivos em assets/minis/.
+
+ARQUIVOS DESTE PACOTE
+- index.html
+- app.js
+- styles.css
+- assets/monster-art/ (32 artes WebP, uma para cada criatura do bestiário)
+
+COMO INSTALAR
+1. Faça uma cópia de segurança dos arquivos atuais.
+2. Na raiz do projeto do GitHub Pages, substitua index.html, app.js e styles.css pelos arquivos deste pacote.
+3. Copie a pasta assets/monster-art/ inteira para dentro da pasta assets/ já existente. Mescle a pasta; não apague outras pastas ou arquivos.
+4. Preserve config.js, assets/maps/, assets/maps-v3/ e assets/minis/.
+5. Publique as alterações e atualize o site com Ctrl+F5. No celular, feche a aba antiga e abra o site novamente.
+
+NÃO É NECESSÁRIO EXECUTAR SQL.
+
+COMPORTAMENTO
+- A arte acompanha o monstro em destaque/turno ativo.
+- Nome, tipo, HP, defesa e textos continuam sendo dados dinâmicos da campanha; não estão gravados dentro das imagens.
+- Se uma arte não carregar, o painel mostra a miniatura existente como alternativa.
+- Nenhuma miniatura de personagem ou monstro é substituída ou modificada.
