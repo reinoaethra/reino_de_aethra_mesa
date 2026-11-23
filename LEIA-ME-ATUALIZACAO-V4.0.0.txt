@@ -1,0 +1,30 @@
+REINO DE AETHRA — ATUALIZAÇÃO V4.0.0
+
+PACOTE INCREMENTAL
+O ZIP contém somente index.html, app.js, styles.css, documentação e testes locais.
+Não contém config.js, mapas, miniaturas nem outras imagens já instaladas.
+
+INSTALAÇÃO
+1. Faça backup das campanhas.
+2. Extraia o ZIP na raiz do projeto GitHub Pages.
+3. Substitua index.html, app.js e styles.css.
+4. MANTENHA seu config.js atual.
+5. MANTENHA todas as pastas assets/ e seus arquivos.
+6. Publique e atualize o navegador com Ctrl+F5.
+
+SUPABASE
+Não precisa executar SQL. Os recursos novos usam o game_state JSONB e RPCs já existentes.
+
+DOCUMENTAÇÃO
+- NOTAS-DE-LANCAMENTO-V4.0.0.md
+- GUIA-CENTRAL-DO-MESTRE-V4.0.0.md
+- GUIA-COMBATE-AVANCADO-V4.0.0.md
+- GUIA-NARRATIVA-E-PROGRESSAO-V4.0.0.md
+- GUIA-DE-ATUALIZACAO-V4.0.0.md
+- CHECKLIST-PUBLICACAO-V4.0.0.md
+
+ATENÇÃO A PRIVACIDADE
+Anotações secretas ficam apenas neste navegador. Preparação da próxima sessão e memória de NPC ficam no estado compartilhado JSONB da campanha; a interface restringe sua apresentação ao mestre, mas esses dados não são criptograficamente secretos.
+
+TESTES
+O arquivo tests/v400-release-tests.cjs pode ser executado localmente com Node.js. Não é necessário publicá-lo no GitHub Pages.
