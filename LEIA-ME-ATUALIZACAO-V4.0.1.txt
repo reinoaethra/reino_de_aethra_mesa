@@ -1,0 +1,15 @@
+REINO DE AETHRA — ATUALIZAÇÃO V4.0.1
+
+Esta atualização acrescenta o Modo Chamada para jogar com o áudio em um serviço externo (Discord, WhatsApp ou Google Meet), enquanto a campanha permanece aberta no Reino de Aethra.
+
+INSTALAÇÃO:
+1. Extraia o ZIP na raiz do repositório.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js e toda a pasta assets/.
+4. Publique e atualize o navegador.
+
+NÃO EXECUTE SQL. Não há migração nesta versão.
+
+O Modo Chamada NÃO integra áudio no site. O som continua no aplicativo externo; Aethra oferece links e atalhos rápidos para intenções, testes D20 e registros de cena.
+
+Leia GUIA-MODO-CHAMADA-V4.0.1.md antes da primeira sessão.
