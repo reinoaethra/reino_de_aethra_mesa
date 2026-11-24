@@ -1,0 +1,26 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.0
+
+PACOTE INCREMENTAL
+Contém apenas os arquivos necessários para atualizar a instalação v4.0.1:
+- index.html
+- app.js
+- styles.css
+- documentação v4.1.0
+- tests/v410-release-tests.cjs (opcional, para validação local)
+
+INSTALAÇÃO
+1. Extraia este ZIP na raiz do repositório do GitHub Pages.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js e todas as pastas assets/.
+4. Publique e atualize o navegador com Ctrl+F5.
+
+SUPABASE
+Não é necessária migração SQL. A atualização usa o game_state e as RPCs já existentes.
+
+DOCUMENTAÇÃO
+- GUIA-DE-RECURSOS-V4.1.0.md
+- GUIA-DE-ATUALIZACAO-V4.1.0.md
+- NOTAS-DE-LANCAMENTO-V4.1.0.md
+- CHECKLIST-PUBLICACAO-V4.1.0.md
+
+Leia o guia de atualização antes de publicar.
