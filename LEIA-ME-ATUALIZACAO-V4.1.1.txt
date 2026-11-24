@@ -1,0 +1,23 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.1
+
+PACOTE INCREMENTAL
+
+Substitua na raiz do site:
+- index.html
+- app.js
+- styles.css
+
+Preserve sem alterações:
+- config.js
+- assets/ (mapas, miniaturas, retratos e artes)
+- projeto Supabase, contas e campanhas existentes
+
+Não é necessário executar SQL nesta atualização.
+
+Documentação v4.1.1:
+- GUIA-DE-RECURSOS-V4.1.1.md
+- GUIA-DE-ATUALIZACAO-V4.1.1.md
+- NOTAS-DE-LANCAMENTO-V4.1.1.md
+- CHECKLIST-PUBLICACAO-V4.1.1.md
+
+Após publicar, atualize o computador com Ctrl + F5. No celular, feche a aba antiga e abra novamente.

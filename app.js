@@ -1,4 +1,4 @@
-/* Reino de Aethra v4.1.0 — Modo Chamada para sessões com áudio externo e ações rápidas sincronizadas.
+/* Reino de Aethra v4.1.1 — Modo Chamada para sessões com áudio externo e ações rápidas sincronizadas.
  * Compatível com campanhas v3.x; recursos novos usam o game_state JSONB existente e fichas/RPCs atuais.
  * Modo local funciona sem backend; não há migração SQL específica para esta edição.
  */
@@ -56,7 +56,7 @@
     ]
   };
 
-  // Complemento dos livros em jogo para a edição 4.1.0.
+  // Complemento dos livros em jogo para a edição 4.1.1.
   BOOK_CONTENT.master.push(
     ['Central do Mestre e preparação de sessão','A Central do Mestre reúne o estado da companhia e atalhos para preparar a próxima sessão, publicar decisões, administrar condições, resolver ataques em área, registrar tesouros, acompanhar relações com NPCs e criar backups. O resumo da sessão é uma anotação no Diário; para pausar a sessão, use o comando próprio Salvar e encerrar sessão.',['Antes de começar: confira participantes, capítulo, missão e encontro.','Durante a sessão: use narração e decisões para conduzir a história; abra combate quando a posição ou o risco tático importar.','Ao terminar: registre o resumo, prepare a próxima sessão e exporte um backup.']],
     ['Condições, alcance e terreno','Condições são aplicadas pelo mestre a um aventureiro ou monstro e duram turnos do próprio alvo. Ataques de aventureiros verificam alcance e linha de visão quando há peças posicionadas no mapa; obstáculos podem conceder cobertura ao alvo.',['Atordoado: perde a próxima ação.','Envenenado: -2 no ataque; Queimando: 1d4 de dano ao fim do turno; Congelado: -2 Defesa.','Enfraquecido: -2 dano; Marcado: recebe +2 dano; Enraizado: não pode se mover.','O alcance padrão é 1 casa para ataques corpo a corpo e 6 para classes de ataque à distância, salvo alcance definido pela arma.']],
@@ -507,14 +507,14 @@
     return `assets/minis/monsters/monster-${slug}.png`;
   }
   function mapMonsterMiniature(token){
-    const id=String(token?.templateId||'goblin-cinzas').toLowerCase(),src=monsterMiniaturePath(id)+'?v=4.1.0';
+    const id=String(token?.templateId||'goblin-cinzas').toLowerCase(),src=monsterMiniaturePath(id)+'?v=4.1.1';
     return `<span class="miniature-art-wrap monster-miniature-wrap"><img class="monster-miniature-image ${token?.boss?'monster-statue-boss':''}" src="${src}" alt="Miniatura de ${esc(token?.name||'Criatura')}" loading="lazy" draggable="false" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="miniature-art-fallback" hidden>${mapMonsterSprite(id,token?.name)}</span></span>`;
   }
   // Arte colorida exclusiva do painel amplo do combate. As miniaturas cinza permanecem nos demais painéis.
   function mapMonsterBattleArt(token){
     const id=String(token?.templateId||'goblin-cinzas').toLowerCase();
     const slug=id.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'')||'goblin-cinzas';
-    const src=`assets/monster-art/${slug}.webp?v=4.1.0`;
+    const src=`assets/monster-art/${slug}.webp?v=4.1.1`;
     return `<img class="battle-color-art" src="${src}" alt="Ilustração colorida de ${esc(token?.name||'Criatura')}" loading="eager" draggable="false" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="battle-color-fallback" hidden>${mapMonsterMiniature(token)}</span>`;
   }
   function mapPieceArt(token){return token.kind==='monster'?mapMonsterMiniature(token):mapHeroMiniature(token.className,token.equipment)}
@@ -675,6 +675,96 @@
       mapPings:Array.isArray(raw.mapPings)?raw.mapPings.slice(-24):[]
     };
   }
+  function v411GameData(gs=state.campaign?.game_state||defaultGameState()){
+    const raw=gs?.v411&&typeof gs.v411==='object'?gs.v411:{};
+    return {version:1,revision:Math.max(0,Number(raw.revision)||0),undoHistory:Array.isArray(raw.undoHistory)?raw.undoHistory.slice(-8):[]};
+  }
+  function v411UndoLabel(keys=[]){
+    const labels={encounter:'Combate, HP ou iniciativa',partyState:'Recursos e fichas dos aventureiros',exploration:'Mapa, posições ou objetos',worldExploration:'Exploração do mundo',quests:'Progresso das missões',journalEntries:'Diário da campanha',narration:'Narração publicada',chapter:'Capítulo da aventura',location:'Local da companhia',storyFlags:'Decisão ou progresso narrativo',revealedNpcIds:'NPCs revelados',dialogueChoices:'Decisão de diálogo',v4:'Recompensa, NPC ou progressão',v41:'Preparação, marcações ou pontos de restauração',activeRollPrompt:'Solicitação de dados'};
+    const unique=[...new Set(keys)];return unique.map(k=>labels[k]||'Alteração da campanha').filter(Boolean).slice(0,2).join(' · ')||'Alteração da campanha';
+  }
+  function v411LastUndo(gs=state.campaign?.game_state||defaultGameState()){
+    const data=v411GameData(gs),item=data.undoHistory.at(-1);if(!item)return null;
+    return item.actorId===currentUserId()&&Number(item.revision)===data.revision?item:null;
+  }
+  async function undoV411LastAction(){
+    if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode desfazer uma ação.');
+    const gs=cloneData(state.campaign?.game_state||defaultGameState()),data=v411GameData(gs),item=data.undoHistory.at(-1);
+    if(!item||item.actorId!==currentUserId()||Number(item.revision)!==data.revision)throw new Error('A última alteração não pode ser desfeita neste dispositivo. Sincronize a campanha e confira o histórico.');
+    if(!window.confirm(`Desfazer “${item.summary}”, registrado em ${new Date(item.at).toLocaleString('pt-BR')}? O estado atual desses campos será revertido.`))return;
+    Object.entries(item.before||{}).forEach(([key,saved])=>{if(saved?.present)gs[key]=cloneData(saved.value);else delete gs[key]});
+    gs.v411={...data,revision:data.revision+1,undoHistory:data.undoHistory.slice(0,-1)};
+    state.isUndoing=true;
+    try{await updateGameState(gs,item.statusBefore||state.campaign.status,true)}finally{state.isUndoing=false}
+    await createEvent('session_note',{kind:'undo',text:`O mestre desfez a última ação: ${item.summary}.`});
+    toast('Última ação do mestre desfeita.');
+  }
+  function v411ConnectionState(){
+    if(!navigator.onLine)return {label:'Sem conexão com a internet',tone:'offline'};
+    if(!state.backendReady)return {label:'Modo local',tone:'offline'};
+    if(state.realtimeStatus==='SUBSCRIBED')return {label:'Sincronização ao vivo',tone:'online'};
+    if(state.realtimeStatus==='connecting'||state.realtimeStatus==='RECONNECTING')return {label:'Reconectando à campanha',tone:'pending'};
+    if(state.realtimeStatus==='CHANNEL_ERROR'||state.realtimeStatus==='TIMED_OUT'||state.realtimeStatus==='CLOSED')return {label:'Conexão instável · nova tentativa agendada',tone:'offline'};
+    return {label:'Supabase conectado · sala não confirmada',tone:'pending'};
+  }
+  function v411NotificationRows(){
+    const allowed=new Set(['session_note','narration','dice_result','dice_prompt','damage_applied','combat_action_result','monster_attack_result','turn_advanced','encounter_started','encounter_defeated','party_defeated','voice_action_resolved','member_joined','member_left','member_removed']);
+    return state.events.filter(ev=>allowed.has(ev.event_type)).map(ev=>{const p=ev.payload||{},labels={session_note:p.kind==='quest'?'Missão atualizada':p.kind==='discovery'?'Descoberta registrada':p.kind==='summary'?'Resumo de sessão':p.kind==='undo'?'Ação desfeita':'Diário da campanha',narration:'Nova narração',dice_result:'Resultado de D20',dice_prompt:'Teste solicitado',damage_applied:'Dano aplicado',combat_action_result:'Ação de combate',monster_attack_result:'Ação de criatura',turn_advanced:'Mudança de turno',encounter_started:'Encontro iniciado',encounter_defeated:'Encontro concluído',party_defeated:'Companhia derrotada',voice_action_resolved:'Ação por voz resolvida',member_joined:'Jogador entrou',member_left:'Jogador saiu',member_removed:'Jogador removido'};const text=p.text||p.description||p.reason||p.player_name||p.monster||p.kind||'Um acontecimento foi registrado.';return {id:ev.id,title:labels[ev.event_type]||'Acontecimento',text,at:ev.created_at||new Date().toISOString(),actor:ev.actor_id,own:ev.actor_id===currentUserId()}}).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,40);
+  }
+  function v411NotificationReadKey(){return `aethra.v411.notifications-read.${state.campaign?.id||'none'}.${currentUserId()}`}
+  function v411NotificationReadAt(){try{return Number(localStorage.getItem(v411NotificationReadKey())||0)}catch{return 0}}
+  function v411MarkNotificationsRead(){try{localStorage.setItem(v411NotificationReadKey(),String(Date.now()))}catch(error){console.warn('Não foi possível salvar a leitura local das notificações.',error)}}
+  function v411NotificationUnread(){const readAt=v411NotificationReadAt();return v411NotificationRows().filter(n=>!n.own&&Date.parse(n.at)>readAt).length}
+  function renderV411ConnectionPanel(){
+    const status=v411ConnectionState(),online=state.members.filter(memberIsOnline).length,total=state.members.length,last=state.lastSyncAt?new Date(state.lastSyncAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Ainda não sincronizado',unread=v411NotificationUnread();
+    return `<section class="panel v411-connection-panel"><div class="v411-connection-main"><span class="v411-connection-dot ${status.tone}"></span><div><strong>${esc(status.label)}</strong><small>${online}/${total} participante(s) online · Última sincronização: ${esc(last)}</small></div></div><div class="v411-connection-actions"><button class="btn btn-secondary btn-small" data-action="v411-open-notifications">Notificações ${unread?`<span class="v411-unread-count">${unread}</span>`:''}</button>${state.backendReady?`<button class="btn btn-quiet btn-small" data-action="v411-reconnect">Reconectar / sincronizar</button>`:''}</div></section>`;
+  }
+  function renderV411UndoPanel(gs){
+    if(!isMaster()||!isMasterController())return '';
+    const item=v411LastUndo(gs);if(!item)return '';
+    return `<div class="v411-undo-panel"><div><small>ÚLTIMA ALTERAÇÃO REVERSÍVEL</small><strong>${esc(item.summary)}</strong><span>${new Date(item.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · somente a última ação do mestre</span></div><button class="btn btn-secondary btn-small" data-action="v411-undo-last">Desfazer ação</button></div>`;
+  }
+  function renderV411NotificationsModal(){
+    const rows=v411NotificationRows(),html=`<div class="v411-notification-toolbar"><span class="tag gold">${v411NotificationUnread()} não lida(s) neste dispositivo</span><button class="btn btn-secondary btn-small" data-action="v411-mark-notifications-read">Marcar como lidas</button></div><div class="v411-notification-list">${rows.map(n=>`<article class="v411-notification-item ${n.own?'own':''}"><time>${new Date(n.at).toLocaleString('pt-BR')}</time><strong>${esc(n.title)}</strong><p>${esc(n.text)}</p></article>`).join('')||'<div class="empty-state"><strong>Nenhuma notificação</strong><p>Eventos importantes da campanha aparecerão aqui.</p></div>'}</div><div class="notice">O histórico de notificações é montado a partir dos eventos da campanha. O estado de leitura é local a este dispositivo e não altera o diário compartilhado.</div>`;
+    v4ModalShell('Notificações da campanha','Acompanhe entradas, decisões, rolagens, combates e alterações importantes.',html);
+  }
+  function renderV411TurnSummary(enc){
+    if(!enc||enc.defeated||enc.partyDefeated)return '';
+    const turn=activeCombatTurn(enc);if(!turn)return '';
+    const key=`${enc.round||1}:${turn.kind==='player'?turn.user_id:turn.id}`,used=Math.max(0,Number(enc.movementUsed?.[key])||0);
+    let hpText='',actionText='Ação da criatura disponível',conditionText='',target=null;
+    if(turn.kind==='player'){
+      const member=state.members.find(m=>m.user_id===turn.user_id),character=member?.character?normalizeCharacter(member.character):null,vitals=character?currentPartyVitals(turn.user_id,character):null,ps=(state.campaign?.game_state?.partyState||{})[turn.user_id]||{};target=vitals;
+      if(vitals)hpText=`${vitals.hp}/${vitals.maxHp} HP`;
+      actionText=hasCondition(vitals,'stunned')?'Ação perdida · Atordoado':ps.abilityUsed?'Habilidade especial já utilizada neste encontro':'Ação principal disponível';
+      conditionText=(vitals?.conditions||[]).map(c=>COMBAT_CONDITIONS[c.id]?.name||c.id).join(' · ');
+    }else{
+      target=(enc.enemies||[]).find(e=>e.id===turn.id)||enc;hpText=`${Math.max(0,Number(target.hp)||0)}/${Math.max(1,Number(target.maxHp)||1)} HP`;actionText=hasCondition(target,'stunned')?'Ação perdida · Atordoado':target.bossPhaseName||target.specialName||'Ação da criatura disponível';conditionText=(target.conditions||[]).map(c=>COMBAT_CONDITIONS[c.id]?.name||c.id).join(' · ');
+    }
+    const movementLimit=conditionModifiers(target||{}).movement,remaining=Math.min(Math.max(0,4-used),Number.isFinite(movementLimit)?Math.max(0,movementLimit):4);
+    return `<div class="v411-turn-summary"><div class="v411-turn-head"><span class="tag gold">RESUMO DO TURNO</span><strong>${esc(turn.name)}</strong><small>Rodada ${enc.round||1} · ${turn.kind==='monster'?'Criatura':'Aventureiro'}${hpText?' · '+esc(hpText):''}</small></div><div class="v411-turn-metrics"><div><small>Movimento restante</small><strong>${remaining}/4 casas</strong><span class="v411-mini-track"><i style="width:${Math.min(100,remaining/4*100)}%"></i></span></div><div><small>Ação</small><strong>${esc(actionText)}</strong></div><div><small>Condições</small><strong>${esc(conditionText||'Nenhuma')}</strong></div></div></div>`;
+  }
+  function v411SessionCloseSummary(gs){
+    const v41=v41GameData(gs),start=Date.parse(v41.session.startedAt||'')||0,rows=v41JournalRows().filter(r=>!start||Date.parse(r.at)>=start),count=type=>state.events.filter(ev=>!start||Date.parse(ev.created_at||'')>=start).filter(ev=>type.includes(ev.event_type)).length;
+    const quests=Array.isArray(gs.quests)?gs.quests:[],completed=quests.filter(q=>q.completed||q.status==='completed').length;
+    const lines=[`Campanha: ${state.campaign?.name||'Reino de Aethra'}`,`Capítulo: ${gs.chapter||'—'}`,`Local: ${gs.location||'—'}`,`Acontecimentos registrados: ${rows.length}`,`Encontros iniciados: ${count(['encounter_started'])}`,`Ações de combate: ${count(['combat_action_result','monster_attack_result'])}`,`Rolagens: ${count(['dice_result'])}`,`Objetivos de missão concluídos: ${completed}/${quests.length}`,'','Principais acontecimentos:',...rows.slice(-12).map(r=>`• ${r.text}`)];return lines.join('\n');
+  }
+  function renderV411CloseSessionModal(){
+    if(!isMaster()||!isMasterController())return;
+    const gs=state.campaign?.game_state||defaultGameState(),summary=v411SessionCloseSummary(gs);
+    const html=`<form id="v411-close-session-form"><div class="notice"><strong>Encerramento da sessão.</strong> O resumo será publicado no Diário da Crônica para todos os participantes. Revise o texto antes de concluir; as campanhas, fichas e missões permanecem salvas.</div><div class="field"><label for="v411-close-summary">RESUMO DA SESSÃO</label><textarea class="textarea" id="v411-close-summary" rows="12" maxlength="8000" required>${esc(summary)}</textarea></div><div class="modal-actions"><button type="button" class="btn btn-quiet" data-action="close-modal">Continuar jogando</button><button type="submit" class="btn btn-primary">Salvar resumo e encerrar sessão</button></div></form>`;
+    v4ModalShell('Encerrar sessão','Registre o que aconteceu e deixe a próxima sessão preparada.',html);
+  }
+  async function finishV411Session(summary){
+    if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode encerrar a sessão.');
+    const text=String(summary||'').trim();if(!text)throw new Error('Revise e salve um resumo antes de encerrar.');
+    const gs=state.campaign.game_state||defaultGameState(),v4=v4GameData(gs),v41=createV41Checkpoint(gs,'Antes de encerrar a sessão');
+    v41.session={...v41.session,status:'paused',pausedAt:new Date().toISOString(),readyBy:{}};v4.lastSessionSummary=text;
+    const journalEntries=[...(gs.journalEntries||[]),{id:`session-close-${Date.now()}`,text:`Resumo da sessão: ${text}`,kind:'summary',createdAt:new Date().toISOString()}].slice(-80);
+    await updateGameState({started:false,activeRollPrompt:null,v41,v4,journalEntries},'paused');
+    await createEvent('session_note',{kind:'summary',text:`Sessão encerrada. ${text.slice(0,520)}`});
+    state.view='lobby';closeModal();render();toast('Sessão encerrada. Resumo salvo no diário e ponto de restauração criado.');
+  }
   function createV41Checkpoint(gs,reason='Ponto de restauração'){
     const current=cloneData(gs||defaultGameState());
     current.v41={...v41GameData(current),snapshots:[]};
@@ -738,7 +828,7 @@
   function v41JournalRows(){
     const gs=state.campaign?.game_state||defaultGameState(),rows=[];
     (gs.journalEntries||[]).forEach((item,i)=>rows.push({id:item.id||`journal-${i}`,kind:item.kind||'story',text:item.text||'',at:item.createdAt||item.at||new Date().toISOString(),source:'Diário'}));
-    state.events.forEach((ev,i)=>{const p=ev.payload||{};if(!['session_note','encounter_started','encounter_defeated','party_defeated','combat_action_result','monster_attack_result','turn_advanced','narration','dice_result','voice_action_resolved'].includes(ev.event_type))return;const text=p.text||p.description||p.reason||p.monster||({encounter_started:'Encontro iniciado',encounter_defeated:'Encontro vencido',party_defeated:'Companhia derrotada',turn_advanced:'Turno avançado',narration:'Narração publicada',dice_result:`${p.player_name||'Aventureiro'} rolou ${p.result}`,voice_action_resolved:`${p.player_name||'Aventureiro'} · ${p.action_label||'Ação'} ${p.accepted?'registrada pelo mestre':'dispensada pelo mestre'}`}[ev.event_type]||ev.event_type);rows.push({id:ev.id||`event-${i}`,kind:p.kind||(ev.event_type==='voice_action_resolved'?'voice':ev.event_type),text,at:ev.created_at||new Date().toISOString(),source:'Evento'});});
+    state.events.forEach((ev,i)=>{const p=ev.payload||{};if(!['session_note','encounter_started','encounter_defeated','party_defeated','combat_action_result','monster_attack_result','turn_advanced','narration','dice_result','voice_action_resolved','member_joined','member_left','member_removed'].includes(ev.event_type))return;const text=p.text||p.description||p.reason||p.monster||({encounter_started:'Encontro iniciado',encounter_defeated:'Encontro vencido',party_defeated:'Companhia derrotada',turn_advanced:'Turno avançado',narration:'Narração publicada',dice_result:`${p.player_name||'Aventureiro'} rolou ${p.result}`,voice_action_resolved:`${p.player_name||'Aventureiro'} · ${p.action_label||'Ação'} ${p.accepted?'registrada pelo mestre':'dispensada pelo mestre'}`,member_joined:`${p.display_name||'Um jogador'} entrou na campanha`,member_left:`${p.display_name||'Um jogador'} saiu da campanha`,member_removed:`${p.display_name||'Um jogador'} foi removido da campanha`}[ev.event_type]||ev.event_type);rows.push({id:ev.id||`event-${i}`,kind:p.kind||(ev.event_type==='voice_action_resolved'?'voice':ev.event_type),text,at:ev.created_at||new Date().toISOString(),source:'Evento'});});
     const seen=new Set(),deduped=rows.filter(row=>{const key=`${row.kind}|${String(row.text).trim().toLowerCase()}|${Math.floor(Date.parse(row.at)/5000)}`;if(seen.has(key))return false;seen.add(key);return true;});return deduped.sort((a,b)=>Date.parse(a.at)-Date.parse(b.at)).slice(-300);
   }
   function v41JournalSummary(){const rows=v41JournalRows().slice(-20);return rows.map(r=>`• ${new Date(r.at).toLocaleString('pt-BR')} — ${r.text}`).join('\n')||'Nenhum acontecimento registrado nesta campanha.'}
@@ -747,7 +837,7 @@
     const callLink=voiceCallUrl(voice.platform,voice.url);
     const call=voice.enabled?`<span class="tag green">Chamada ${esc(voicePlatformName(voice.platform))} ativada</span>`:'<span class="tag">Chamada externa opcional</span>';
     const callAction=callLink?`<button class="btn btn-secondary btn-small" data-action="voice-open-call">Abrir ${esc(voicePlatformName(voice.platform))} ↗</button>`:'';
-    return `<section class="panel v41-session-room"><div class="row between"><div><div class="small-caps">Preparação da sessão · v4.1.0</div><h3>Sala de preparação</h3><p class="panel-subtitle">Confira fichas e presença; cada jogador confirma que está pronto antes de começar.</p></div><span class="tag ${all?'green':'gold'}">${ready}/${players.length} prontos</span></div><div class="v41-ready-list">${players.map(m=>{const has=!!m.character,isReady=!!data.session.readyBy[m.user_id]&&has;return `<div class="v41-ready-row"><span class="v41-ready-dot ${isReady?'ready':''}"></span><span><strong>${esc(m.character?.name||m.display_name||'Aventureiro')}</strong><small>${has?`${esc(m.character.class)} · nível ${m.character.level||1}`:'Ficha pendente'} · ${memberIsOnline(m)?'Online':'Offline'}</small></span><span class="tag ${isReady?'green':'gold'}">${isReady?'Pronto':has?'Aguardando':'Sem ficha'}</span></div>`}).join('')||'<p class="panel-subtitle">Compartilhe o convite para reunir a companhia.</p>'}</div><div class="v41-room-footer"><div class="v41-room-state"><span class="panel-subtitle">Estado: ${data.session.status==='live'?'Sessão em andamento':data.session.status==='paused'?'Pausada':'Preparação'}</span>${call}</div><div class="row">${callAction}${isMaster()?`<span class="panel-subtitle">${all?'Todos os jogadores com ficha estão prontos.':'Você pode iniciar mesmo com confirmações pendentes.'}</span>`:`<button class="btn ${data.session.readyBy[currentUserId()]?'btn-secondary':'btn-primary'} btn-small" data-action="v41-toggle-ready" ${state.member?.character?'':'disabled'}>${state.member?.character?(data.session.readyBy[currentUserId()]?'Desmarcar pronto':'Estou pronto'):'Crie sua ficha para confirmar'}</button>`}</div></div></section>`;
+    return `<section class="panel v41-session-room"><div class="row between"><div><div class="small-caps">Preparação da sessão · v4.1.1</div><h3>Sala de preparação</h3><p class="panel-subtitle">Confira fichas e presença; cada jogador confirma que está pronto antes de começar.</p></div><span class="tag ${all?'green':'gold'}">${ready}/${players.length} prontos</span></div><div class="v41-ready-list">${players.map(m=>{const has=!!m.character,isReady=!!data.session.readyBy[m.user_id]&&has;return `<div class="v41-ready-row"><span class="v41-ready-dot ${isReady?'ready':''}"></span><span><strong>${esc(m.character?.name||m.display_name||'Aventureiro')}</strong><small>${has?`${esc(m.character.class)} · nível ${m.character.level||1}`:'Ficha pendente'} · ${memberIsOnline(m)?'Online':'Offline'}</small></span><span class="tag ${isReady?'green':'gold'}">${isReady?'Pronto':has?'Aguardando':'Sem ficha'}</span></div>`}).join('')||'<p class="panel-subtitle">Compartilhe o convite para reunir a companhia.</p>'}</div><div class="v41-room-footer"><div class="v41-room-state"><span class="panel-subtitle">Estado: ${data.session.status==='live'?'Sessão em andamento':data.session.status==='paused'?'Pausada':'Preparação'}</span>${call}</div><div class="row">${callAction}${isMaster()?`<span class="panel-subtitle">${all?'Todos os jogadores com ficha estão prontos.':'Você pode iniciar mesmo com confirmações pendentes.'}</span>`:`<button class="btn ${data.session.readyBy[currentUserId()]?'btn-secondary':'btn-primary'} btn-small" data-action="v41-toggle-ready" ${state.member?.character?'':'disabled'}>${state.member?.character?(data.session.readyBy[currentUserId()]?'Desmarcar pronto':'Estou pronto'):'Crie sua ficha para confirmar'}</button>`}</div></div></section>`;
   }
   function renderV41MasterStatus(gs){
     const data=v41GameData(gs),players=state.members.filter(m=>m.role==='player'),ready=players.filter(m=>data.session.readyBy[m.user_id]).length;
@@ -1088,7 +1178,7 @@
     campaign:null, member:null, members:[], events:[], pendingDamage:[], pendingMapMoves:[], pendingMapInteractions:[], channel:null, channelPresence:[], authSubscription:null, processed:new Set(),
     charStep:0, charDraft:null, monsterDraft:85, toastTimer:null, diceOverlayTimer:null, cloudCampaigns:[], prefillJoinCode:null,
     selectedMapToken:null, selectedMapTool:'move',
-    instanceId:null, lastSyncAt:null, rollQueue:Promise.resolve(), combatQueue:Promise.resolve(), branchQueue:Promise.resolve(), v4NpcSelected:null, isRefreshing:false,
+    instanceId:null, lastSyncAt:null, rollQueue:Promise.resolve(), combatQueue:Promise.resolve(), branchQueue:Promise.resolve(), v4NpcSelected:null, isRefreshing:false, reconnectTimer:null, reconnectAttempts:0, lastConnectionChange:null, isUndoing:false,
     localCampaigns:readLocalCampaigns(), currentBook:null, accountMode:'home', bestiarySearch:'', bestiaryKind:'all', bestiarySelectedId:null, bestiaryEncounterIds:[], journalSearch:'', journalFilter:'all'
   };
   function readLocalCampaigns(){
@@ -1132,11 +1222,31 @@
   function toast(message,type='ok'){const node=document.createElement('div');node.className='toast '+(type==='error'?'error':'');node.textContent=message;toastRoot.append(node);setTimeout(()=>node.remove(),3800)}
   function setConnection(label,online=false){const el=$('#connection-status');if(!el)return;el.innerHTML=`<i></i> ${esc(label)}`;el.classList.toggle('offline',!online)}
   function refreshConnectionLabel(){
+    if(!navigator.onLine){setConnection('Sem internet',false);return}
     if(!state.backendReady){setConnection('Modo local',false);return}
     if(state.realtimeStatus==='SUBSCRIBED'){setConnection('Sala sincronizada',true);return}
-    if(state.realtimeStatus==='connecting'){setConnection('Conectando à sala',false);return}
-    if(state.realtimeStatus==='CHANNEL_ERROR'||state.realtimeStatus==='TIMED_OUT'||state.realtimeStatus==='CLOSED'){setConnection('Reconectando sala',false);return}
+    if(state.realtimeStatus==='connecting'||state.realtimeStatus==='RECONNECTING'){setConnection('Reconectando sala',false);return}
+    if(state.realtimeStatus==='CHANNEL_ERROR'||state.realtimeStatus==='TIMED_OUT'||state.realtimeStatus==='CLOSED'){setConnection('Conexão instável',false);return}
     setConnection('Supabase conectado',true);
+  }
+  function scheduleCampaignReconnect(reason=''){
+    if(!state.backendReady||!state.campaign||state.reconnectTimer||!navigator.onLine)return;
+    state.reconnectAttempts=Math.min(8,(state.reconnectAttempts||0)+1);
+    const delay=Math.min(30000,1000*Math.pow(2,Math.min(5,state.reconnectAttempts-1)));
+    state.realtimeStatus='RECONNECTING';state.channelPresence=[];state.lastConnectionChange=new Date().toISOString();refreshConnectionLabel();
+    if(reason)console.warn('Realtime desconectado; nova tentativa agendada:',reason);
+    state.reconnectTimer=setTimeout(async()=>{
+      state.reconnectTimer=null;if(!state.backendReady||!state.campaign||!navigator.onLine)return;
+      try{const old=state.channel;state.channel=null;if(old)await state.backend.removeChannel(old);subscribeCampaign()}catch(error){console.warn('Falha ao reconectar campanha:',error);scheduleCampaignReconnect(error?.message||'erro de reconexão')}
+    },delay);
+  }
+  async function retryCampaignConnection(){
+    if(!state.backendReady||!state.campaign){await refreshCloudCampaign({silent:true});return}
+    if(state.reconnectTimer){clearTimeout(state.reconnectTimer);state.reconnectTimer=null}
+    state.reconnectAttempts=0;state.realtimeStatus='connecting';refreshConnectionLabel();
+    const old=state.channel;state.channel=null;state.channelPresence=[];
+    if(old){try{await state.backend.removeChannel(old)}catch(error){console.warn('Não foi possível remover o canal anterior:',error)}}
+    subscribeCampaign();await refreshCloudCampaign({silent:true});toast('Nova tentativa de conexão iniciada.');
   }
   function isAnonymousUser(user=state.user){return !!user?.is_anonymous}
   function isPermanentUser(user=state.user){return !!user&&!isAnonymousUser(user)}
@@ -1161,6 +1271,7 @@
     state.localCampaigns=[];
   }
   function clearCampaignContext(){
+    if(state.reconnectTimer){clearTimeout(state.reconnectTimer);state.reconnectTimer=null}state.reconnectAttempts=0;
     if(state.channel&&state.backend)state.backend.removeChannel(state.channel);
     state.channel=null;state.channelPresence=[];state.campaign=null;state.member=null;state.members=[];state.events=[];
     state.pendingDamage=[];state.pendingMapMoves=[];state.pendingMapInteractions=[];state.processed=new Set();state.cloudCampaigns=[];
@@ -1323,6 +1434,8 @@
     if(state.modal==='v41-checkpoints')renderV41CheckpointModal();
     if(state.modal==='v41-bestiary')renderV41BestiaryModal();
     if(state.modal==='v41-journal')renderV41JournalModal();
+    if(state.modal==='v411-notifications')renderV411NotificationsModal();
+    if(state.modal==='v411-close-session')renderV411CloseSessionModal();
     refreshAccountButton();
     const chatBox=$('.chat-messages');if(chatBox)chatBox.scrollTop=chatBox.scrollHeight;
   }
@@ -1358,7 +1471,7 @@
   }
   function renderLibrary(){
     app.innerHTML=`<div class="page-header"><div><div class="page-kicker">Conhecimento preservado</div><h1 class="page-title">Biblioteca de Aethra</h1><p>Livros de consulta para mestres e aventureiros. A biblioteca acompanha a expansão das crônicas de Aethra.</p></div><button class="btn btn-secondary" data-action="go-home">← Voltar ao início</button></div>
-      <div class="notice"><strong>Edição oficial v4.1.0:</strong> a biblioteca reúne os capítulos mais recentes sobre exploração regional e condução de cenas. O Livro do Mestre também possui uma edição diagramada em PDF para consulta durante as sessões. O PDF é um material separado e deve ser guardado pelo mestre; não o publique no repositório público do site. A biblioteca do navegador não oferece proteção real contra acesso ao conteúdo.</div>
+      <div class="notice"><strong>Edição oficial v4.1.1:</strong> a biblioteca reúne os capítulos mais recentes sobre exploração regional e condução de cenas. O Livro do Mestre também possui uma edição diagramada em PDF para consulta durante as sessões. O PDF é um material separado e deve ser guardado pelo mestre; não o publique no repositório público do site. A biblioteca do navegador não oferece proteção real contra acesso ao conteúdo.</div>
       <div class="panel v41-library-tools"><div><div class="small-caps">Consulta rápida</div><h3>Bestiário interativo</h3><p class="panel-subtitle">Pesquise criaturas, veja atributos e prepare encontros sem navegar por capítulos.</p></div><button class="btn btn-primary" data-action="open-bestiary">Abrir bestiário</button></div><div class="library-grid" style="margin-top:18px">${BOOKS.filter(b=>b.id!=='master'||isMaster()).map(b=>`<article class="book-card"><div class="book-cover"><span>${b.icon}</span></div><div class="book-body"><span class="tag ${b.access==='Mestre'?'gold':'green'}">${b.access==='Mestre'?'Reservado ao mestre':'Consulta geral'}</span><h3>${b.title}</h3><p>${b.desc}</p><div class="book-card-actions"><button class="btn btn-secondary btn-small" data-action="open-book" data-book="${b.id}">Abrir livro →</button></div></div></article>`).join('')}</div>`;
   }
   async function loadCloudCampaigns(){
@@ -1392,14 +1505,15 @@
   }
   function normalizeCampaign(c){return c?.campaign||c}
   async function joinCampaign(code,displayName){
-    if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);return}
+    if(state.backendReady){const {data,error}=await state.backend.rpc('join_campaign',{p_code:code,p_display_name:displayName});if(error)throw error;const c=normalizeCampaign(data);await openCloudCampaign(c.id);await createEvent('member_joined',{user_id:state.user?.id,display_name:state.member?.display_name||displayName,role:state.member?.role||'player',text:`${state.member?.display_name||displayName} entrou na campanha.`});return}
     const c=state.localCampaigns.find(x=>x.code.toUpperCase()===code.toUpperCase());if(!c)throw new Error('Código não encontrado no modo local. Para convidar pessoas de outros computadores, conecte o Supabase.');
     let m=c.members.find(x=>x.user_id==='local-user');if(!m){m={id:'local-player-'+Date.now(),campaign_id:c.id,user_id:'local-user',display_name:displayName,role:'player',character:null,status:'online'};c.members.push(m)}else m.display_name=displayName;
-    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);setActiveCampaignId(c.id);writeLocalCampaigns();state.view='lobby';closeModal();render();toast('Você entrou na campanha.');
+    state.campaign=c;state.member=m;state.members=c.members;state.events=c.events||[];state.pendingDamage=state.events.filter(e=>e.event_type==='damage_request');state.pendingMapMoves=pendingMapMovesFrom(state.events);state.pendingMapInteractions=pendingMapInteractionsFrom(state.events);setActiveCampaignId(c.id);writeLocalCampaigns();state.view='lobby';closeModal();await createEvent('member_joined',{user_id:'local-user',display_name:m.display_name,role:m.role,text:`${m.display_name} entrou na campanha.`});render();toast('Você entrou na campanha.');
   }
 
   function canDeleteCurrentCampaign(){return !!state.campaign&&isMaster()&&(!state.backendReady?state.campaign.owner_id==='local-user':state.campaign.owner_id===state.user?.id)}
   function clearOpenCampaignState(){
+    if(state.reconnectTimer){clearTimeout(state.reconnectTimer);state.reconnectTimer=null}state.reconnectAttempts=0;
     if(state.channel&&state.backend)state.backend.removeChannel(state.channel);
     state.channel=null;state.channelPresence=[];state.campaign=null;state.member=null;state.members=[];state.events=[];
     state.pendingDamage=[];state.pendingMapMoves=[];state.pendingMapInteractions=[];state.processed=new Set();clearActiveCampaignId();
@@ -1484,7 +1598,7 @@
     const id=state.campaign.id;
     state.realtimeStatus='connecting';refreshConnectionLabel();
     state.channel=state.backend.channel('campaign-'+id,{config:{presence:{key:state.instanceId}}})
-      .on('presence',{event:'sync'},()=>{state.channelPresence=Object.values(state.channel.presenceState()).flat();if(isMasterController()){reconcilePendingRollRequests();reconcilePendingCombatActions()}render()})
+      .on('presence',{event:'sync'},()=>{state.channelPresence=Object.values(state.channel.presenceState()).flat();state.lastSyncAt=new Date().toISOString();if(isMasterController()){reconcilePendingRollRequests();reconcilePendingCombatActions()}render()})
       .on('presence',{event:'join'},({newPresences})=>{state.channelPresence=Object.values(state.channel.presenceState()).flat();(newPresences||[]).forEach(p=>{if(isMasterController()&&p.user_id!==state.user.id)toast(`${p.display_name||'Um aventureiro'} entrou na campanha.`)});render()})
       .on('presence',{event:'leave'},()=>{state.channelPresence=Object.values(state.channel.presenceState()).flat();if(isMasterController()){reconcilePendingRollRequests();reconcilePendingCombatActions()}render()})
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'campaigns',filter:`id=eq.${id}`},payload=>{
@@ -1495,16 +1609,16 @@
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'campaign_events',filter:`campaign_id=eq.${id}`},payload=>handleIncomingEvent(payload.new))
       .on('postgres_changes',{event:'*',schema:'public',table:'campaign_members',filter:`campaign_id=eq.${id}`},()=>refreshCloudCampaign({silent:true}))
       .subscribe(async status=>{
-        state.realtimeStatus=status;refreshConnectionLabel();
+        state.realtimeStatus=status;state.lastConnectionChange=new Date().toISOString();refreshConnectionLabel();
         if(status==='SUBSCRIBED'){
+          state.reconnectAttempts=0;if(state.reconnectTimer){clearTimeout(state.reconnectTimer);state.reconnectTimer=null}
           try{
             await state.channel.track({user_id:state.user.id,client_id:state.instanceId,display_name:state.member?.display_name||'Aventureiro',role:state.member?.role||'player',joined_at:new Date().toISOString()});
             state.channelPresence=Object.values(state.channel.presenceState()).flat();
-            await refreshCloudCampaign({silent:true});
-            render();
-          }catch(err){console.warn('Falha ao anunciar presença:',err);toast('A sala conectou, mas não foi possível atualizar sua presença.','error')}
-        }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){
-          toast('A conexão em tempo real caiu. A sala tentará reconectar; use Sincronizar ao voltar.','error');
+            await refreshCloudCampaign({silent:true});render();
+          }catch(err){console.warn('Falha ao anunciar presença:',err);toast('A sala conectou, mas não foi possível atualizar sua presença.','error');scheduleCampaignReconnect(err?.message||'falha ao anunciar presença')}
+        }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){
+          state.channelPresence=[];scheduleCampaignReconnect(status);render();
         }
       });
   }
@@ -1538,8 +1652,9 @@
     await updateGameState({v4,storyFlags,journalEntries,partyState});await createEvent('session_note',{kind:'choice',text:note});toast('Decisão confirmada e registrada na crônica.');
   }
   async function handleIncomingEvent(ev){
-    if(!ev||state.processed.has(ev.id))return;state.processed.add(ev.id);state.events.push(ev);if(state.events.length>150)state.events.shift();
+    if(!ev||state.processed.has(ev.id))return;state.processed.add(ev.id);state.events.push(ev);if(state.events.length>150)state.events.shift();state.lastSyncAt=new Date().toISOString();
     playEventSound(ev.event_type,ev.payload||{});
+    if(ev.event_type==='member_joined'&&ev.actor_id!==currentUserId())toast(`${ev.payload?.display_name||'Um aventureiro'} entrou na campanha.`);
     if(ev.event_type==='voice_action_request'&&isMasterController())toast(`${ev.payload?.player_name||'Um aventureiro'} sinalizou: ${ev.payload?.action_label||'ação rápida'}.`);
     if(ev.event_type==='v41_ready_request'&&isMasterController())state.branchQueue=state.branchQueue.then(()=>processV41ReadyRequest(ev)).catch(err=>toast(err.message||'Não foi possível registrar a prontidão.','error'));
     if(ev.event_type==='v41_map_ping_request'&&isMasterController())state.branchQueue=state.branchQueue.then(()=>processV41MapPingRequest(ev)).catch(err=>toast(err.message||'Não foi possível marcar o mapa.','error'));
@@ -1766,14 +1881,23 @@
   function secureD20(){const a=new Uint32Array(1);let x;do{crypto.getRandomValues(a);x=a[0]}while(x>=4294967280);return (x%20)+1}
   async function updateGameState(patch,status,replace=false){
     if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo desta campanha pode alterar seu estado.');
-    const current=state.campaign.game_state||defaultGameState();let next=replace?cloneData(patch):{...current,...patch};
+    const current=cloneData(state.campaign.game_state||defaultGameState());let next=replace?cloneData(patch):{...current,...patch};
     const checkpointKeys=['encounter','quests','partyState','exploration','worldExploration','chapter','location'];
-    if(!replace&&!Object.prototype.hasOwnProperty.call(patch,'v41')&&Object.keys(patch).some(key=>checkpointKeys.includes(key))){
+    if(!replace&&!state.isUndoing&&!Object.prototype.hasOwnProperty.call(patch,'v41')&&Object.keys(patch).some(key=>checkpointKeys.includes(key))){
       const data=v41GameData(current);if(v41CheckpointAge(data)>10*60*1000)next.v41=createV41Checkpoint(current,patch.encounter?'Antes de alterar o encontro':patch.quests?'Antes de alterar missões':patch.exploration?'Antes de alterar a exploração':'Salvamento automático');
+    }
+    if(replace&&state.isUndoing){next.v411=patch.v411||current.v411||{version:1,revision:v411GameData(current).revision+1,undoHistory:[]};}
+    else if(replace){next.v411={...v411GameData(next),revision:v411GameData(current).revision+1,undoHistory:[]};}
+    else if(state.isUndoing){next.v411=patch.v411||current.v411||{version:1,revision:v411GameData(current).revision+1,undoHistory:[]};}
+    else{
+      const prior=v411GameData(current),keys=Object.keys(patch||{}).filter(key=>key!=='v411'),before={};
+      keys.forEach(key=>{before[key]={present:Object.prototype.hasOwnProperty.call(current,key),value:Object.prototype.hasOwnProperty.call(current,key)?cloneData(current[key]):null}});
+      const revision=prior.revision+1,record={id:`undo-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,actorId:currentUserId(),at:new Date().toISOString(),revision,statusBefore:state.campaign.status,summary:v411UndoLabel(keys),before};
+      next.v411={...prior,revision,undoHistory:keys.length?[...prior.undoHistory,record].slice(-8):prior.undoHistory};
     }
     if(state.backendReady){const {error}=await state.backend.rpc('update_campaign_state',{p_campaign_id:state.campaign.id,p_game_state:next,p_status:status||state.campaign.status});if(error)throw error;state.campaign={...state.campaign,game_state:next,status:status||state.campaign.status}}
     else{state.campaign.game_state=next;if(status)state.campaign.status=status;await persistLocalCampaign()}
-    render();
+    state.lastSyncAt=new Date().toISOString();render();
   }
   async function persistLocalCampaign(){const i=state.localCampaigns.findIndex(c=>c.id===state.campaign.id);if(i>=0){state.localCampaigns[i]=state.campaign;state.localCampaigns[i].members=state.members;state.localCampaigns[i].events=state.events;writeLocalCampaigns()}}
   async function saveCharacter(character){
@@ -1789,7 +1913,7 @@
 
   function memberIsOnline(member){
     if(!state.backendReady)return member.user_id==='local-user';
-    return state.channelPresence.some(p=>p.user_id===member.user_id);
+    return state.realtimeStatus==='SUBSCRIBED'&&state.channelPresence.some(p=>p.user_id===member.user_id);
   }
   function masterIsOnline(){const master=state.members.find(m=>m.role==='master');return !!master&&memberIsOnline(master)}
   const QUEST_REWARD_PACKAGES={
@@ -1904,7 +2028,7 @@
   function renderMasterCommandCenter(gs){
     const data=v4GameData(gs),enc=gs.encounter,active=enc&&!enc.defeated&&!enc.partyDefeated,activeQuest=(gs.quests||STORY_QUESTS).filter(q=>q.status==='active').length,online=state.members.filter(m=>memberIsOnline(m)).length,enemyCount=enc?.enemies?.filter(e=>!e.defeated&&e.hp>0).length||0;
     const privateKey=`aethra.v4.private.${state.campaign?.id||'none'}.${currentUserId()}`;
-    return `<section class="panel v4-command-center"><div class="row between v4-command-head"><div><div class="small-caps">Edição 4.1.0 · Sala de controle</div><h3>Central do Mestre</h3><p class="panel-subtitle">Resumo da sessão e ferramentas principais em um só lugar.</p></div><span class="tag gold">${state.backendReady?(isMasterController()?'Controle ativo':'Mestre em outra aba'):'Local'}</span></div><div class="v4-command-stats"><div><small>Participantes online</small><strong>${online}/${state.members.length}</strong></div><div><small>Missões ativas</small><strong>${activeQuest}</strong></div><div><small>Encontro</small><strong>${active?`${enemyCount} inimigo(s)`:'Exploração'}</strong></div><div><small>Capítulo</small><strong>${esc((gs.chapter||'Capítulo I').replace(/^Capítulo\s*/,'Cap. '))}</strong></div></div><div class="v4-command-actions"><button class="btn btn-secondary btn-small" data-action="v4-open-summary">Registrar resumo da sessão</button><button class="btn btn-secondary btn-small" data-action="v4-open-prep">Preparar próxima sessão</button><button class="btn btn-secondary btn-small" data-action="v4-open-branch">Criar decisão narrativa</button><button class="btn btn-secondary btn-small" data-action="v41-open-roll">Teste inteligente D20</button><button class="btn btn-secondary btn-small" data-action="v41-open-checkpoints">Pontos de restauração</button><button class="btn btn-secondary btn-small" data-action="open-bestiary">Consultar bestiário</button><button class="btn btn-secondary btn-small" data-action="open-journal">Linha do tempo</button><button class="btn btn-secondary btn-small" data-action="v4-open-conditions" ${active?'':'disabled'}>Condições de combate</button><button class="btn btn-secondary btn-small" data-action="v4-open-area" ${active?'':'disabled'}>Ataque em área</button><button class="btn btn-secondary btn-small" data-action="v4-open-loot">Distribuir tesouro</button><button class="btn btn-secondary btn-small" data-action="v4-open-npc">Memória dos NPCs</button><button class="btn btn-secondary btn-small" data-action="v4-open-private">Anotações secretas</button><button class="btn btn-quiet btn-small" data-action="v4-export-backup">Exportar backup</button><button class="btn btn-quiet btn-small" data-action="v4-open-backup">Restaurar backup</button></div>${data.nextSessionPrep?`<div class="v4-prep-preview"><strong>Próxima sessão preparada</strong><p>${esc(data.nextSessionPrep)}</p></div>`:'<p class="v4-inline-hint">Você ainda não preparou a próxima sessão. Registre objetivos, cenas e encontros pendentes para retomar rapidamente.</p>'}${renderV41MasterStatus(gs)}</section>`;
+    return `<section class="panel v4-command-center"><div class="row between v4-command-head"><div><div class="small-caps">Edição 4.1.1 · Sala de controle</div><h3>Central do Mestre</h3><p class="panel-subtitle">Resumo da sessão e ferramentas principais em um só lugar.</p></div><span class="tag gold">${state.backendReady?(isMasterController()?'Controle ativo':'Mestre em outra aba'):'Local'}</span></div><div class="v4-command-stats"><div><small>Participantes online</small><strong>${online}/${state.members.length}</strong></div><div><small>Missões ativas</small><strong>${activeQuest}</strong></div><div><small>Encontro</small><strong>${active?`${enemyCount} inimigo(s)`:'Exploração'}</strong></div><div><small>Capítulo</small><strong>${esc((gs.chapter||'Capítulo I').replace(/^Capítulo\s*/,'Cap. '))}</strong></div></div><div class="v4-command-actions"><button class="btn btn-secondary btn-small" data-action="v4-open-summary">Registrar resumo da sessão</button><button class="btn btn-secondary btn-small" data-action="v4-open-prep">Preparar próxima sessão</button><button class="btn btn-secondary btn-small" data-action="v4-open-branch">Criar decisão narrativa</button><button class="btn btn-secondary btn-small" data-action="v41-open-roll">Teste inteligente D20</button><button class="btn btn-secondary btn-small" data-action="v41-open-checkpoints">Pontos de restauração</button><button class="btn btn-secondary btn-small" data-action="open-bestiary">Consultar bestiário</button><button class="btn btn-secondary btn-small" data-action="open-journal">Linha do tempo</button><button class="btn btn-secondary btn-small" data-action="v4-open-conditions" ${active?'':'disabled'}>Condições de combate</button><button class="btn btn-secondary btn-small" data-action="v4-open-area" ${active?'':'disabled'}>Ataque em área</button><button class="btn btn-secondary btn-small" data-action="v4-open-loot">Distribuir tesouro</button><button class="btn btn-secondary btn-small" data-action="v4-open-npc">Memória dos NPCs</button><button class="btn btn-secondary btn-small" data-action="v4-open-private">Anotações secretas</button><button class="btn btn-quiet btn-small" data-action="v4-export-backup">Exportar backup</button><button class="btn btn-quiet btn-small" data-action="v4-open-backup">Restaurar backup</button></div>${data.nextSessionPrep?`<div class="v4-prep-preview"><strong>Próxima sessão preparada</strong><p>${esc(data.nextSessionPrep)}</p></div>`:'<p class="v4-inline-hint">Você ainda não preparou a próxima sessão. Registre objetivos, cenas e encontros pendentes para retomar rapidamente.</p>'}${renderV41MasterStatus(gs)}</section>`;
   }
   function renderStoryBranchPanel(gs){
     const branch=v4GameData(gs).storyBranches?.active;if(!branch)return '';
@@ -1916,7 +2040,7 @@
     if(myVote){const voted=branch.options?.find(o=>o.id===myVote);return `<section class="panel v4-story-branch"><div class="small-caps">Decisão da companhia · ${voteTotal} voto(s)</div><h3>${esc(branch.question)}</h3><div class="notice"><strong>Seu voto foi registrado:</strong> ${esc(voted?.label||'Opção selecionada')}<p>Aguardando o mestre concluir a votação e narrar as consequências.</p></div></section>`}
     return `<section class="panel v4-story-branch"><div class="small-caps">Decisão da companhia · ${voteTotal} voto(s)</div><h3>${esc(branch.question)}</h3><div class="v4-choice-grid">${counts.map(({option,count})=>`<button class="v4-choice-card" data-action="v4-choose-branch" data-option-id="${esc(option.id)}" data-branch-id="${esc(branch.id)}"><strong>${esc(option.label)}</strong><small>${esc(option.publicHint||'Escolha este caminho.')}</small><span class="tag">${count} voto(s)</span></button>`).join('')}</div><p class="panel-subtitle">Escolha uma opção. Cada jogador pode votar uma única vez; o mestre confirmará o resultado da decisão.</p></section>`;
   }
-  function v4ModalShell(title,subtitle,content){modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Central do Mestre · v4.1.0</div><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">×</button></div>${content}</section></div>`}
+  function v4ModalShell(title,subtitle,content){modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Central do Mestre · v4.1.1</div><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button class="modal-close" data-action="close-modal" aria-label="Fechar">×</button></div>${content}</section></div>`}
   function renderV4ConditionModal(){
     if(!isMaster()||!isMasterController())return;
     const enc=state.campaign?.game_state?.encounter,party=state.campaign?.game_state?.partyState||{},enemies=enc?.enemies||[],players=state.members.filter(m=>m.role==='player'&&m.character);
@@ -2029,7 +2153,7 @@
     const exploration=explorationData(gs),record=activeMapRecord(gs),template=mapTemplate(exploration.mapId),tokens=mapTokens(record,gs),mapPings=v41GameData(gs).mapPings.filter(p=>p.mapId===exploration.mapId&&Date.now()-Date.parse(p.createdAt||0)<6*60*60*1000);
     if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id||tokens[0]?.id||null;
     const selected=state.selectedMapToken||currentUserId(),markers=record.markers||[],cells=[];
-    const columnName=x=>String.fromCharCode(65+x),mapImageUrl=template.image?.src?(()=>{const url=new URL(template.image.src,document.baseURI);url.searchParams.set('v','4.1.0');return url.href})() : '',mapImageLayer=mapImageUrl?`<img class="map-board-background" src="${esc(mapImageUrl)}" alt="" aria-hidden="true" draggable="false" decoding="async" onload="this.parentElement.classList.add('map-image-ready')" onerror="this.hidden=true;this.parentElement.classList.add('map-image-missing')">`:'';
+    const columnName=x=>String.fromCharCode(65+x),mapImageUrl=template.image?.src?(()=>{const url=new URL(template.image.src,document.baseURI);url.searchParams.set('v','4.1.1');return url.href})() : '',mapImageLayer=mapImageUrl?`<img class="map-board-background" src="${esc(mapImageUrl)}" alt="" aria-hidden="true" draggable="false" decoding="async" onload="this.parentElement.classList.add('map-image-ready')" onerror="this.hidden=true;this.parentElement.classList.add('map-image-missing')">`:'';
     for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
       const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y&&!t.defeated);
       const footprintToken=tokens.find(t=>t.kind==='monster'&&(t.footprint?.w>1||t.footprint?.h>1)&&tokenOccupiesCell(t,x,y)&&!(t.position.x===x&&t.position.y===y));
@@ -2359,9 +2483,11 @@
   function renderSession(){
     if(!state.campaign){state.view='home';renderHome();return}
     const c=state.campaign,gs=c.game_state||defaultGameState(),enc=gs.encounter,events=state.events.filter(e=>e.event_type!=='chat_message').slice(-24).reverse(),chatEvents=state.events.filter(e=>e.event_type==='chat_message').slice(-14),prompt=activeRollPrompt(),playerCanRoll=canCurrentPlayerRoll(),ownChar=state.member?.character?normalizeCharacter(state.member.character):null,ownVitals=ownChar?currentPartyVitals(currentUserId(),ownChar):null,activeTurn=activeCombatTurn(enc),ownTurn=isPlayersCombatTurn();
-    app.innerHTML=`<div class="session-top"><div><div class="page-kicker">Crônica em andamento · ${esc(c.code)}</div><h1 class="page-title">${esc(c.name)}</h1></div><div class="row"><span class="tag ${masterIsOnline()?'green':'gold'}">${masterIsOnline()?'● Mestre online':'○ Aguardando mestre'}</span><span class="tag">${state.lastSyncAt?'Sync '+new Date(state.lastSyncAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Sincronização pendente'}</span>${isMaster()?`<button class="btn btn-secondary btn-small" data-action="pause-session">Salvar e encerrar sessão</button>${canDeleteCurrentCampaign()?`<button class="btn btn-danger btn-small" data-action="delete-campaign" data-id="${c.id}">Excluir campanha</button>`:''}`:`<button class="btn btn-quiet btn-small" data-action="leave-campaign">Sair da campanha</button>`}<button class="btn btn-quiet btn-small" data-action="sync-campaign">⟳ Sincronizar</button><button class="btn btn-quiet btn-small" data-action="open-lobby">Participantes</button></div></div>
+    app.innerHTML=`<div class="session-top"><div><div class="page-kicker">Crônica em andamento · ${esc(c.code)}</div><h1 class="page-title">${esc(c.name)}</h1></div><div class="row"><span class="tag ${masterIsOnline()?'green':'gold'}">${masterIsOnline()?'● Mestre online':'○ Aguardando mestre'}</span><span class="tag">${state.lastSyncAt?'Sync '+new Date(state.lastSyncAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Sincronização pendente'}</span>${isMaster()?`<button class="btn btn-secondary btn-small" data-action="pause-session">Encerrar sessão</button>${canDeleteCurrentCampaign()?`<button class="btn btn-danger btn-small" data-action="delete-campaign" data-id="${c.id}">Excluir campanha</button>`:''}`:`<button class="btn btn-quiet btn-small" data-action="leave-campaign">Sair da campanha</button>`}<button class="btn btn-quiet btn-small" data-action="sync-campaign">⟳ Sincronizar</button><button class="btn btn-quiet btn-small" data-action="open-lobby">Participantes</button></div></div>
     ${!isMaster()&&!masterIsOnline()?'<div class="notice" style="margin-bottom:16px"><strong>O mestre está offline.</strong> A campanha continua salva, mas as ações ao vivo ficarão disponíveis quando o mestre retornar.</div>':''}
+    ${renderV411ConnectionPanel()}
     ${isMaster()?renderMasterCommandCenter(gs):''}
+    ${renderV411UndoPanel(gs)}
     ${renderVoiceSessionPanel(gs)}
     <div class="session-grid"><div><section class="narrative-box"><div class="scene-artwork"><img src="${sceneArtworkFor(gs).src}" alt="${esc(sceneArtworkFor(gs).label)}" loading="lazy"></div><div class="label">✦ NARRAÇÃO DO MESTRE · ${esc(gs.chapter||'A CRÔNICA')}</div><h3>${esc(gs.location||'Aethra')}</h3><p>${esc(gs.narration||'A aventura aguarda a próxima decisão dos heróis.')}</p><div class="scene-howto"><strong>O que fazer nesta cena?</strong><span>Jogadores: descrevam o que seus personagens querem fazer — conversar, observar, investigar, viajar ou agir. Mestre: responda narrando as consequências e peça um D20 apenas quando houver risco e incerteza. Use o painel de missões para acompanhar objetivos; abra o mapa tático quando a posição no terreno for importante.</span></div></section>
       ${renderStoryBranchPanel(gs)}
@@ -2379,7 +2505,7 @@
   function renderCombatTracker(enc){
     const turn=activeCombatTurn(enc);const order=enc.turnOrder||[];
     const partyState=state.campaign?.game_state?.partyState||{};
-    return `<section class="panel turn-tracker"><div class="row between"><div><div class="small-caps">Ordem de iniciativa</div><h3 style="margin:6px 0 0">Rodada ${enc.round||1}</h3></div><span class="tag gold">${order.length} participante(s)</span></div><div class="turn-order">${order.map((t,i)=>{const unavailable=!combatantAvailable(t,enc,partyState);return `<div class="turn-token ${i===Number(enc.turnIndex||0)?'active':''} ${unavailable?'out-of-action':''}"><strong>${esc(t.name)}</strong><small>${t.kind==='monster'?'Criatura':'Aventureiro'} · Iniciativa ${t.initiative}${unavailable?' · fora de combate':''}</small></div>`}).join('')}</div><div class="notice ${enc.partyDefeated?'notice-danger':''}" style="margin-top:12px"><strong>${enc.partyDefeated?'A companhia foi derrotada.':enc.defeated?'Vitória da companhia.':turn?'Turno atual:':'Combate concluído:'}</strong> ${esc(turn?.name||(enc.partyDefeated?'O mestre pode encerrar o encontro.':enc.defeated?'Todas as criaturas foram derrotadas.':'—'))} ${turn?.kind==='monster'?'(monstro)':turn?.kind==='player'?'(jogador)':''}</div>${isMaster()?`<div class="row" style="margin-top:10px">${turn?.kind==='monster'?'<button class="btn btn-danger btn-small" data-action="resolve-monster-turn">Resolver ação do monstro</button>':''}<button class="btn btn-secondary btn-small" data-action="advance-turn" ${enc.partyDefeated?'disabled':''}>Avançar / pular turno</button></div>`:''}</section>`;
+    return `<section class="panel turn-tracker">${renderV411TurnSummary(enc)}<div class="row between"><div><div class="small-caps">Ordem de iniciativa</div><h3 style="margin:6px 0 0">Rodada ${enc.round||1}</h3></div><span class="tag gold">${order.length} participante(s)</span></div><div class="turn-order">${order.map((t,i)=>{const unavailable=!combatantAvailable(t,enc,partyState);return `<div class="turn-token ${i===Number(enc.turnIndex||0)?'active':''} ${unavailable?'out-of-action':''}"><strong>${esc(t.name)}</strong><small>${t.kind==='monster'?'Criatura':'Aventureiro'} · Iniciativa ${t.initiative}${unavailable?' · fora de combate':''}</small></div>`}).join('')}</div><div class="notice ${enc.partyDefeated?'notice-danger':''}" style="margin-top:12px"><strong>${enc.partyDefeated?'A companhia foi derrotada.':enc.defeated?'Vitória da companhia.':turn?'Turno atual:':'Combate concluído:'}</strong> ${esc(turn?.name||(enc.partyDefeated?'O mestre pode encerrar o encontro.':enc.defeated?'Todas as criaturas foram derrotadas.':'—'))} ${turn?.kind==='monster'?'(monstro)':turn?.kind==='player'?'(jogador)':''}</div>${isMaster()?`<div class="row" style="margin-top:10px">${turn?.kind==='monster'?'<button class="btn btn-danger btn-small" data-action="resolve-monster-turn">Resolver ação do monstro</button>':''}<button class="btn btn-secondary btn-small" data-action="advance-turn" ${enc.partyDefeated?'disabled':''}>Avançar / pular turno</button></div>`:''}</section>`;
   }
   function renderBattleCard(enc){
     const enemies=Array.isArray(enc.enemies)&&enc.enemies.length?enc.enemies:[enc];
@@ -2411,7 +2537,7 @@
     const bag=vitals.inventory.map(item=>`<div class="member-row"><div class="avatar">${item.kind==='consumable'?'🧪':item.kind==='equipment'?'⚔':item.kind==='relic'?'✧':item.kind==='material'?'⚒':'🎒'}</div><div><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}${item.rarity&&item.rarity!=='Comum'?' · '+esc(item.rarity):''}${item.requiredLevel?' · Nível '+item.requiredLevel+'+':''}${item.requiredClasses?' · '+esc(item.requiredClasses.join('/')):''}</small></div><span class="spacer"></span><span class="tag">x${item.qty||0}</span>${['equipment','relic'].includes(item.kind)&&Number(item.qty)>0&&isMaster()&&isMasterController()?`<button class="btn btn-primary btn-small" data-action="equip-item" data-item-id="${esc(item.id)}">Equipar</button>`:''}</div>`).join('');
     modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide" role="dialog" aria-modal="true"><div class="modal-head inventory-heading"><div class="inventory-hero-portrait">${portraitImage(ch.portrait||classPortrait(ch),ch.name)}</div><div><div class="page-kicker">Pertences do aventureiro</div><h2>Equipamentos e mochila</h2><p>${esc(ch.name)} · ${esc(ch.class)} · Nível ${ch.level}/50</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="stat-grid"><div class="stat-card"><small>HP atual</small><strong>${vitals.hp}/${vitals.maxHp}</strong></div><div class="stat-card"><small>Defesa efetiva</small><strong>${vitals.defense}</strong></div><div class="stat-card"><small>Bônus de ataque</small><strong>+${vitals.equipmentBonuses?.attack||0}</strong></div><div class="stat-card"><small>Ouro</small><strong>${vitals.coins} PO</strong></div></div><div class="notice"><strong>Especializações:</strong> Lâmina ${skillTreeRanks(ch).assault}/3 · Guardião ${skillTreeRanks(ch).guardian}/3 · Arcana ${skillTreeRanks(ch).arcane}/3. Os bônus já estão aplicados aos atributos efetivos.</div><h3>Equipado</h3><div class="member-list">${equipped}</div>${vitals.equipmentBonuses?.setName?`<div class="notice"><strong>Conjunto ${esc(vitals.equipmentBonuses.setName)} completo:</strong> +${vitals.equipmentBonuses?.setBonus||1} Defesa e +${vitals.equipmentBonuses?.setBonus||1} no ataque. ${esc(vitals.equipmentBonuses?.setEffect||'')}</div>`:(vitals.equipmentBonuses?.setPieces?`<p class="panel-subtitle">Conjunto ${esc(vitals.equipmentBonuses.setProgressName||"")}: ${vitals.equipmentBonuses.setPieces}/3 peças equipadas. O bônus será ativado ao completar as três peças.</p>`:'')}<div class="divider"></div><h3>Mochila</h3><div class="member-list">${bag||'<p class="panel-subtitle">A mochila está vazia.</p>'}</div><div class="notice">Equipar ou retirar itens altera a Defesa e o dano-base da arma na campanha. Nesta versão, somente o mestre ativo confirma trocas para todos os participantes.</div></section></div>`;
   }
-  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Rolagens: ${(p.rolls||[p.result]).join(' / ')} · Natural ${p.natural??p.result}${p.modifier!=null?` ${Number(p.modifier)>=0?'+':''}${p.modifier} = ${p.total}`:''}${p.dc?` · CD ${p.dc}: ${p.success?'Sucesso':'Falha'}`:''}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'npc_revealed':{const npc=STORY_NPCS.find(n=>n.id===p.npc_id);title='Personagem apresentado';desc=npc?`${npc.name} · ${npc.role}`:'Um personagem do mundo foi apresentado.';break;}case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'combat_action_rejected':title='Ação não realizada';desc=p.reason||'A ação foi recusada pela validação do combate.';break;case'party_defeated':title='Derrota da companhia';desc=p.description||'Todos os aventureiros ficaram sem pontos de vida.';break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'map_move_request':title='Pedido de movimento';desc=`${p.player_name||'Aventureiro'} solicitou a casa ${Number(p.x)+1}, linha ${Number(p.y)+1}.`;break;case'session_note':title=p.kind==='quest'?'Progresso de missão':p.kind==='map'?'Exploração do mapa':p.kind==='trade'?'Comércio':p.kind==='choice'?'Decisão narrativa':p.kind==='equipment'?'Equipamento':p.kind==='loot'?'Espólio':p.kind==='combat'?'Efeito de combate':p.kind==='backup'?'Backup':p.kind==='summary'?'Resumo de sessão':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
+  function formatEvent(ev){const p=ev.payload||{};let title='Acontecimento registrado',desc='';switch(ev.event_type){case'dice_result':title=`D20 · ${p.player_name||'Aventureiro'}`;desc=`Rolagens: ${(p.rolls||[p.result]).join(' / ')} · Natural ${p.natural??p.result}${p.modifier!=null?` ${Number(p.modifier)>=0?'+':''}${p.modifier} = ${p.total}`:''}${p.dc?` · CD ${p.dc}: ${p.success?'Sucesso':'Falha'}`:''}${p.reason?' · '+p.reason:''}`;break;case'dice_prompt':title='O mestre solicitou um teste';desc=p.reason||'Um aventureiro pode lançar o D20.';break;case'damage_applied':title=`${p.player_name||'Aventureiro'} causou dano`;desc=`${p.amount} de dano em ${p.monster||'a criatura'} · ${p.hp} HP restantes`;break;case'damage_request':title=`${p.player_name||'Aventureiro'} declarou um ataque`;desc=`Dano solicitado: ${p.amount}`;break;case'narration':title='Narração do mestre';desc=p.text||'';break;case'chat_message':title=`${p.display_name||'Aventureiro'} · mensagem`;desc=p.text||'';break;case'encounter_started':title='Encontro iniciado';desc=p.monster||'Uma criatura apareceu.';break;case'npc_revealed':{const npc=STORY_NPCS.find(n=>n.id===p.npc_id);title='Personagem apresentado';desc=npc?`${npc.name} · ${npc.role}`:'Um personagem do mundo foi apresentado.';break;}case'combat_action_result':title=`Ação de ${p.player_name||'Aventureiro'}`;desc=p.description||`Rolagem ${p.natural||'—'} · Dano ${p.damage||0}`;break;case'combat_action_rejected':title='Ação não realizada';desc=p.reason||'A ação foi recusada pela validação do combate.';break;case'party_defeated':title='Derrota da companhia';desc=p.description||'Todos os aventureiros ficaram sem pontos de vida.';break;case'encounter_defeated':title='Vitória da companhia';desc=p.description||`${p.monster||'A criatura'} foi derrotada. XP distribuído.`;break;case'monster_attack_result':title=`Ação de ${p.monster||'Monstro'}`;desc=p.description||'A criatura realizou sua ação.';break;case'member_joined':title='Jogador entrou';desc=`${p.display_name||'Um jogador'} entrou na campanha.`;break;case'member_left':title='Jogador saiu';desc=`${p.display_name||'Um jogador'} saiu da campanha.`;break;case'member_removed':title='Jogador removido';desc=`${p.display_name||'Um jogador'} foi removido da campanha.`;break;case'turn_advanced':title='Turno avançado';desc=p.description||'A ordem de iniciativa avançou.';break;case'map_move_request':title='Pedido de movimento';desc=`${p.player_name||'Aventureiro'} solicitou a casa ${Number(p.x)+1}, linha ${Number(p.y)+1}.`;break;case'session_note':title=p.kind==='quest'?'Progresso de missão':p.kind==='map'?'Exploração do mapa':p.kind==='trade'?'Comércio':p.kind==='choice'?'Decisão narrativa':p.kind==='equipment'?'Equipamento':p.kind==='loot'?'Espólio':p.kind==='combat'?'Efeito de combate':p.kind==='backup'?'Backup':p.kind==='summary'?'Resumo de sessão':'Diário da campanha';desc=p.text||'Uma anotação foi registrada.';break;default:desc=JSON.stringify(p)}return `<div class="event-item"><strong>${esc(title)}</strong><p>${esc(desc)}</p><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>`}
 
   function formatChatMessage(ev){const p=ev.payload||{};const mine=ev.actor_id===currentUserId();return `<div class="chat-message ${mine?'mine':''}"><div class="chat-message-meta"><strong>${esc(p.display_name||'Aventureiro')}</strong><time>${new Date(ev.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div><p>${esc(p.text||'')}</p></div>`}
 
@@ -2470,7 +2596,7 @@
     const b=BOOKS.find(x=>x.id===state.currentBook);if(!b){state.modal=null;return}
     const chapters=BOOK_CONTENT[b.id]||[];
     const body=chapters.map((chapter,i)=>`<article class="book-chapter"><div class="page-kicker">Capítulo ${String(i+1).padStart(2,'0')}</div><h3>${esc(chapter[0])}</h3><p>${esc(chapter[1])}</p><ul>${chapter[2].map(item=>`<li>${esc(item)}</li>`).join('')}</ul></article>`).join('');
-    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide book-reader" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Biblioteca de Aethra · ${b.access} · Edição v4.1.0 · regras, campanha e combate</div><h2>${b.title}</h2><p>${b.desc}</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="notice">Este livro reúne as orientações atuais do Reino de Aethra. Consulte também o Guia do Modo Chamada v4.1.0 e os manuais anteriores.</div><div class="book-reader-content">${body}</div></section></div>`;
+    modalRoot.innerHTML=`<div class="modal-backdrop" data-action="backdrop-close"><section class="modal wide book-reader" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="page-kicker">Biblioteca de Aethra · ${b.access} · Edição v4.1.1 · regras, campanha e combate</div><h2>${b.title}</h2><p>${b.desc}</p></div><button class="modal-close" data-action="close-modal">×</button></div><div class="notice">Este livro reúne as orientações atuais do Reino de Aethra. Consulte também o Guia do Modo Chamada v4.1.1 e os manuais anteriores.</div><div class="book-reader-content">${body}</div></section></div>`;
   }
 
   function renderAccountModal(){
@@ -2594,6 +2720,10 @@
     if(action==='backdrop-close'&&e.target===btn){closeModal();return}
     try{
       if(action==='go-home'){state.view='home';closeModal();render()}
+      else if(action==='v411-reconnect'){await retryCampaignConnection()}
+      else if(action==='v411-open-notifications'){state.modal='v411-notifications';render()}
+      else if(action==='v411-mark-notifications-read'){v411MarkNotificationsRead();renderV411NotificationsModal();render();toast('Notificações marcadas como lidas neste dispositivo.')}
+      else if(action==='v411-undo-last'){await undoV411LastAction()}
       else if(action==='open-library'){state.view='library';closeModal();render()}
       else if(action==='my-campaigns'){state.view='campaigns';closeModal();render();loadCloudCampaigns()}
       else if(action==='open-settings')openModal('settings')
@@ -2644,7 +2774,7 @@
       else if(action==='char-prev'){if(state.charStep>0){state.charStep--;render()}}
       else if(action==='char-save'){await saveCharacter(state.charDraft);closeModal();render()}
       else if(action==='start-session'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode iniciar a sessão.');const gs=state.campaign.game_state||defaultGameState(),v=v41GameData(gs),players=state.members.filter(m=>m.role==='player'),ready=players.filter(m=>v.session.readyBy[m.user_id]).length;if(players.length&&ready<players.length&&!window.confirm(`Somente ${ready} de ${players.length} jogadores marcaram que estão prontos. Iniciar mesmo assim?`))return;const checkpoint=createV41Checkpoint(gs,'Antes do início da sessão');checkpoint.session={...checkpoint.session,status:'live',startedAt:new Date().toISOString(),pausedAt:null};await updateGameState({started:true,v41:checkpoint},'active');state.view='session';render();toast('Sessão iniciada. Ponto de restauração criado.')}
-      else if(action==='pause-session'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode encerrar a sessão.');const gs=state.campaign.game_state||defaultGameState(),checkpoint=createV41Checkpoint(gs,'Antes de pausar a sessão');checkpoint.session={...checkpoint.session,status:'paused',pausedAt:new Date().toISOString()};await updateGameState({started:false,activeRollPrompt:null,v41:checkpoint},'paused');state.view='lobby';render();toast('Crônica salva e ponto de restauração criado.')}
+      else if(action==='pause-session'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre pode encerrar a sessão.');state.modal='v411-close-session';render()}
       else if(action==='open-lobby'){state.view='lobby';render()}
       else if(action==='request-dice'){if(state.modal==='masterGuide')closeModal();openModal('rollPrompt')}
       else if(action==='cancel-roll-prompt'){if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo pode cancelar a solicitação.');await updateGameState({activeRollPrompt:null});toast('Solicitação de rolagem cancelada.')}
@@ -2776,6 +2906,7 @@
       else if(form.id==='join-form'){const code=$('#join-code').value.trim().toUpperCase(),name=$('#join-name').value.trim();state.prefillJoinCode=null;await joinCampaign(code,name)}
       else if(form.id==='damage-form'){const amount=Number($('#damage-amount').value),note=$('#damage-note').value.trim(),encounter=state.campaign.game_state?.encounter;if(!encounter?.id)throw new Error('Não existe um encontro ativo.');if(!amount||amount<1)throw new Error('Informe um valor de dano válido.');await createEvent('damage_request',{amount,note,encounter_id:encounter.id,player_name:state.member?.display_name||'Aventureiro'});closeModal();toast('Ataque enviado. O mestre validará o dano.')}
       else if(form.id==='v41-roll-form'){const target=$('#v41-roll-target').value,type=$('#v41-roll-type').value,reason=$('#v41-roll-reason').value.trim(),opts={attribute:$('#v41-roll-attribute').value,dc:$('#v41-roll-dc').value,bonus:$('#v41-roll-bonus').value,mode:$('#v41-roll-mode').value,visibility:$('#v41-roll-visibility').value,testType:type,opponentMonsterId:$('#v41-roll-opponent').value};await requestRoll(target,reason,opts);closeModal();render()}
+      else if(form.id==='v411-close-session-form'){await finishV411Session($('#v411-close-summary').value)}
       else if(form.id==='roll-prompt-form'){const target=$('#roll-target').value,reason=$('#roll-reason').value.trim()||'Teste de D20';await requestRoll(target,reason);closeModal()}
       else if(form.id==='encounter-form'){const templates=[...modalRoot.querySelectorAll('input[name="monster"]:checked')].map(r=>MONSTERS.find(m=>m.id===r.value)).filter(Boolean);if(!templates.length)throw new Error('Marque ao menos uma criatura.');await startEncounter(templates);closeModal()}
       else if(form.id==='chat-form'){const input=$('#chat-input');const text=input?.value.trim();if(text){await createEvent('chat_message',{text:text.slice(0,500),display_name:state.member?.display_name||'Aventureiro'});input.value='';render()}}
@@ -2813,9 +2944,10 @@
     characterNext().catch(err=>toast(err.message,'error')).finally(()=>{if(b.isConnected){b.dataset.busy='false';b.disabled=false;b.textContent=original}});
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.modal){closeModal();render()}});
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.backendReady&&state.campaign)refreshCloudCampaign({silent:true})});
-  window.addEventListener('online',()=>{if(state.backendReady&&state.campaign)refreshCloudCampaign({silent:true})});
-  window.addEventListener('beforeunload',()=>{if(state.channel&&state.backend)state.backend.removeChannel(state.channel)});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.backendReady&&state.campaign){refreshCloudCampaign({silent:true});if(state.realtimeStatus!=='SUBSCRIBED')scheduleCampaignReconnect('aba voltou ao primeiro plano')}});
+  window.addEventListener('online',()=>{refreshConnectionLabel();if(state.backendReady&&state.campaign)retryCampaignConnection().catch(err=>{console.warn(err);scheduleCampaignReconnect(err?.message||'retorno online')})});
+  window.addEventListener('offline',()=>{state.channelPresence=[];state.realtimeStatus='CLOSED';refreshConnectionLabel();render()});
+  window.addEventListener('beforeunload',()=>{if(state.reconnectTimer)clearTimeout(state.reconnectTimer);if(state.channel&&state.backend)state.backend.removeChannel(state.channel)});
 
   init().catch(err=>{console.error(err);setConnection('Modo local',false);render();toast('A aplicação iniciou em modo local.','error')});
 })();
