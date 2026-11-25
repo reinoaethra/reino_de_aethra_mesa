@@ -1,0 +1,13 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.7
+
+Correção: a ficha do Bestiário à direita passa a responder à roda do mouse e ao touchpad. A seleção à esquerda mantém sua rolagem própria. A rolagem interna é isolada do modal externo, e o gesto de toque permanece habilitado.
+
+INSTALAÇÃO
+1. Faça backup do repositório.
+2. Extraia o ZIP na raiz do projeto.
+3. Substitua index.html, app.js e styles.css.
+4. Preserve config.js e toda a pasta assets/.
+5. Publique e atualize com Ctrl+F5.
+
+Não requer SQL nem recriação de campanhas.
+Consulte GUIA-DE-ATUALIZACAO-V4.1.7.md.

@@ -9,10 +9,10 @@ async function main() {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-  assert(html.includes('v4.1.6'), 'HTML identifies v4.1.6');
-  assert(html.includes('app.js?v=4.1.6') && html.includes('styles.css?v=4.1.6'), 'application assets use the v4.1.6 cache key');
+  assert(html.includes('v4.1.7'), 'HTML identifies v4.1.7');
+  assert(html.includes('app.js?v=4.1.7') && html.includes('styles.css?v=4.1.7'), 'application assets use the v4.1.7 cache key');
   assert(html.includes('src="config.js"'), 'existing config.js reference remains unchanged');
-  assert(app.includes("url.searchParams.set('v','4.1.6')"), 'map background cache key is refreshed for v4.1.6');
+  assert(app.includes("url.searchParams.set('v','4.1.7')"), 'map background cache key is refreshed for v4.1.7');
 
   for (const feature of [
     'renderV41SessionRoom', 'toggleV41Ready', 'processV41ReadyRequest',
@@ -162,7 +162,7 @@ async function main() {
   for (const rule of ['.v41-session-room', '.v41-bestiary-grid', '.v41-timeline', '.v41-map-ping', '.v41-player-help', '.v41-checkpoint-list']) {
     assert(css.includes(rule), `style ${rule} exists`);
   }
-  console.log('Reino de Aethra v4.1.6: regressão v4.1.0 de sessão, D20, convites, mapas, diário, checkpoints e compatibilidade aprovada.');
+  console.log('Reino de Aethra v4.1.7: regressão v4.1.0 de sessão, D20, convites, mapas, diário, checkpoints e compatibilidade aprovada.');
 }
 
 main().catch(error => { console.error(error); process.exit(1); });

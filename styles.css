@@ -1593,3 +1593,28 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @media(max-width:420px){
   .v416-bestiary-grid{row-gap:16px;column-gap:13px;padding:8px 9px 14px 3px}
 }
+
+
+/* v4.1.7 — rolagem por roda do mouse/touchpad nas duas áreas internas do Bestiário */
+.v417-bestiary-grid,
+.v417-bestiary-detail{
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(212,177,109,.62) rgba(255,255,255,.045);
+}
+.v417-bestiary-detail{
+  height:100%;
+  max-height:100%;
+}
+.v417-bestiary-grid{
+  flex:1 1 auto;
+  min-height:0;
+}
+@media(max-width:760px){
+  .v417-bestiary-detail{height:auto;max-height:52dvh}
+  .v417-bestiary-grid{min-height:0}
+}
