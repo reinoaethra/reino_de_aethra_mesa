@@ -1,0 +1,29 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.3
+
+O QUE MUDA:
+- Seleção dos monstros em lista vertical à esquerda.
+- Nome completo, tipo, nível, HP e Defesa visíveis em cada opção.
+- Miniatura correta e ampliada no painel de detalhes à direita.
+- Pesquisa por nome, tipo, ameaça e habilidade; filtro por tipo.
+- Composição de encontro, encontros salvos e ações do mestre preservados.
+- Em telas pequenas, a lista fica acima da ficha.
+
+INSTALAÇÃO:
+1. Faça backup.
+2. Extraia este pacote na raiz do repositório.
+3. Substitua index.html, app.js e styles.css.
+4. Preserve config.js e toda a pasta assets/.
+5. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+Não execute SQL. Não recrie campanhas.
+
+DOCUMENTAÇÃO:
+- GUIA-DE-ATUALIZACAO-V4.1.3.md
+- GUIA-DE-RECURSOS-V4.1.3.md
+- NOTAS-DE-LANCAMENTO-V4.1.3.md
+- CHECKLIST-PUBLICACAO-V4.1.3.md
+
+TESTES LOCAIS:
+node tests/v410-release-tests.cjs
+node tests/v411-release-tests.cjs
+node tests/v413-bestiary-layout-tests.cjs
