@@ -1265,3 +1265,88 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @keyframes v411Pulse{50%{opacity:.45;box-shadow:0 0 3px rgba(210,179,110,.2)}}
 @media(max-width:760px){.v411-connection-panel,.v411-undo-panel{align-items:flex-start;flex-direction:column}.v411-connection-actions{width:100%;justify-content:flex-start}.v411-turn-summary{grid-template-columns:1fr}.v411-turn-metrics{grid-template-columns:1fr 1fr}.v411-turn-metrics>div:last-child{grid-column:1/-1}}
 @media(max-width:420px){.v411-turn-metrics{grid-template-columns:1fr}.v411-turn-metrics>div:last-child{grid-column:auto}.v411-connection-actions .btn{flex:1}}
+
+/* v4.1.2 — Bestiário em painel expandido, com seleção acima e ficha abaixo */
+.modal.wide.v412-bestiary-modal{
+  width:min(96vw,1440px);
+  max-width:none;
+  max-height:96dvh;
+  padding:clamp(16px,2vw,28px);
+  overflow-x:hidden;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(212,177,109,.48) rgba(255,255,255,.04);
+}
+.v412-bestiary-modal .modal-head{margin-bottom:16px}
+.v412-bestiary-modal .v41-encounter-builder{margin-bottom:16px}
+.v412-bestiary-modal .v41-bestiary-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+  min-width:0;
+}
+.v412-bestiary-modal .v41-bestiary-list-panel{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-width:0;
+  width:100%;
+}
+.v412-bestiary-modal .v41-bestiary-toolbar{width:100%;margin-bottom:0}
+.v412-bestiary-modal .v41-bestiary-grid{
+  width:100%;
+  grid-template-columns:repeat(auto-fill,minmax(145px,1fr));
+  gap:10px;
+  max-height:min(39vh,430px);
+  padding:2px 5px 6px 2px;
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.v412-bestiary-modal .v41-bestiary-thumb{height:112px}
+.v412-bestiary-modal .v41-bestiary-thumb .monster-miniature-image{max-height:106px}
+.v412-bestiary-modal .v41-bestiary-card{padding:10px;gap:5px}
+.v412-bestiary-modal .v41-bestiary-card>strong{font-size:11px}
+.v412-bestiary-modal .v41-bestiary-card>small{font-size:9px}
+.v412-bestiary-modal .v41-bestiary-detail{
+  position:static;
+  width:100%;
+  min-width:0;
+  padding:16px;
+}
+.v412-bestiary-modal .v41-bestiary-detail-main{
+  display:grid;
+  grid-template-columns:minmax(260px,.72fr) minmax(0,1.28fr);
+  align-items:start;
+  gap:18px;
+}
+.v412-bestiary-modal .v41-bestiary-art{
+  height:clamp(220px,28vw,360px);
+  min-height:220px;
+  margin:0;
+}
+.v412-bestiary-modal .v41-bestiary-detail-copy{min-width:0}
+.v412-bestiary-modal .v41-bestiary-detail-copy h3{font-size:clamp(17px,1.6vw,23px);margin:8px 0 6px}
+.v412-bestiary-modal .v41-bestiary-detail-copy>p{font-size:11px;line-height:1.7}
+.v412-bestiary-modal .v41-bestiary-stats{gap:9px;margin:14px 0}
+.v412-bestiary-modal .v41-bestiary-stats span{padding:11px 9px}
+.v412-bestiary-modal .v41-bestiary-stats small{font-size:9px}
+.v412-bestiary-modal .v41-bestiary-stats strong{font-size:15px}
+.v412-bestiary-modal .v41-bestiary-detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.v412-bestiary-modal .v41-bestiary-detail-actions .btn{margin:0}
+.v412-bestiary-modal .v41-saved-presets{margin-top:18px}
+@media(max-width:760px){
+  .modal.wide.v412-bestiary-modal{width:min(98vw,100%);max-height:95dvh;padding:16px}
+  .v412-bestiary-modal .v41-bestiary-grid{grid-template-columns:repeat(auto-fill,minmax(125px,1fr));max-height:36vh}
+  .v412-bestiary-modal .v41-bestiary-detail-main{grid-template-columns:minmax(0,1fr)}
+  .v412-bestiary-modal .v41-bestiary-art{height:240px;max-width:100%}
+  .v412-bestiary-modal .v41-bestiary-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .modal.wide.v412-bestiary-modal{width:100%;max-height:94dvh;padding:14px}
+  .v412-bestiary-modal .v41-bestiary-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:34vh;gap:7px}
+  .v412-bestiary-modal .v41-bestiary-thumb{height:96px}
+  .v412-bestiary-modal .v41-bestiary-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .v412-bestiary-modal .v41-bestiary-detail-actions{flex-direction:column;align-items:stretch}
+  .v412-bestiary-modal .v41-bestiary-detail-actions .btn{width:100%}
+}

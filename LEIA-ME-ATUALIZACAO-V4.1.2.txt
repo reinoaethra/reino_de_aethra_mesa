@@ -1,0 +1,32 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.2
+
+PACOTE INCREMENTAL SOBRE A v4.1.1
+
+Substitua na raiz do site:
+- index.html
+- app.js
+- styles.css
+
+Preserve sem alterações:
+- config.js
+- assets/ (mapas, miniaturas, retratos e artes)
+- projeto Supabase, contas, campanhas, livros e dados existentes
+
+Não é necessário executar SQL nesta atualização.
+
+MELHORIA PRINCIPAL
+O pop-up do Bestiário foi ampliado e reorganizado. A pesquisa e os cartões de criaturas ficam agrupados em uma grade larga; a ficha selecionada aparece logo abaixo, ocupando a largura disponível. Em telas menores, o conteúdo se reorganiza para uma coluna e a grade passa a duas colunas.
+
+DOCUMENTAÇÃO
+- GUIA-DE-RECURSOS-V4.1.2.md
+- GUIA-DE-ATUALIZACAO-V4.1.2.md
+- NOTAS-DE-LANCAMENTO-V4.1.2.md
+- CHECKLIST-PUBLICACAO-V4.1.2.md
+
+TESTES LOCAIS
+node --check app.js
+node tests/v410-release-tests.cjs
+node tests/v411-release-tests.cjs
+node tests/v412-bestiary-layout-tests.cjs
+
+Após publicar, atualize o computador com Ctrl + F5. No celular, feche a aba antiga e abra novamente.
