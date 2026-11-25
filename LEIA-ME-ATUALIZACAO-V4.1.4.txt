@@ -1,0 +1,23 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.4
+
+CORREÇÃO DO BESTIÁRIO
+- Seleção em miniaturas quadradas; somente a miniatura aparece nos cartões.
+- Coluna de seleção à esquerda no desktop; ficha detalhada à direita.
+- Em telas estreitas, catálogo acima da ficha.
+- Rolagem independente do catálogo e da ficha.
+- Adicionar/remover da composição permanece no painel de detalhes.
+
+INSTALAÇÃO
+1. Extraia o ZIP na raiz do repositório.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js e todas as pastas assets/.
+4. Não execute SQL.
+5. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+TESTES
+node --check app.js
+node tests/v410-release-tests.cjs
+node tests/v411-release-tests.cjs
+node tests/v414-bestiary-selection-tests.cjs
+
+Leia GUIA-DE-ATUALIZACAO-V4.1.4.md para instruções completas.

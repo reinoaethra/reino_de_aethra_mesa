@@ -1266,7 +1266,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @media(max-width:760px){.v411-connection-panel,.v411-undo-panel{align-items:flex-start;flex-direction:column}.v411-connection-actions{width:100%;justify-content:flex-start}.v411-turn-summary{grid-template-columns:1fr}.v411-turn-metrics{grid-template-columns:1fr 1fr}.v411-turn-metrics>div:last-child{grid-column:1/-1}}
 @media(max-width:420px){.v411-turn-metrics{grid-template-columns:1fr}.v411-turn-metrics>div:last-child{grid-column:auto}.v411-connection-actions .btn{flex:1}}
 
-/* v4.1.3 — Bestiário em duas colunas: seleção vertical à esquerda e ficha à direita */
+/* v4.1.3 — estrutura de ficha à direita; v4.1.4 ajusta os cartões de seleção */
 .modal.wide.v413-bestiary-modal{
   width:min(96vw,1480px);
   max-width:none;
@@ -1425,4 +1425,129 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
   .v413-bestiary-detail .v41-bestiary-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .v413-bestiary-detail-actions{flex-direction:column;align-items:stretch}
   .v413-bestiary-detail-actions .btn{width:100%}
+}
+
+
+/* v4.1.4 — seleção do Bestiário em miniaturas quadradas com rolagem independente */
+.v414-bestiary-layout{
+  height:min(74dvh,740px);
+  min-height:430px;
+  overflow:hidden;
+}
+.v414-bestiary-list-panel{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  max-height:100%;
+  min-height:0;
+  overflow:hidden;
+}
+.v414-bestiary-grid{
+  display:grid;
+  flex:1 1 auto;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-auto-rows:minmax(76px,auto);
+  align-content:start;
+  align-items:start;
+  gap:9px;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(212,177,109,.58) rgba(255,255,255,.045);
+  padding:3px 6px 8px 1px;
+}
+.v414-monster-option-wrap{
+  display:block;
+  position:relative;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  aspect-ratio:1/1;
+  flex:none;
+  border:1px solid rgba(193,157,91,.22);
+  border-radius:11px;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(5,10,18,.28));
+  transition:border-color .15s ease,background .15s ease,transform .15s ease;
+}
+.v414-monster-option-wrap:hover{border-color:rgba(215,184,117,.55);transform:translateY(-1px)}
+.v414-monster-option-wrap:has(.v414-monster-option.selected){border-color:rgba(222,190,119,.9);background:rgba(193,157,91,.13);box-shadow:0 0 0 1px rgba(215,184,117,.18),0 5px 16px rgba(0,0,0,.2)}
+.v414-monster-option{
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0;
+  min-height:0;
+  padding:6px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  cursor:pointer;
+}
+.v414-monster-option:hover,.v414-monster-option.selected{background:transparent!important;box-shadow:none!important}
+.v414-monster-option:focus-visible{outline:2px solid var(--gold,#d7b875);outline-offset:-3px}
+.v414-monster-option-thumb{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+  border-radius:7px;
+  background:radial-gradient(ellipse at 50% 78%,rgba(176,160,129,.18),rgba(5,9,15,.68) 72%);
+}
+.v414-monster-option-thumb .monster-miniature-wrap{display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden}
+.v414-monster-option-thumb .monster-miniature-image{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;filter:grayscale(1) saturate(.08) contrast(1.12) drop-shadow(0 4px 4px rgba(0,0,0,.78))}
+.v414-monster-option-thumb .miniature-art-fallback{display:grid;place-items:center;width:100%;height:100%}
+.v414-monster-option-thumb .monster-sprite{width:88%;height:94%;max-width:100%;max-height:100%;object-fit:contain}
+.v414-bestiary-detail{
+  height:100%;
+  min-height:0;
+  max-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(212,177,109,.58) rgba(255,255,255,.045);
+}
+.v414-bestiary-detail-main{min-height:100%;height:auto}
+.v414-bestiary-art{min-height:340px}
+@media(max-width:980px){
+  .v414-bestiary-layout{height:min(70dvh,700px);min-height:400px}
+  .v414-bestiary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .v414-bestiary-layout{
+    height:auto;
+    min-height:0;
+    max-height:none;
+    overflow:visible;
+  }
+  .v414-bestiary-list-panel{height:auto;max-height:30dvh;min-height:150px}
+  .v414-bestiary-grid{
+    flex:1 1 auto;
+    grid-template-columns:repeat(auto-fill,minmax(70px,1fr));
+    grid-auto-rows:minmax(66px,auto);
+    max-height:none;
+    min-height:0;
+  }
+  .v414-bestiary-detail{
+    height:auto;
+    max-height:52dvh;
+    min-height:250px;
+    overflow-y:auto;
+  }
+  .v414-bestiary-art{min-height:220px}
+}
+@media(max-width:420px){
+  .v414-bestiary-list-panel{max-height:28dvh;min-height:138px}
+  .v414-bestiary-grid{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:7px}
+  .v414-bestiary-detail{max-height:50dvh}
 }
