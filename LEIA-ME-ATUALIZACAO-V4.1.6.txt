@@ -1,0 +1,25 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.6
+
+AJUSTE DO BESTIÁRIO
+- Aumentado o espaço vertical e horizontal entre miniaturas quadradas.
+- Desktop: 24 px vertical / 20 px horizontal.
+- Até 980 px: 21 px / 17 px.
+- Até 760 px: 18 px / 15 px.
+- Até 420 px: 16 px / 13 px.
+- Mantidos a seleção à esquerda, a ficha à direita e as duas rolagens independentes.
+
+INSTALAÇÃO
+1. Extraia o ZIP na raiz do repositório.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js e todas as pastas assets/.
+4. Não execute SQL.
+5. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+TESTES
+node --check app.js
+node tests/v410-release-tests.cjs
+node tests/v411-release-tests.cjs
+node tests/v414-bestiary-selection-tests.cjs
+node tests/v416-bestiary-spacing-tests.cjs
+
+Leia GUIA-DE-ATUALIZACAO-V4.1.6.md para instruções completas.
