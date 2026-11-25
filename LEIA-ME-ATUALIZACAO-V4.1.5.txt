@@ -1,0 +1,21 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.5
+
+AJUSTE DO BESTIÁRIO
+- Mais espaço entre os cartões quadrados das miniaturas.
+- Desktop: 16 px; telas intermediárias: 13 px; telas estreitas: 11 px.
+- Mantida a ficha à direita e as rolagens independentes.
+
+INSTALAÇÃO
+1. Extraia o ZIP na raiz do repositório.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js e todas as pastas assets/.
+4. Não execute SQL.
+5. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+TESTES
+node --check app.js
+node tests/v410-release-tests.cjs
+node tests/v411-release-tests.cjs
+node tests/v414-bestiary-selection-tests.cjs
+
+Leia GUIA-DE-ATUALIZACAO-V4.1.5.md para instruções completas.

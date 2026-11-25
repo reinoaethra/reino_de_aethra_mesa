@@ -9,8 +9,8 @@ async function main() {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-  assert(html.includes('v4.1.4'), 'HTML identifies the release');
-  assert(html.includes('app.js?v=4.1.4') && html.includes('styles.css?v=4.1.4'), 'cache keys are bumped');
+  assert(html.includes('v4.1.5'), 'HTML identifies the release');
+  assert(html.includes('app.js?v=4.1.5') && html.includes('styles.css?v=4.1.5'), 'cache keys are bumped');
   assert(html.includes('src="config.js"'), 'existing config.js is preserved');
   for (const fn of ['v411GameData','undoV411LastAction','scheduleCampaignReconnect','retryCampaignConnection','v411NotificationRows','renderV411ConnectionPanel','renderV411TurnSummary','v411SessionCloseSummary','finishV411Session','v411MarkNotificationsRead']) {
     assert(app.includes(`function ${fn}`) || app.includes(`async function ${fn}`), `${fn} exists`);
@@ -139,7 +139,7 @@ async function main() {
     assert.equal(state.view,'lobby','master returns to lobby after closeout');
   }
 
-  console.log('Reino de Aethra v4.1.4: reconexão, histórico/desfazer, notificações, resumo do turno, encerramento e regressão aprovados.');
+  console.log('Reino de Aethra v4.1.5: reconexão, histórico/desfazer, notificações, resumo do turno, encerramento e regressão aprovados.');
 }
 
 main().catch(error => { console.error(error); process.exit(1); });
