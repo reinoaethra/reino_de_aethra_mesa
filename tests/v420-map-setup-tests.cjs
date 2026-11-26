@@ -4,7 +4,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-assert(html.includes('v4.2.0'), 'release HTML is v4.2.0');
+assert(html.includes('v4.2.1'), 'release HTML is v4.2.1');
 assert(app.includes("data-tool=\"setup-move\">Preparar posições · livre"), 'GM free placement tool is visible');
 const start = app.indexOf('async function moveMapToken(');
 const end = app.indexOf('\n  async function', start + 10);
@@ -16,4 +16,4 @@ const freeBlock = fn.slice(fn.indexOf('if(freePlacement){'), fn.indexOf('\n    c
 for (const normalRule of ['mapPathDistance(', 'positionFitsFootprint(', 'movementUsed', 'hasCondition(']) assert(!freeBlock.includes(normalRule), `${normalRule} is bypassed in setup mode`);
 assert(app.includes("const free=state.selectedMapTool==='setup-move'"), 'drag-and-drop respects setup mode');
 assert(app.includes("if(tool==='setup-move')"), 'click-to-place respects setup mode');
-console.log('v4.2.0 tactical setup: GM free placement, board bounds and normal movement bypass approved.');
+console.log('v4.2.1 tactical setup: GM free placement, board bounds and normal movement bypass approved.');

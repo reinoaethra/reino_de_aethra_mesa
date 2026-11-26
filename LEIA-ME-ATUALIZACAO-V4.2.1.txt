@@ -1,0 +1,9 @@
+REINO DE AETHRA v4.2.1 — CORREÇÃO DE MIGRATION
+
+1. Faça backup do banco, campanhas e repositório.
+2. Execute supabase-migration-v4.2.1.sql deste pacote corrigido no SQL Editor do Supabase.
+3. A migration pode ser reaplicada: as políticas RLS são removidas pelo nome legado e pelo nome novo antes de serem recriadas.
+4. Substitua index.html, app.js e styles.css somente se ainda não tiver publicado a v4.2.1.
+5. Preserve config.js e assets/.
+
+Esta edição corrige a política de leitura dos eventos da campanha: a execução anterior removia somente o nome antigo e podia falhar se a política nova já tivesse sido criada numa tentativa parcialmente concluída.

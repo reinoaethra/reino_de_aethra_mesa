@@ -4,8 +4,8 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.0.sql'), 'utf8');
-assert(html.includes('v4.2.0') && html.includes('app.js?v=4.2.0') && html.includes('styles.css?v=4.2.0'), 'HTML/cache keys identify v4.2.0');
+const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
+assert(html.includes('v4.2.1') && html.includes('app.js?v=4.2.1') && html.includes('styles.css?v=4.2.1'), 'HTML/cache keys identify v4.2.1');
 assert(sql.includes('create table if not exists public.campaign_master_private_state'), 'private state table is created');
 assert(sql.includes('enable row level security') && sql.includes('revoke all on public.campaign_master_private_state from public, anon, authenticated'), 'private table has RLS and no direct grants');
 assert(sql.includes('create or replace function public.aethra_public_game_state'), 'public state projection exists');
@@ -36,4 +36,4 @@ assert(sql.includes('v_public_state := public.aethra_public_game_state(v_private
 assert(sql.includes('check (xp between 1 and 50000)'), 'XP ledger constraint matches the RPC upper bound');
 assert(sql.includes('Campaign members can read public events and masters can read all'), 'event reads are role-filtered');
 assert(sql.includes("event_type not in ('master_note','private_roll_result','gm_secret')"), 'private event types are excluded for players');
-console.log('v4.2.0 security: private master state, sanitized player projection, role-aware RPCs and event RLS approved.');
+console.log('v4.2.1 security: private master state, sanitized player projection, role-aware RPCs and event RLS approved.');

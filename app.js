@@ -507,14 +507,14 @@
     return `assets/minis/monsters/monster-${slug}.png`;
   }
   function mapMonsterMiniature(token){
-    const id=String(token?.templateId||'goblin-cinzas').toLowerCase(),src=monsterMiniaturePath(id)+'?v=4.2.0';
+    const id=String(token?.templateId||'goblin-cinzas').toLowerCase(),src=monsterMiniaturePath(id)+'?v=4.2.1';
     return `<span class="miniature-art-wrap monster-miniature-wrap"><img class="monster-miniature-image ${token?.boss?'monster-statue-boss':''}" src="${src}" alt="Miniatura de ${esc(token?.name||'Criatura')}" loading="lazy" draggable="false" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="miniature-art-fallback" hidden>${mapMonsterSprite(id,token?.name)}</span></span>`;
   }
   // Arte colorida exclusiva do painel amplo do combate. As miniaturas cinza permanecem nos demais painéis.
   function mapMonsterBattleArt(token){
     const id=String(token?.templateId||'goblin-cinzas').toLowerCase();
     const slug=id.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'')||'goblin-cinzas';
-    const src=`assets/monster-art/${slug}.webp?v=4.2.0`;
+    const src=`assets/monster-art/${slug}.webp?v=4.2.1`;
     return `<img class="battle-color-art" src="${src}" alt="Ilustração colorida de ${esc(token?.name||'Criatura')}" loading="eager" draggable="false" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="battle-color-fallback" hidden>${mapMonsterMiniature(token)}</span>`;
   }
   function mapPieceArt(token){return token.kind==='monster'?mapMonsterMiniature(token):mapHeroMiniature(token.className,token.equipment)}
@@ -765,8 +765,31 @@
     await createEvent('session_note',{kind:'summary',text:`Sessão encerrada. ${text.slice(0,520)}`});
     state.view='lobby';closeModal();render();toast('Sessão encerrada. Resumo salvo no diário e ponto de restauração criado.');
   }
+  function compactCheckpointCopies(gameState){
+    const current=cloneData(gameState||{});
+    const v41=v41GameData(current);
+    v41.snapshots=(v41.snapshots||[]).slice(-3).map(entry=>{
+      const item=cloneData(entry||{});
+      if(item.gameState&&typeof item.gameState==='object'){
+        const nested=item.gameState;
+        if(nested.v41&&typeof nested.v41==='object')nested.v41={...nested.v41,snapshots:[]};
+        if(nested.v411&&typeof nested.v411==='object')nested.v411={...nested.v411,undoHistory:[]};
+        item.gameState=nested;
+      }
+      return item;
+    });
+    current.v41=v41;
+    const undo=v411GameData(current);
+    undo.undoHistory=(undo.undoHistory||[]).slice(-8).map(entry=>{
+      const item=cloneData(entry||{}),before=item.before||{};
+      if(before.v41?.present&&before.v41.value&&typeof before.v41.value==='object')before.v41.value={...before.v41.value,snapshots:[]};
+      item.before=before;return item;
+    });
+    current.v411=undo;
+    return current;
+  }
   function createV41Checkpoint(gs,reason='Ponto de restauração'){
-    const current=cloneData(gs||defaultGameState());
+    const current=compactCheckpointCopies(gs||defaultGameState());
     current.v41={...v41GameData(current),snapshots:[]};
     const snapshot={id:`v41-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,reason:String(reason).slice(0,100),createdAt:new Date().toISOString(),gameState:current};
     const data=v41GameData(gs);return {...data,snapshots:[...data.snapshots,snapshot].slice(-3)};
@@ -1893,7 +1916,7 @@
   function secureD20(){const a=new Uint32Array(1);let x;do{crypto.getRandomValues(a);x=a[0]}while(x>=4294967280);return (x%20)+1}
   async function updateGameState(patch,status,replace=false){
     if(!isMaster()||!isMasterController())throw new Error('Somente o mestre ativo desta campanha pode alterar seu estado.');
-    const current=cloneData(state.campaign.game_state||defaultGameState());let next=replace?cloneData(patch):{...current,...patch};
+    const current=compactCheckpointCopies(state.campaign.game_state||defaultGameState());let next=compactCheckpointCopies(replace?cloneData(patch):{...current,...patch});
     const checkpointKeys=['encounter','quests','partyState','exploration','worldExploration','chapter','location'];
     if(!replace&&!state.isUndoing&&!Object.prototype.hasOwnProperty.call(patch,'v41')&&Object.keys(patch).some(key=>checkpointKeys.includes(key))){
       const data=v41GameData(current);if(v41CheckpointAge(data)>10*60*1000)next.v41=createV41Checkpoint(current,patch.encounter?'Antes de alterar o encontro':patch.quests?'Antes de alterar missões':patch.exploration?'Antes de alterar a exploração':'Salvamento automático');
@@ -2176,7 +2199,7 @@
     if(!isMaster()&&!record.playersVisible)return `<section class="panel tactical-map-panel map-hidden-to-players"><div class="small-caps">Campo de aventura</div><h3>Mapa tático ainda não apresentado</h3><p class="panel-subtitle">O mestre está preparando o cenário. O mapa será exibido aqui quando a companhia for convidada a entrar no tabuleiro.</p><span class="tag gold">Aguardando apresentação do mestre</span></section>`;
     if(isMaster()&&!tokens.some(t=>t.id===state.selectedMapToken))state.selectedMapToken=tokens.find(t=>t.kind==='player')?.id||tokens[0]?.id||null;
     const selected=state.selectedMapToken||currentUserId(),markers=record.markers||[],cells=[];
-    const columnName=x=>String.fromCharCode(65+x),mapImageUrl=template.image?.src?(()=>{const url=new URL(template.image.src,document.baseURI);url.searchParams.set('v','4.2.0');return url.href})() : '',mapImageLayer=mapImageUrl?`<img class="map-board-background" src="${esc(mapImageUrl)}" alt="" aria-hidden="true" draggable="false" decoding="async" onload="this.parentElement.classList.add('map-image-ready')" onerror="this.hidden=true;this.parentElement.classList.add('map-image-missing')">`:'';
+    const columnName=x=>String.fromCharCode(65+x),mapImageUrl=template.image?.src?(()=>{const url=new URL(template.image.src,document.baseURI);url.searchParams.set('v','4.2.1');return url.href})() : '',mapImageLayer=mapImageUrl?`<img class="map-board-background" src="${esc(mapImageUrl)}" alt="" aria-hidden="true" draggable="false" decoding="async" onload="this.parentElement.classList.add('map-image-ready')" onerror="this.hidden=true;this.parentElement.classList.add('map-image-missing')">`:'';
     for(let y=0;y<MAP_HEIGHT;y++)for(let x=0;x<MAP_WIDTH;x++){
       const tile=mapTile(template.id,x,y),info=mapTileInfo(tile),visible=mapCellVisible(x,y,record,gs,tokens),cellTokens=tokens.filter(t=>t.position.x===x&&t.position.y===y&&!t.defeated);
       const footprintToken=tokens.find(t=>t.kind==='monster'&&(t.footprint?.w>1||t.footprint?.h>1)&&tokenOccupiesCell(t,x,y)&&!(t.position.x===x&&t.position.y===y));

@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.0.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 assert(app.includes("const shown=new Set(gs.worldExploration?.presentedPlaces||[]);return all.filter(p=>shown.has(p.id))"), 'players list only presented points of interest');
 assert(app.includes("if(!isMaster()&&!presented)throw new Error('Este local ainda não foi apresentado à companhia.')"), 'unpresented locations cannot be opened in normal player UI');
 assert(app.includes("data-action=\"toggle-world-object-visibility\""), 'GM can hide/show scene objects');
@@ -17,4 +17,4 @@ assert(sql.includes("coalesce(v_game_state #>> array['worldExploration','objectS
 assert(app.includes('world.masterDiscoveryNotes={...(world.masterDiscoveryNotes||{}),[placeId]:masterNote}'), 'GM clue is retained in private state');
 assert(app.includes('text:note,kind:\'discovery\'') && app.includes('A companhia descobriu o local:'), 'public discovery history does not include the clue text');
 assert(app.includes("visibility:'public',text:note,place_id:placeId"), 'new discovery event is explicitly public without the master clue');
-console.log('v4.2.0 scene exploration: presented locations, hidden objects, player requests and GM approval approved.');
+console.log('v4.2.1 scene exploration: presented locations, hidden objects, player requests and GM approval approved.');

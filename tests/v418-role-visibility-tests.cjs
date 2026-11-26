@@ -7,10 +7,10 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.2.0'), 'HTML version is v4.2.0');
-assert(html.includes('app.js?v=4.2.0') && html.includes('styles.css?v=4.2.0'), 'assets use v4.2.0 cache keys');
+assert(html.includes('v4.2.1'), 'HTML version is v4.2.1');
+assert(html.includes('app.js?v=4.2.1') && html.includes('styles.css?v=4.2.1'), 'assets use v4.2.1 cache keys');
 
-// v4.2.0 sends readiness using its own player event; old v4.1.8 envelopes remain readable.
+// v4.2.1 sends readiness using its own player event; old v4.1.8 envelopes remain readable.
 assert(app.includes("createEvent('v41_ready_request',{ready:next})"), 'readiness uses its dedicated RPC event type');
 assert(app.includes("ev.event_type==='v4_branch_choice_request'&&ev.payload?.request_type==='session_ready'"), 'legacy readiness events remain compatible');
 assert(app.includes("ev.payload?.request_type==='session_ready'&&isMasterController()"), 'master routes the readiness envelope to the readiness processor');
@@ -38,4 +38,4 @@ for (const cls of ['.map-visibility-control', '.map-hidden-to-players']) {
   assert(css.includes(cls), `${cls} styling exists`);
 }
 
-console.log('Reino de Aethra v4.2.0: prontidão por evento permitido, separação de missões, publicação do mapa e papéis da cena aprovados.');
+console.log('Reino de Aethra v4.2.1: prontidão por evento permitido, separação de missões, publicação do mapa e papéis da cena aprovados.');

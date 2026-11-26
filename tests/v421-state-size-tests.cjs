@@ -1,0 +1,17 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+assert(html.includes('v4.2.1') && html.includes('app.js?v=4.2.1') && html.includes('styles.css?v=4.2.1'));
+assert(sql.includes('v_max_state_bytes bigint := 8388608'));
+assert(sql.includes('v_state_bytes := octet_length(p_game_state::text)'));
+assert(sql.includes('limite atual: % bytes'));
+assert(app.includes('function compactCheckpointCopies(gameState)'));
+assert(app.includes('snapshots:[]'));
+assert(app.includes('undoHistory:[]'));
+assert(app.includes('const current=compactCheckpointCopies(state.campaign.game_state||defaultGameState())'));
+assert(app.includes('.slice(-3)'));
+console.log('v4.2.1 state size: 8 MiB guard, diagnostic size, compact non-recursive snapshots and active undo history checks passed.');

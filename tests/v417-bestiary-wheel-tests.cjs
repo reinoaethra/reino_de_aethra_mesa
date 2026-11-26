@@ -6,12 +6,12 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.2.0'), 'HTML identifica v4.2.0');
-assert(html.includes('app.js?v=4.2.0') && html.includes('styles.css?v=4.2.0'), 'HTML usa a nova chave de cache');
-assert(app.includes("url.searchParams.set('v','4.2.0')"), 'mapas usam cache atualizado');
-assert(app.includes("monsterMiniaturePath(id)+'?v=4.2.0'"), 'miniaturas usam cache atualizado');
-assert(app.includes('v417-bestiary-detail'), 'painel de detalhes recebe classe de rolagem v4.2.0');
-assert(app.includes('v417-bestiary-grid'), 'lista recebe classe de rolagem v4.2.0');
+assert(html.includes('v4.2.1'), 'HTML identifica v4.2.1');
+assert(html.includes('app.js?v=4.2.1') && html.includes('styles.css?v=4.2.1'), 'HTML usa a nova chave de cache');
+assert(app.includes("url.searchParams.set('v','4.2.1')"), 'mapas usam cache atualizado');
+assert(app.includes("monsterMiniaturePath(id)+'?v=4.2.1'"), 'miniaturas usam cache atualizado');
+assert(app.includes('v417-bestiary-detail'), 'painel de detalhes recebe classe de rolagem v4.2.1');
+assert(app.includes('v417-bestiary-grid'), 'lista recebe classe de rolagem v4.2.1');
 assert(/addEventListener\('wheel',[\s\S]*?\{capture:true,passive:false\}\)/.test(app), 'wheel listener é delegado em capture e não passivo');
 assert(app.includes("'.v417-bestiary-detail, .v417-bestiary-grid'"), 'wheel listener identifica os dois painéis internos');
 assert(app.includes('panel.scrollTop=Math.max(0,Math.min(maxScroll,panel.scrollTop+delta))'), 'wheel ajusta a posição do painel sob o cursor');
@@ -21,4 +21,4 @@ assert(/\.v417-bestiary-detail[\s\S]*?overflow-y:auto/.test(css), 'detalhes têm
 assert(/\.v417-bestiary-grid[\s\S]*?overflow-y:auto/.test(css), 'seleção mantém rolagem vertical interna');
 assert(css.includes('overscroll-behavior-y:contain'), 'rolagem interna não vaza para a página externa');
 assert(css.includes('-webkit-overflow-scrolling:touch'), 'rolagem por toque continua habilitada');
-console.log('Reino de Aethra v4.2.0: roda do mouse, touchpad, rolagem independente, touch e chaves de cache aprovados.');
+console.log('Reino de Aethra v4.2.1: roda do mouse, touchpad, rolagem independente, touch e chaves de cache aprovados.');
