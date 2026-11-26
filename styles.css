@@ -1628,3 +1628,24 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .map-hidden-to-players h3{margin:0}
 .map-hidden-to-players .panel-subtitle{max-width:620px;margin:0}
 @media(max-width:640px){.map-visibility-control{align-items:flex-start;flex-direction:column}.map-visibility-control .btn{width:100%}}
+
+/* v4.2.0 — música compartilhada */
+.campaign-music-panel{display:grid;gap:14px;margin:0 0 18px;background:linear-gradient(145deg,rgba(31,43,55,.96),rgba(14,22,32,.96));border-color:rgba(207,171,104,.28)}
+.campaign-music-panel h3{margin:4px 0 2px;color:#f1dfbb}
+.music-now-playing{display:flex;align-items:center;gap:13px;padding:13px;border:1px solid rgba(208,177,119,.18);border-radius:12px;background:rgba(0,0,0,.18)}
+.music-note-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:rgba(199,156,83,.14);color:#d8b36e;font-size:26px}
+.music-now-playing>div{display:grid;gap:3px;min-width:0}.music-now-playing small{font-size:9px;letter-spacing:.12em;color:#aeb8c6}.music-now-playing strong{font-family:Cinzel,serif;color:#f4dfb5;font-size:14px}.music-now-playing span:not(.music-note-icon){font-size:10px;color:#98a7b7}
+.music-master-controls,.player-music-controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.music-volume-control{display:flex;align-items:center;gap:9px;min-width:160px;flex:1;font-size:10px;color:#c5d0dd}
+.music-volume-control input{width:100%;accent-color:#d4ad69;cursor:pointer}
+.music-add-controls{display:flex;gap:8px;flex-wrap:wrap}
+.music-playlist{display:grid;gap:8px}.music-track-row{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid rgba(196,177,139,.12);border-radius:9px;background:rgba(0,0,0,.14)}.music-track-row.active{border-color:rgba(214,175,104,.6);background:rgba(185,139,67,.12)}
+.music-track-select{flex:1;display:grid;grid-template-columns:28px minmax(0,1fr);gap:0 7px;text-align:left;border:0;background:transparent;color:inherit;cursor:pointer}.music-track-select>span{grid-row:span 2;align-self:center;color:#d3ad6d;font-family:Cinzel,serif}.music-track-select strong{font-size:11px;color:#e9d9bb}.music-track-select small{font-size:9px;color:#8f9eae}.music-track-remove{flex:0 0 30px;color:#d5a6a0}.music-footnote{margin:0;font-size:9px;line-height:1.5;color:#8d9bad}.player-music-panel{grid-template-columns:minmax(0,1fr);margin-bottom:16px}.player-music-controls{padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.16)}.player-music-controls .music-volume-control{min-width:130px}
+.world-pending-requests{margin-top:12px;padding:12px;border:1px solid rgba(208,171,102,.25);border-radius:11px;background:rgba(0,0,0,.16)}.world-pending-requests>.small-caps{margin-bottom:7px;color:#d8b979}
+@media(max-width:620px){.music-master-controls>*{flex:1 1 auto}.music-volume-control{flex:1 1 100%}.player-music-controls{align-items:stretch}.player-music-controls .music-volume-control{flex:1 1 100%}}
+
+/* v4.2.0 — controle de apresentação individual dos objetos da Cena Interativa. */
+.world-object-row{display:flex;align-items:stretch;gap:7px;min-width:0}
+.world-object-row>.world-object{flex:1 1 auto;min-width:0}
+.world-object-visibility{flex:0 0 76px;border:1px solid rgba(208,174,111,.22);border-radius:9px;background:rgba(0,0,0,.16);color:#cbb58f;font-size:9px;font-weight:700;cursor:pointer;padding:6px}
+.world-object-visibility:hover{border-color:rgba(208,174,111,.58);background:rgba(208,174,111,.08)}

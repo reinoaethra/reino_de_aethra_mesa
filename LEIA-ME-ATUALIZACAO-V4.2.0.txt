@@ -1,0 +1,25 @@
+REINO DE AETHRA v4.2.0 — LEIA ANTES DE INSTALAR
+
+1. Faça backup do repositório e exporte as campanhas importantes.
+2. Faça backup do banco Supabase.
+3. Abra supabase-migration-v4.2.0.sql no Supabase SQL Editor e execute o conteúdo completo.
+4. Só depois substitua index.html, app.js e styles.css na raiz do repositório.
+5. Preserve config.js e toda a pasta assets/.
+6. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+A migração cria campaign_master_private_state e o bucket aethra-campaign-audio. Não execute novamente o schema completo v3.0.3 nem a migration v4.1.9: a migration v4.2.0 já contém as atualizações necessárias.
+
+NOVO: estado privado do mestre com projeção pública para jogadores; preparação livre de miniaturas no Mapa Tático; música compartilhada com playlist, upload e volume individual; objetos e Pontos de Interesse da Cena Interativa com apresentação controlada.
+
+A reprodução de música exige que cada navegador clique uma vez em “Ativar música neste dispositivo”. Arquivos enviados são armazenados em bucket público para reprodução; qualquer pessoa com o URL pode ouvir.
+
+Limite: conteúdo estático incorporado em JS/assets públicos continua inspecionável. A migração protege o estado dinâmico e as notas privadas armazenadas no estado.
+
+Leia GUIA-DE-ATUALIZACAO-V4.2.0.md e CHECKLIST-PUBLICACAO-V4.2.0.md antes de publicar.
+
+
+CORREÇÃO DA MIGRATION SQL
+Este pacote contém a edição corrigida de supabase-migration-v4.2.0.sql.
+Use este arquivo no lugar da primeira cópia da migration v4.2.0. A função de filtragem
+JSONB foi reescrita para remover chaves com jsonb_each, tratando estados legados com
+segurança. O pacote de arquivos do site não muda nesta correção.
