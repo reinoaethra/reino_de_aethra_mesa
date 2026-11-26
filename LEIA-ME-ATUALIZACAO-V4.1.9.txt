@@ -1,0 +1,14 @@
+REINO DE AETHRA v4.1.9
+
+ANTES DE PUBLICAR:
+1. Faça backup do repositório e das campanhas.
+2. Execute supabase-migration-v4.1.9.sql no SQL Editor do Supabase.
+3. Substitua index.html, app.js e styles.css.
+4. Preserve config.js e toda a pasta assets/.
+5. Publique no GitHub Pages e atualize o navegador com Ctrl+F5.
+
+IMPORTANTE: a migration substitui somente public.submit_campaign_event. Não execute novamente o supabase-schema.sql completo.
+
+O pacote contém um teste SQL de regressão e guias. A migration corrige prontidão, votos narrativos e solicitações de marcação de mapa, preservando as restrições dos eventos exclusivos do mestre.
+
+Limite de privacidade: o esquema atual permite que membros leiam todo o JSONB game_state da campanha. Ocultar itens na interface não os torna tecnicamente secretos.

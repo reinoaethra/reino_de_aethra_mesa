@@ -6,11 +6,11 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.1.8'), 'HTML identifica v4.1.8');
-assert(html.includes('app.js?v=4.1.8') && html.includes('styles.css?v=4.1.8'), 'arquivos usam chave de cache v4.1.8');
-assert(app.includes("url.searchParams.set('v','4.1.8')"), 'mapas usam nova chave de cache');
-assert(app.includes("monsterMiniaturePath(id)+'?v=4.1.8'"), 'miniaturas usam nova chave de cache');
-assert(app.includes('v416-bestiary-grid'), 'grade do bestiário recebe classe v4.1.8');
+assert(html.includes('v4.1.9'), 'HTML identifica v4.1.9');
+assert(html.includes('app.js?v=4.1.9') && html.includes('styles.css?v=4.1.9'), 'arquivos usam chave de cache v4.1.9');
+assert(app.includes("url.searchParams.set('v','4.1.9')"), 'mapas usam nova chave de cache');
+assert(app.includes("monsterMiniaturePath(id)+'?v=4.1.9'"), 'miniaturas usam nova chave de cache');
+assert(app.includes('v416-bestiary-grid'), 'grade do bestiário recebe classe v4.1.9');
 assert(/\.v416-bestiary-grid\s*\{[^}]*row-gap:24px/s.test(css), 'espaçamento vertical ampliado no desktop');
 assert(/\.v416-bestiary-grid\s*\{[^}]*column-gap:20px/s.test(css), 'espaçamento horizontal ampliado no desktop');
 assert(/@media\(max-width:980px\)\s*\{[^}]*\.v416-bestiary-grid\s*\{[^}]*row-gap:21px/s.test(css), 'espaçamento adaptável em telas intermediárias');
@@ -21,4 +21,4 @@ assert(app.includes('mapMonsterMiniature({templateId:m.id'), 'cartões continuam
 assert(app.includes('mapMonsterMiniature({templateId:selected.id'), 'ficha continua usando a miniatura selecionada');
 assert(app.includes('v414-bestiary-detail'), 'ficha mantém painel independente');
 assert(!/v=4\.1\.[0-5]/.test(html + app), 'chaves de cache anteriores foram removidas do HTML e JavaScript');
-console.log('Reino de Aethra v4.1.8: espaçamento vertical/horizontal, miniaturas, ficha e responsividade aprovados.');
+console.log('Reino de Aethra v4.1.9: espaçamento vertical/horizontal, miniaturas, ficha e responsividade aprovados.');

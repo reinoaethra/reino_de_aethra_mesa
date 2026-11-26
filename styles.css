@@ -1619,7 +1619,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
   .v417-bestiary-grid{min-height:0}
 }
 
-/* v4.1.8 — apresentação do mapa por escolha do mestre e aviso para jogadores */
+/* v4.1.9 — apresentação do mapa por escolha do mestre e aviso para jogadores */
 .map-visibility-control{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 14px;padding:12px 14px;border:1px solid rgba(198,154,82,.28);border-radius:12px;background:linear-gradient(135deg,rgba(198,154,82,.09),rgba(17,27,41,.55))}
 .map-visibility-control>div{display:flex;flex-direction:column;gap:4px;min-width:0}
 .map-visibility-control strong{font-size:12px;color:var(--text,#e8eaf0)}
