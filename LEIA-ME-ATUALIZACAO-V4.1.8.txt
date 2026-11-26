@@ -1,0 +1,14 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.1.8
+
+1. Faça backup.
+2. Extraia o ZIP na raiz do repositório GitHub Pages.
+3. Substitua index.html, app.js e styles.css.
+4. Preserve config.js e todas as pastas assets/.
+5. Não execute SQL para esta atualização.
+6. Publique e atualize o navegador com Ctrl + F5.
+
+A v4.1.8 corrige a solicitação de prontidão reutilizando o evento de voto narrativo permitido no fluxo atual, oculta missões não apresentadas da visão do jogador e adiciona o controle de apresentar/ocultar o Mapa Tático por mapa.
+
+ATENÇÃO: teste a confirmação de prontidão no Supabase publicado. A atualização não inclui substituição da função submit_campaign_event. Se o ambiente personalizado também bloquear v4_branch_choice_request para jogadores, será necessário inspecionar a definição SQL real antes de alterá-la.
+
+O controle de visibilidade do mapa é de exibição na interface, não de sigilo técnico do game_state compartilhado.
