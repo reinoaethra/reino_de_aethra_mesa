@@ -6,9 +6,9 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const fn = fs.readFileSync(path.join(root, 'supabase/functions/delete-account/index.ts'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.5.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'tests', 'fixtures', 'supabase-migration-v4.2.5.sql'), 'utf8');
 
-assert.match(html, /v4\.2\.8/);
+assert.match(html, /v4\.2\.9/);
 assert.match(app, /account-delete-open/);
 assert.match(app, /account-delete-form/);
 assert.match(app, /form\.id==='account-delete-form'[\s\S]{0,500}deletePermanentAccount\(email,password,confirmation\)/, 'account deletion form now invokes the verified server operation');

@@ -7,8 +7,8 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.2.8'), 'HTML version is v4.2.1');
-assert(html.includes('app.js?v=4.2.8') && html.includes('styles.css?v=4.2.8'), 'assets use v4.2.1 cache keys');
+assert(html.includes('v4.2.9'), 'HTML version is v4.2.1');
+assert(html.includes('app.js?v=4.2.9') && html.includes('styles.css?v=4.2.9'), 'assets use v4.2.1 cache keys');
 
 // v4.2.1 sends readiness using its own player event; old v4.1.8 envelopes remain readable.
 assert(app.includes("createEvent('v41_ready_request',{ready:next})"), 'readiness uses its dedicated RPC event type');

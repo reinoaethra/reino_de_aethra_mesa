@@ -4,7 +4,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'tests', 'fixtures', 'supabase-migration-v4.2.1.sql'), 'utf8');
 for (const action of ['music-toggle','music-prev','music-next','music-pick','music-upload','music-add-link','music-remove','music-unlock','music-mute']) assert(app.includes(`data-action=\"${action}\"`) || app.includes(`action==='${action}'`), `${action} control is wired`);
 assert(app.includes('data-music-global-volume'), 'master global volume exists');
 assert(app.includes('data-music-local-volume'), 'player local volume exists');

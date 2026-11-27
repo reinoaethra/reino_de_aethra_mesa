@@ -4,7 +4,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-assert(html.includes('v4.2.8'), 'release HTML is v4.2.1');
+assert(html.includes('v4.2.9'), 'release HTML is v4.2.1');
 assert(app.includes("data-tool=\"setup-move\">Preparar posições · livre"), 'GM free placement tool is visible');
 const start = app.indexOf('async function moveMapToken(');
 const end = app.indexOf('\n  async function', start + 10);

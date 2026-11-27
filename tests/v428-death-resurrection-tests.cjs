@@ -27,4 +27,4 @@ assert.match(sql, /Ritual de Ressurreição/);
 assert.match(app, /O Clérigo precisa estar consciente para realizar o Ritual de Ressurreição/);
 assert.match(app, /O Ritual foi recusado: o Clérigo precisa estar consciente para conduzi-lo/);
 assert.match(sql, /O Clérigo precisa estar consciente para conduzir o Ritual de Ressurreição/);
-console.log('v4.2.8 death, death saves, Cleric resurrection/healing, master override: passed');
+console.log('v4.2.9 death, death saves, Cleric resurrection/healing, master override: passed');

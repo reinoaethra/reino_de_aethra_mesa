@@ -32,4 +32,4 @@ assert.match(app, /legacySpentSkillPoints/);
 assert.match(app, /effect==='heal'[\s\S]{0,500}applyPlayerHealingToState/);
 assert.match(app, /Círculo Restaurador/);
 assert.match(app, /Aprimorar/);
-console.log('v4.2.8 eight class skill trees: 5 skills each, 3 ranks, unlock levels and migration: passed');
+console.log('v4.2.9 eight class skill trees: 5 skills each, 3 ranks, unlock levels and migration: passed');

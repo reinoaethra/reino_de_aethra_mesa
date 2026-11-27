@@ -3,7 +3,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'preview-dados-3d.html'),'utf8');
-assert(html.includes("import('./assets/js/aethra-dice-3d.js?v=4.2.7')"),'preview page imports the same 3D engine');
+assert(html.includes("import('./assets/js/aethra-dice-3d.js?v=4.2.9')"),'preview page imports the same 3D engine');
 for(const d of [4,6,8,10,12,20])assert(html.includes(`value="${d}"`),`preview offers D${d}`);
 assert(html.includes('crypto.getRandomValues'),'preview uses browser secure randomness');
 assert(html.includes('sem publicação')&&html.includes('não são publicados'),'preview rolls are not campaign events');

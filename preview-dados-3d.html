@@ -71,7 +71,7 @@
       const overlay=document.createElement('div');overlay.className='dice-overlay v426-dice-overlay';document.body.append(overlay);
       const resultHtml=`<div class="v426-universal-final"><span>${html(formula)}</span><strong>${total}</strong><small>${rolls.join(' + ')}${sign} = ${total}</small></div><small>Demonstração local · sem publicação</small>`;
       try{
-        const module=await import('./assets/js/aethra-dice-3d.js?v=4.2.7');
+        const module=await import('./assets/js/aethra-dice-3d.js?v=4.2.9');
         await module.play(overlay,{kicker:`PRÉ-VISUALIZAÇÃO · ${html(formula)}`,title:html(reason),dice:rolls.map(value=>({sides,value})),seed:seedValue,accessibleResult:`${formula}: ${rolls.join(' + ')}${sign} = ${total}`,resultHtml});
         status.textContent=`Demonstração concluída: ${formula} = ${total}. Feche o palco para lançar novamente.`;
         const closeButton=overlay.querySelector('.v426-dice-continue');

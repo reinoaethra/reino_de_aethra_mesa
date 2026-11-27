@@ -5,10 +5,10 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'tests', 'fixtures', 'supabase-migration-v4.2.1.sql'), 'utf8');
 
-assert(html.includes('v4.2.8'), 'HTML identifies the v4.2.7 release');
-assert(html.includes('styles.css?v=4.2.8') && html.includes('app.js?v=4.2.8'), 'site assets use the v4.2.7 cache key');
+assert(html.includes('v4.2.9'), 'HTML identifies the v4.2.7 release');
+assert(html.includes('styles.css?v=4.2.9') && html.includes('app.js?v=4.2.9'), 'site assets use the v4.2.7 cache key');
 assert(app.includes("const V423_DICE_SIDES=[4,6,8,10,12,20]"), 'supported dice include D4, D6, D8, D10, D12 and D20');
 assert(app.includes('Math.max(1,Math.min(20,Math.floor(Number(count)||1)))'), 'number of dice is bounded from 1 to 20');
 assert(app.includes('secureDie(sides)'), 'each die is generated using the cryptographic random dice helper');

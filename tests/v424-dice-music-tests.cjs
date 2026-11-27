@@ -5,11 +5,11 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
-const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'tests', 'fixtures', 'supabase-migration-v4.2.1.sql'), 'utf8');
 
 // Release and cache version.
-assert(html.includes('v4.2.8'), 'HTML identifies v4.2.7');
-assert(html.includes('styles.css?v=4.2.8') && html.includes('app.js?v=4.2.8'), 'site assets use v4.2.7 cache keys');
+assert(html.includes('v4.2.9'), 'HTML identifies v4.2.7');
+assert(html.includes('styles.css?v=4.2.9') && html.includes('app.js?v=4.2.9'), 'site assets use v4.2.7 cache keys');
 
 // 3D dice experience (detailed checks live in v426-3d-dice-tests.cjs).
 assert(app.includes('function showDice(result,player,eventId)'), 'D20 uses the 3D animation entry point');
