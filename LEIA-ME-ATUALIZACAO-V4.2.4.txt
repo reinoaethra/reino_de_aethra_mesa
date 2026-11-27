@@ -1,0 +1,16 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.2.4
+
+1. Faça backup do site atual.
+2. Substitua index.html, app.js e styles.css.
+3. Preserve config.js, a pasta assets/ e os demais dados já existentes.
+4. Publique normalmente e atualize o navegador com Ctrl + F5.
+5. Consulte GUIA-DE-ATUALIZACAO-V4.2.4.md e CHECKLIST-PUBLICACAO-V4.2.4.md.
+
+Esta atualização não requer SQL.
+
+Novidades: dados facetados animados no D20 e no Rolador Universal; animações mais leves;
+playlist com rolagem interna; controles de adicionar arquivo, link de áudio e YouTube junto
+ao volume; suporte a vídeo do YouTube por player incorporado oficial.
+
+Aviso YouTube: vídeos precisam permitir incorporação. Cada dispositivo pode exigir ativação
+de áudio devido às regras de reprodução automática do navegador.
