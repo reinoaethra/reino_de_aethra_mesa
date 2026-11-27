@@ -6,8 +6,8 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.2.6'), 'HTML identifica v4.2.1');
-assert(html.includes('app.js?v=4.2.6') && html.includes('styles.css?v=4.2.6'), 'HTML usa a nova chave de cache');
+assert(html.includes('v4.2.7'), 'HTML identifica v4.2.1');
+assert(html.includes('app.js?v=4.2.7') && html.includes('styles.css?v=4.2.7'), 'HTML usa a nova chave de cache');
 assert(app.includes("url.searchParams.set('v','4.2.2')"), 'mapas usam cache atualizado');
 assert(app.includes("monsterMiniaturePath(id)+'?v=4.2.1'"), 'miniaturas usam cache atualizado');
 assert(app.includes('v417-bestiary-detail'), 'painel de detalhes recebe classe de rolagem v4.2.1');

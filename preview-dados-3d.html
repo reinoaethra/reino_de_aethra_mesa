@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4.2.6">
+  <link rel="stylesheet" href="styles.css?v=4.2.7">
   <style>
     body{min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1a2638,#080c13 62%);color:#e8dfcc}
     .preview-shell{width:min(94vw,760px);margin:7vh auto 30px;padding:clamp(18px,4vw,34px);border:1px solid rgba(216,179,110,.32);border-radius:18px;background:linear-gradient(145deg,rgba(26,37,52,.95),rgba(10,15,23,.96));box-shadow:0 24px 80px rgba(0,0,0,.55)}
@@ -71,7 +71,7 @@
       const overlay=document.createElement('div');overlay.className='dice-overlay v426-dice-overlay';document.body.append(overlay);
       const resultHtml=`<div class="v426-universal-final"><span>${html(formula)}</span><strong>${total}</strong><small>${rolls.join(' + ')}${sign} = ${total}</small></div><small>Demonstração local · sem publicação</small>`;
       try{
-        const module=await import('./assets/js/aethra-dice-3d.js?v=4.2.6');
+        const module=await import('./assets/js/aethra-dice-3d.js?v=4.2.7');
         await module.play(overlay,{kicker:`PRÉ-VISUALIZAÇÃO · ${html(formula)}`,title:html(reason),dice:rolls.map(value=>({sides,value})),seed:seedValue,accessibleResult:`${formula}: ${rolls.join(' + ')}${sign} = ${total}`,resultHtml});
         status.textContent=`Demonstração concluída: ${formula} = ${total}. Feche o palco para lançar novamente.`;
         const closeButton=overlay.querySelector('.v426-dice-continue');

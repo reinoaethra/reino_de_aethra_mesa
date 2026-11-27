@@ -27,6 +27,8 @@ const SIDE_GEOMETRIES = {
 
 const GOLD = 0xd8b36e;
 const UP = new THREE.Vector3(0, 1, 0);
+const TABLE_TOP = -0.15;
+const TABLE_CLEARANCE = 0.055;
 
 function seededRandom(seed) {
   let value = (Number(seed) >>> 0) || 0xA37A42;
@@ -190,6 +192,7 @@ function buildDieMesh(sides, seed) {
     const ref = Math.abs(normal.y) > .92 ? new THREE.Vector3(1,0,0) : UP;
     const axisX = new THREE.Vector3().crossVectors(ref,normal).normalize();
     const axisY = new THREE.Vector3().crossVectors(normal,axisX).normalize();
+    face.labelAxisY = axisY.clone();
     let inRadius = Infinity;
     for (let i=0;i<points.length;i++) {
       const a=points[i], b=points[(i+1)%points.length], edge=b.clone().sub(a);
@@ -237,31 +240,54 @@ function buildDieMesh(sides, seed) {
   return {group:dieGroup,faces,vertices,startQuaternion,dispose(){bodyGeometry.dispose();bodyMaterial.dispose();edgesGeometry.dispose();edgeMesh.material.dispose();labelGeometry.dispose();labelMaterial.dispose();}};
 }
 
+function configureTopDownCamera(camera,width,height) {
+  const aspect=Math.max(.45,width/Math.max(1,height));
+  const viewHeight=aspect<1.05?18.5:13.1;
+  const viewWidth=viewHeight*aspect;
+  camera.left=-viewWidth/2;camera.right=viewWidth/2;
+  camera.top=viewHeight/2;camera.bottom=-viewHeight/2;
+  camera.near=.1;camera.far=55;
+  camera.position.set(0,24,0);
+  camera.up.set(0,0,-1);
+  camera.lookAt(0,0,0);
+  camera.updateProjectionMatrix();
+}
+
 function createScene(renderer, width, height) {
   const scene=new THREE.Scene();
-  scene.fog=new THREE.Fog(0x070b12,14,31);
-  const camera=new THREE.PerspectiveCamera(36,width/height,.1,60);
-  camera.position.set(0,8.4,15.8); camera.lookAt(0,.45,0);
-  scene.add(new THREE.HemisphereLight(0xc2d1e7,0x241a12,1.75));
-  const key=new THREE.DirectionalLight(0xffe6b5,3.1); key.position.set(-5,10,7); scene.add(key);
-  const rim=new THREE.DirectionalLight(0x8b9fc6,2.0); rim.position.set(6,5,-7); scene.add(rim);
-  const goldLight=new THREE.PointLight(0xd7a653,38,18,2); goldLight.position.set(-1,4,2); scene.add(goldLight);
-  const fill=new THREE.PointLight(0x7690b7,18,16,2); fill.position.set(4,2,7); scene.add(fill);
+  scene.fog=new THREE.Fog(0x070b12,24,48);
+  const camera=new THREE.OrthographicCamera(-10,10,6,-6,.1,55);
+  configureTopDownCamera(camera,width,height);
+  scene.add(new THREE.HemisphereLight(0xc2d1e7,0x241a12,1.85));
+  const key=new THREE.DirectionalLight(0xffe6b5,3.25); key.position.set(-4,12,5); scene.add(key);
+  const rim=new THREE.DirectionalLight(0x8b9fc6,1.9); rim.position.set(6,8,-7); scene.add(rim);
+  const goldLight=new THREE.PointLight(0xd7a653,32,22,2); goldLight.position.set(-1,7,2); scene.add(goldLight);
+  const fill=new THREE.PointLight(0x7690b7,14,20,2); fill.position.set(4,5,7); scene.add(fill);
 
-  const floor=new THREE.Mesh(new THREE.BoxGeometry(20,.3,12),new THREE.MeshStandardMaterial({color:0x101720,metalness:.58,roughness:.4}));
-  floor.position.y=-.3; floor.receiveShadow=true; scene.add(floor);
-  const floorEdges=new THREE.LineSegments(new THREE.EdgesGeometry(floor.geometry),new THREE.LineBasicMaterial({color:0x80623b,transparent:true,opacity:.48}));
-  floorEdges.position.copy(floor.position); scene.add(floorEdges);
-  const runeRing=new THREE.Mesh(new THREE.TorusGeometry(4.3,.012,5,100),new THREE.MeshBasicMaterial({color:0xb68b4c,transparent:true,opacity:.22}));
-  runeRing.rotation.x=Math.PI/2; runeRing.position.y=-.13; scene.add(runeRing);
-
+  const floor=new THREE.Mesh(new THREE.BoxGeometry(20,.30,12),new THREE.MeshStandardMaterial({color:0x101720,metalness:.58,roughness:.4}));
+  floor.position.y=-.30;floor.receiveShadow=true;scene.add(floor);
+  const floorEdges=new THREE.LineSegments(new THREE.EdgesGeometry(floor.geometry),new THREE.LineBasicMaterial({color:0x80623b,transparent:true,opacity:.55}));
+  floorEdges.position.copy(floor.position);scene.add(floorEdges);
+  const runeRing=new THREE.Mesh(new THREE.TorusGeometry(4.3,.012,5,100),new THREE.MeshBasicMaterial({color:0xb68b4c,transparent:true,opacity:.20}));
+  runeRing.rotation.x=Math.PI/2;runeRing.position.y=TABLE_TOP+.012;scene.add(runeRing);
+  const marks=new THREE.Group();
+  const markMaterial=new THREE.LineBasicMaterial({color:0x987343,transparent:true,opacity:.18});
+  for(let x=-8;x<=8;x+=2){
+    const geometry=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,TABLE_TOP+.008,-5.4),new THREE.Vector3(x,TABLE_TOP+.008,5.4)]);
+    marks.add(new THREE.Line(geometry,markMaterial));
+  }
+  for(let z=-4;z<=4;z+=2){
+    const geometry=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-9.4,TABLE_TOP+.009,z),new THREE.Vector3(9.4,TABLE_TOP+.009,z)]);
+    marks.add(new THREE.Line(geometry,markMaterial));
+  }
+  scene.add(marks);
   renderer.setClearColor(0x05080d,0);
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.22;
   renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.25));
   renderer.setSize(width,height,false);
-  return {scene,camera,floor,floorEdges,runeRing};
+  return {scene,camera,floor,floorEdges,runeRing,marks};
 }
 
 function createRapierWorld(RAPIER) {
@@ -269,61 +295,81 @@ function createRapierWorld(RAPIER) {
   world.timestep=1/60;
   const addFixed=(x,y,z,hx,hy,hz)=>{
     const body=world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(x,y,z));
-    world.createCollider(RAPIER.ColliderDesc.cuboid(hx,hy,hz).setFriction(.86).setRestitution(.32),body);
+    world.createCollider(RAPIER.ColliderDesc.cuboid(hx,hy,hz).setFriction(.48).setRestitution(.38),body);
   };
-  addFixed(0,-.49,0,9.8,.16,5.8);
-  addFixed(-9.8,1.4,0,.16,1.9,5.8);
-  addFixed(9.8,1.4,0,.16,1.9,5.8);
-  addFixed(0,1.4,-5.8,9.8,1.9,.16);
-  addFixed(0,1.4,5.8,9.8,1.9,.16);
+  // Piso visual: centro -0,30 e espessura 0,30. O colisor termina no mesmo topo y=-0,15.
+  addFixed(0,-.30,0,10,.15,6);
+  // Paredes contínuas desde a superfície do tampo.
+  addFixed(-9.84,1.45,0,.16,1.60,6);
+  addFixed(9.84,1.45,0,.16,1.60,6);
+  addFixed(0,1.45,-5.84,10,1.60,.16);
+  addFixed(0,1.45,5.84,10,1.60,.16);
   return world;
 }
 
 function createPhysicsDice(RAPIER, world, die, index, count, random, layout={}) {
   const columns=Math.min(layout.columns||5,Math.ceil(Math.sqrt(count)));
   const rows=Math.ceil(count/columns);
-  const col=index%columns, row=Math.floor(index/columns);
-  const gap=layout.gap||(columns>=5?2.85:3.15);
-  let x=(col-(Math.min(count,columns)-1)/2)*gap;
-  if (count===1) x=-5.8;
-  const z=(row-(rows-1)/2)*(layout.rowGap||2.05);
-  const y=3.5+random()*1.6;
+  const col=index%columns,row=Math.floor(index/columns);
+  const gap=layout.gap||3.0,rowGap=layout.rowGap||2.35;
+  const targetX=(col-(Math.min(count,columns)-1)/2)*gap;
+  const targetZ=(row-(rows-1)/2)*rowGap;
+  const x=targetX+(random()-.5)*1.15;
+  const z=count===1?4.65:targetZ+(random()-.5)*1.25;
+  const y=3.2+random()*1.25;
   const q=die.startQuaternion;
+  const vx=count===1?6.5+random()*2.1:(-targetX*.12+(random()-.5)*4.8);
+  const vz=count===1?-6.0-random()*1.5:(random()-.5)*5.2-(targetZ*.08);
   const bodyDesc=RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(x,y,z)
     .setRotation({x:q.x,y:q.y,z:q.z,w:q.w})
-    .setLinvel({x:count===1?7+random()*1.3:(-x*.28+(random()-.5)*3.4),y:-.2-random()*1.1,z:(random()-.5)*3.2})
-    .setAngvel({x:(random()-.5)*18,y:(random()-.5)*20,z:(random()-.5)*18})
-    .setLinearDamping(.22).setAngularDamping(.2).setCanSleep(true);
+    .setLinvel({x:vx,y:-.8-random()*1.3,z:vz})
+    .setAngvel({x:(random()-.5)*17,y:(random()-.5)*19,z:(random()-.5)*17})
+    .setLinearDamping(.12).setAngularDamping(.16).setCanSleep(true).setCcdEnabled(true);
   const body=world.createRigidBody(bodyDesc);
   const raw=new Float32Array(die.vertices.flatMap(v=>[v.x,v.y,v.z]));
   let collider=RAPIER.ColliderDesc.convexHull(raw);
   if (!collider) collider=RAPIER.ColliderDesc.ball(.94);
-  world.createCollider(collider.setDensity(1.15).setFriction(.72).setRestitution(.36),body);
-  return {body,die,startX:x,startZ:z,index};
+  world.createCollider(collider.setDensity(1.0).setFriction(.48).setRestitution(.40),body);
+  return {body,die,startX:x,startZ:z,index,targetX,targetZ};
 }
 
-function alignQuaternion(face, random) {
+function alignQuaternion(face) {
   const normal=face.normal.clone().normalize();
   const align=new THREE.Quaternion().setFromUnitVectors(normal,UP);
-  const yaw=new THREE.Quaternion().setFromAxisAngle(UP,random()*Math.PI*2);
+  // Alinha o eixo vertical do algarismo à parte superior da tela na câmera superior.
+  const faceUp=(face.labelAxisY||new THREE.Vector3(0,1,0)).clone().applyQuaternion(align).normalize();
+  const screenUp=new THREE.Vector3(0,0,-1);
+  const signedAngle=Math.atan2(UP.dot(new THREE.Vector3().crossVectors(faceUp,screenUp)),faceUp.dot(screenUp));
+  const yaw=new THREE.Quaternion().setFromAxisAngle(UP,signedAngle);
   return yaw.multiply(align);
 }
 
+function supportHeightForRotation(die, quaternion, clearance=TABLE_CLEARANCE) {
+  let lowest=Infinity;
+  for (const vertex of die.vertices) {
+    const rotatedY=vertex.clone().applyQuaternion(quaternion).y;
+    if (rotatedY<lowest) lowest=rotatedY;
+  }
+  return TABLE_TOP-lowest+clearance;
+}
+
 function runKinematicFallback(dice, options, scene) {
-  const duration=options.duration||2500;
-  const layout=options.layout||{columns:5,gap:2.9,rowGap:1.85,finalGap:2.55,finalRowGap:1.8};
+  const duration=options.duration||3000;
+  const layout=options.layout||{columns:5,gap:3,rowGap:2.35,finalGap:3,finalRowGap:2.45};
   const random=seededRandom(options.seed);
   const starts=dice.map((entry,index)=>{
     const columns=Math.min(layout.columns||5,Math.ceil(Math.sqrt(dice.length)));
-    const rows=Math.ceil(dice.length/columns);
-    const x=dice.length===1?-7:(index%columns-(columns-1)/2)*(layout.gap||2.9);
-    const z=(Math.floor(index/columns)-(rows-1)/2)*(layout.rowGap||1.85);
+    const rows=Math.ceil(dice.length/columns),col=index%columns,row=Math.floor(index/columns);
+    const x=dice.length===1?-6:(col-(columns-1)/2)*(layout.gap||3);
+    const z=dice.length===1?4.7:(row-(rows-1)/2)*(layout.rowGap||2.35);
     const group=entry.die.group;
-    group.position.set(x,3.4+random()*1.2,z);
+    group.position.set(x+(random()-.5),3.5+random(),z+(random()-.5));
     group.quaternion.copy(entry.die.startQuaternion);
     const face=entry.die.faces.find(f=>f.value===entry.value)||entry.die.faces[0];
-    return {entry,group,start:group.position.clone(),rotation:group.quaternion.clone(),target:alignQuaternion(face,random),face};
+    const target=alignQuaternion(face),startQ=group.quaternion.clone();
+    group.position.y=Math.max(group.position.y,supportHeightForRotation(entry.die,startQ)+1.3);
+    return {entry,group,start:group.position.clone(),rotation:startQ,target,face};
   });
   return new Promise(resolve=>{
     const start=performance.now();
@@ -331,77 +377,72 @@ function runKinematicFallback(dice, options, scene) {
       if(!options.overlay.isConnected){resolve();return;}
       const t=Math.min(1,(now-start)/duration);
       starts.forEach((item,index)=>{
-        const move=Math.min(1,t/.78),ease=move*move*(3-2*move);
+        const roll=Math.min(1,t/.80),ease=roll*roll*(3-2*roll);
         const columns=Math.min(layout.columns||5,Math.ceil(Math.sqrt(starts.length)));
-        const x=(index%columns-(columns-1)/2)*(layout.finalGap||2.55);
-        const z=(Math.floor(index/columns)-(Math.ceil(starts.length/columns)-1)/2)*(layout.finalRowGap||1.8);
+        const rows=Math.ceil(starts.length/columns),col=index%columns,row=Math.floor(index/columns);
+        const x=(col-(columns-1)/2)*(layout.finalGap||3),z=(row-(rows-1)/2)*(layout.finalRowGap||2.45);
         item.group.position.x=THREE.MathUtils.lerp(item.start.x,x,ease);
         item.group.position.z=THREE.MathUtils.lerp(item.start.z,z,ease);
-        item.group.position.y=.9+Math.abs(Math.sin(t*Math.PI*5+index*.45))*1.15*Math.pow(1-t,1.25);
-        if(t<.78){
-          const spin=new THREE.Quaternion().setFromEuler(new THREE.Euler(t*12+index,t*15+index*.7,t*17+index*.4));
+        if(t<.80){
+          const spin=new THREE.Quaternion().setFromEuler(new THREE.Euler(t*15+index*.7,t*18+index*.4,t*19+index*.6));
           item.group.quaternion.copy(item.rotation).multiply(spin);
-        } else {
-          const settle=(t-.78)/.22; item.group.quaternion.slerpQuaternions(item.rotation,item.target,settle*settle*(3-2*settle));
+          item.group.position.y=supportHeightForRotation(item.entry.die,item.group.quaternion)+Math.abs(Math.sin(t*Math.PI*6+index*.45))*1.15*Math.pow(1-t,1.2);
+        }else{
+          const settle=(t-.80)/.20,e=settle*settle*(3-2*settle);
+          item.group.quaternion.slerpQuaternions(item.rotation,item.target,e);
+          const support=supportHeightForRotation(item.entry.die,item.group.quaternion);
+          item.group.position.y=Math.max(support,THREE.MathUtils.lerp(item.group.position.y,support,.4+e*.6));
         }
       });
       options.render();
-      if(t<1) requestAnimationFrame(frame); else resolve();
+      if(t<1)requestAnimationFrame(frame);else resolve();
     };
     requestAnimationFrame(frame);
   });
 }
 
 async function runPhysicsRoll(RAPIER,dice,options,scene) {
-  const world=createRapierWorld(RAPIER);
-  const random=seededRandom(options.seed);
-  const layout=options.layout||{columns:5,gap:2.85,rowGap:2.05};
+  const world=createRapierWorld(RAPIER),random=seededRandom(options.seed);
+  const layout=options.layout||{columns:5,gap:3,rowGap:2.35,finalGap:3,finalRowGap:2.45};
   const actors=dice.map((entry,index)=>createPhysicsDice(RAPIER,world,entry.die,index,dice.length,random,layout));
-  const randomYaw=seededRandom((Number(options.seed)||1)^0x51A7);
-  const finalTargets=actors.map(actor=>{
-    const face=actor.die.faces.find(f=>f.value===actor.die.value)||actor.die.faces[0];
-    return alignQuaternion(face,randomYaw);
-  });
-  const fixedStep=1/60;
-  const targetSteps=Math.max(1,Math.round((options.duration||2650)/1000*60));
-  let last=performance.now(),accumulator=0,physicsSteps=0,finalizing=false,finalStart=0,finalStates=[];
+  const finalTargets=actors.map(actor=>alignQuaternion(actor.die.faces.find(f=>f.value===actor.die.value)||actor.die.faces[0]));
+  const fixedStep=1/60,minSteps=Math.max(1,Math.round((options.duration||2900)/1000*60));
+  const maxSteps=Math.max(minSteps+60,Math.round((options.maxDuration||4300)/1000*60));
+  let last=performance.now(),accumulator=0,physicsSteps=0,quietSteps=0,finalizing=false,finalStart=0,finalStates=[];
   return new Promise(resolve=>{
     const frame=now=>{
       if(!options.overlay.isConnected){world.free();resolve();return;}
-      const dt=Math.min(.25,Math.max(0,(now-last)/1000)); last=now; accumulator+=dt;
+      const dt=Math.min(.20,Math.max(0,(now-last)/1000));last=now;accumulator+=dt;
       if(!finalizing){
         let safety=0;
-        while(accumulator>=fixedStep&&safety<16&&physicsSteps<targetSteps){world.step();accumulator-=fixedStep;safety++;physicsSteps++;}
-        actors.forEach(actor=>{
-          const p=actor.body.translation(),q=actor.body.rotation();
-          actor.die.group.position.set(p.x,p.y,p.z);
-          actor.die.group.quaternion.set(q.x,q.y,q.z,q.w);
-        });
-        if(physicsSteps>=targetSteps){
+        while(accumulator>=fixedStep&&safety<12&&physicsSteps<maxSteps){world.step();accumulator-=fixedStep;safety++;physicsSteps++;}
+        actors.forEach(actor=>{const p=actor.body.translation(),q=actor.body.rotation();actor.die.group.position.set(p.x,p.y,p.z);actor.die.group.quaternion.set(q.x,q.y,q.z,q.w)});
+        if(physicsSteps>=minSteps){
+          const allCalm=actors.every(actor=>{const v=actor.body.linvel(),w=actor.body.angvel();return actor.body.isSleeping?.()===true||(Math.hypot(v.x,v.y,v.z)<.24&&Math.hypot(w.x,w.y,w.z)<1.45)});
+          quietSteps=allCalm?quietSteps+1:0;
+        }
+        if((physicsSteps>=minSteps&&quietSteps>=14)||physicsSteps>=maxSteps){
           finalizing=true;finalStart=now;
-          const columns=Math.min(layout.columns||5,Math.ceil(Math.sqrt(actors.length)));
-          const rows=Math.ceil(actors.length/columns);
+          const columns=Math.min(layout.columns||5,Math.ceil(Math.sqrt(actors.length))),rows=Math.ceil(actors.length/columns);
           finalStates=actors.map((actor,index)=>{
-            const face=actor.die.faces.find(f=>f.value===actor.die.value)||actor.die.faces[0];
-            const p=actor.die.group.position.clone(),q=actor.die.group.quaternion.clone();
-            const x=(index%columns-(columns-1)/2)*(layout.finalGap||2.35);
-            const z=(Math.floor(index/columns)-(rows-1)/2)*(layout.finalRowGap||1.7);
-            return {group:actor.die.group,start:p,end:new THREE.Vector3(x,.9,z),rotation:q,target:finalTargets[index]};
+            const p=actor.die.group.position.clone(),q=actor.die.group.quaternion.clone(),col=index%columns,row=Math.floor(index/columns);
+            const endQ=finalTargets[index],x=(col-(columns-1)/2)*(layout.finalGap||3),z=(row-(rows-1)/2)*(layout.finalRowGap||2.45);
+            return {actor,group:actor.die.group,start:new THREE.Vector3(p.x,Math.max(p.y,supportHeightForRotation(actor.die,q)),p.z),end:new THREE.Vector3(x,supportHeightForRotation(actor.die,endQ),z),rotation:q,target:endQ};
           });
         }
       }else{
-        const settleDuration=options.settleDuration||550;
-        const t=Math.min(1,(now-finalStart)/settleDuration),ease=t*t*(3-2*t);
+        const settleDuration=options.settleDuration||700,t=Math.min(1,(now-finalStart)/settleDuration),ease=t*t*(3-2*t);
         finalStates.forEach(item=>{
-          item.group.position.lerpVectors(item.start,item.end,ease);
           item.group.quaternion.slerpQuaternions(item.rotation,item.target,ease);
+          const support=supportHeightForRotation(item.actor.die,item.group.quaternion);
+          item.group.position.x=THREE.MathUtils.lerp(item.start.x,item.end.x,ease);
+          item.group.position.z=THREE.MathUtils.lerp(item.start.z,item.end.z,ease);
+          item.group.position.y=Math.max(support,THREE.MathUtils.lerp(item.start.y,item.end.y,ease));
         });
-        if(t>=1){
-          world.free(); resolve();
-        }
+        if(t>=1){world.free();resolve();}
       }
       options.render();
-      if(!finalizing||now-finalStart<(options.settleDuration||550)) requestAnimationFrame(frame);
+      if(!finalizing||now-finalStart<(options.settleDuration||700))requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
   });
@@ -422,15 +463,15 @@ export async function play(overlay, config) {
   let dimensions=size();
   const {scene,camera}=createScene(renderer,dimensions.width,dimensions.height);
   const rendererResize=()=>{
-    dimensions=size(); camera.aspect=dimensions.width/dimensions.height;camera.updateProjectionMatrix();
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));renderer.setSize(dimensions.width,dimensions.height,false);
+    dimensions=size();configureTopDownCamera(camera,dimensions.width,dimensions.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.25));renderer.setSize(dimensions.width,dimensions.height,false);
   };
   window.addEventListener('resize',rendererResize,{passive:true});
   const random=seededRandom(config.seed);
   const reducedMotion=!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-  const physicsDuration=reducedMotion?900:2650,settleDuration=reducedMotion?260:550;
-  const mobile=dimensions.width<680;
-  const layout={columns:mobile?3:5,gap:mobile?1.95:2.85,rowGap:mobile?1.75:2.05,finalGap:mobile?1.55:2.35,finalRowGap:mobile?1.45:1.7};
+  const physicsDuration=reducedMotion?700:2900,settleDuration=reducedMotion?280:700;
+  const portrait=dimensions.width/Math.max(1,dimensions.height)<1.05;
+  const layout={columns:portrait?3:5,gap:3,rowGap:portrait?1.45:2.35,finalGap:3,finalRowGap:portrait?1.45:2.45};
   const dice=diceInput.slice(0,20).map((entry,index)=>{
     const die=buildDieMesh(Number(entry.sides)||20,(Number(config.seed)||1)+index*991);
     die.value=Math.max(1,Math.min(die.faces.length,Math.floor(Number(entry.value)||1)));
@@ -451,7 +492,7 @@ export async function play(overlay, config) {
   render();
   try {
     const RAPIER=await rapierLoading;
-    if(RAPIER) await runPhysicsRoll(RAPIER,dice,{seed:config.seed,overlay,render,layout,duration:physicsDuration,settleDuration},scene);
+    if(RAPIER) await runPhysicsRoll(RAPIER,dice,{seed:config.seed,overlay,render,layout,duration:physicsDuration,maxDuration:reducedMotion?1.6:4.3,settleDuration},scene);
     else await runKinematicFallback(dice,{seed:config.seed,overlay,render,layout,duration:reducedMotion?650:2500},scene);
   } catch(error) {
     console.error('[Aethra Dice 3D] Rolling simulation failed; using 3D motion fallback.',error);
@@ -467,4 +508,4 @@ export async function play(overlay, config) {
   return {cleanup};
 }
 
-export const version='4.2.6';
+export const version='4.2.7';

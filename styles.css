@@ -1803,7 +1803,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .account-delete-actions .btn-danger:hover{filter:brightness(1.08)}
 @media(max-width:520px){.account-profile-actions,.account-delete-actions{display:grid;grid-template-columns:1fr}.account-profile-actions .btn,.account-delete-actions .btn{width:100%}}
 
-/* v4.2.6 — palco WebGL para dados poliédricos verdadeiramente tridimensionais. */
+/* v4.2.7 — palco WebGL para dados poliédricos verdadeiramente tridimensionais. */
 .dice-overlay.v426-dice-overlay{
   display:block;place-items:stretch;padding:0;overflow:hidden;isolation:isolate;
   background:radial-gradient(ellipse at 50% 48%,rgba(32,39,49,.7),rgba(3,6,11,.96) 72%);

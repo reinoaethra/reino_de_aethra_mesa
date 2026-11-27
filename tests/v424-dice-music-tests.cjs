@@ -8,8 +8,8 @@ const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 
 // Release and cache version.
-assert(html.includes('v4.2.6'), 'HTML identifies v4.2.6');
-assert(html.includes('styles.css?v=4.2.6') && html.includes('app.js?v=4.2.6'), 'site assets use v4.2.6 cache keys');
+assert(html.includes('v4.2.7'), 'HTML identifies v4.2.7');
+assert(html.includes('styles.css?v=4.2.7') && html.includes('app.js?v=4.2.7'), 'site assets use v4.2.7 cache keys');
 
 // 3D dice experience (detailed checks live in v426-3d-dice-tests.cjs).
 assert(app.includes('function showDice(result,player,eventId)'), 'D20 uses the 3D animation entry point');
@@ -40,4 +40,4 @@ assert(app.includes('music-youtube-form') && app.includes('music-add-youtube'), 
 assert(app.includes('A reprodução pode exigir que cada participante clique em “Ativar música neste dispositivo”'), 'browser audio activation is explained');
 assert(app.includes("track?.source==='youtube'"), 'sync routine handles embedded video tracks separately from HTML audio');
 assert(sql.includes("'session_note'"), 'public dice roll log reuses existing session_note event; no new event type required');
-console.log('v4.2.6 dice and music: 3D animation integration, public/private visibility, compact playlist, YouTube embed and synchronized audio controls approved.');
+console.log('v4.2.7 dice and music: 3D animation integration, public/private visibility, compact playlist, YouTube embed and synchronized audio controls approved.');

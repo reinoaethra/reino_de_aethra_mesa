@@ -7,8 +7,8 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-assert(html.includes('v4.2.6'), 'HTML identifica v4.2.1');
-assert(html.includes('app.js?v=4.2.6') && html.includes('styles.css?v=4.2.6'), 'HTML usa cache novo');
+assert(html.includes('v4.2.7'), 'HTML identifica v4.2.1');
+assert(html.includes('app.js?v=4.2.7') && html.includes('styles.css?v=4.2.7'), 'HTML usa cache novo');
 assert(html.includes('src="config.js"'), 'config.js permanece referenciado');
 assert(app.includes("url.searchParams.set('v','4.2.2')"), 'cache dos mapas é atualizado');
 assert(app.includes("monsterMiniaturePath(id)+'?v=4.2.1'"), 'cache das miniaturas é atualizado');

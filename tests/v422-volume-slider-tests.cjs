@@ -13,6 +13,6 @@ assert(css.includes('border-radius:50%'), 'volume thumb is circular');
 assert(css.includes('linear-gradient(90deg,#b98740 0%,#d5ad64 52%,#e4c984 100%)'), 'volume rail uses the gold palette');
 assert(css.includes('flex:0 1 185px') && css.includes('max-width:185px'), 'master desktop volume control is compact');
 assert(css.includes('@media(max-width:620px)') && css.includes('max-width:none'), 'master control remains responsive on small screens');
-assert(html.includes('styles.css?v=4.2.6') && html.includes('app.js?v=4.2.6'), 'asset cache key is bumped');
+assert(html.includes('styles.css?v=4.2.7') && html.includes('app.js?v=4.2.7'), 'asset cache key is bumped');
 assert(app.includes('data-music-global-volume') && app.includes('data-music-local-volume'), 'existing master and player volume controls remain wired');
-console.log('v4.2.2 volume slider carried forward in v4.2.6: gold custom track, circular thumb, browser variants, compact desktop width and mobile responsiveness approved.');
+console.log('v4.2.2 volume slider carried forward in v4.2.7: gold custom track, circular thumb, browser variants, compact desktop width and mobile responsiveness approved.');
