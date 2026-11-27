@@ -7,8 +7,8 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 
-assert(html.includes('v4.2.4'), 'HTML identifies the v4.2.4 release');
-assert(html.includes('styles.css?v=4.2.4') && html.includes('app.js?v=4.2.4'), 'site assets use the v4.2.4 cache key');
+assert(html.includes('v4.2.5'), 'HTML identifies the v4.2.5 release');
+assert(html.includes('styles.css?v=4.2.5') && html.includes('app.js?v=4.2.5'), 'site assets use the v4.2.5 cache key');
 assert(app.includes("const V423_DICE_SIDES=[4,6,8,10,12,20]"), 'supported dice include D4, D6, D8, D10, D12 and D20');
 assert(app.includes('Math.max(1,Math.min(20,Math.floor(Number(count)||1)))'), 'number of dice is bounded from 1 to 20');
 assert(app.includes('secureDie(sides)'), 'each die is generated using the cryptographic random dice helper');
@@ -27,4 +27,4 @@ assert(app.includes("state.modal==='v423-dice'"), 'roller modal is wired to the 
 assert(css.includes('.v423-dice-result') && css.includes('.v423-dice-total') && css.includes('.v423-dice-rolls'), 'roller has dedicated visual components');
 assert(css.includes('@media(max-width:620px)') && css.includes('.v423-dice-result'), 'roller has a mobile layout');
 assert(sql.includes("'session_note'"), 'existing master session_note event type is retained; no new SQL event type is required');
-console.log('v4.2.4 universal dice: secure dice, formula modifiers, public/private visibility, timeline, manual HP effects and responsive UI approved.');
+console.log('v4.2.5 universal dice: secure dice, formula modifiers, public/private visibility, timeline, manual HP effects and responsive UI approved.');

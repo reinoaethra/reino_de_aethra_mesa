@@ -1,0 +1,5 @@
+REINO DE AETHRA v4.2.5
+
+Esta versão inclui exclusão de conta. Para funcionar, precisa da migration SQL v4.2.5 e da Edge Function delete-account implantada no Supabase, usando as chaves administrativas já fornecidas pelo ambiente das Edge Functions do Supabase (não cadastre SUPABASE_SERVICE_ROLE_KEY manualmente). Consulte GUIA-DE-ATUALIZACAO-V4.2.5.md antes de publicar.
+
+Arquivos de site a substituir: index.html, app.js e styles.css. Preserve config.js e assets/.

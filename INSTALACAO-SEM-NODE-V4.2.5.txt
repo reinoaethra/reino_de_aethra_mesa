@@ -1,0 +1,19 @@
+REINO DE AETHRA v4.2.5 — INSTALAÇÃO SEM NODE.JS
+
+Você pode executar tudo pelo navegador.
+
+1) Supabase Dashboard > projeto > SQL Editor > New query.
+2) Abra supabase-migration-v4.2.5.sql no Bloco de Notas, copie tudo, cole no SQL Editor e clique Run. Se já executou com sucesso, não repita.
+3) Abra supabase/functions/delete-account/index.ts no Bloco de Notas e copie todo o código (Ctrl+A, Ctrl+C).
+4) Supabase Dashboard > projeto > Edge Functions.
+5) Se a função não existir: Deploy a new function > Via Editor. Dê o nome delete-account. Se já existir: abra-a e vá à aba Code.
+6) No editor index.ts, selecione o exemplo todo (Ctrl+A), cole o código (Ctrl+V).
+7) Clique Deploy function ou Deploy updates.
+8) Confirme que delete-account aparece ativa na lista.
+9) Publique index.html, app.js e styles.css no GitHub Pages, mantendo config.js e assets/.
+
+Não precisa Node.js, Supabase CLI, Docker ou terminal. Não copie a chave Secret para lugar algum; ela não deve entrar no frontend.
+
+Se o menu Edge Functions ou Deploy estiver ausente/desativado, o usuário da conta Supabase precisa receber permissão de publicação no projeto. Peça ao proprietário/administrador do projeto.
+
+Guia completo: GUIA-DE-ATUALIZACAO-V4.2.5.md

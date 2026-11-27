@@ -1868,3 +1868,15 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 @media(prefers-reduced-motion:reduce){
   .v424-die-flight,.v424-universal-die{animation:none!important;transform:none!important;will-change:auto!important}
 }
+
+
+/* v4.2.5 — ações de conta e confirmação de exclusão */
+.account-profile-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.account-delete-hint{margin:9px 0 0;color:var(--muted,#aeb6c4);font-size:11px;line-height:1.55}
+.btn-danger-outline{border:1px solid rgba(211,91,91,.58)!important;color:#ef9b95!important;background:rgba(117,35,35,.13)!important}
+.btn-danger-outline:hover{background:rgba(117,35,35,.24)!important;border-color:rgba(235,112,104,.8)!important}
+.danger-notice{border-color:rgba(201,91,82,.48)!important;background:rgba(118,40,36,.15)!important}
+.account-delete-actions{justify-content:space-between}
+.account-delete-actions .btn-danger{background:linear-gradient(135deg,#963e38,#bd5148);border-color:#d77a6d;color:#fff}
+.account-delete-actions .btn-danger:hover{filter:brightness(1.08)}
+@media(max-width:520px){.account-profile-actions,.account-delete-actions{display:grid;grid-template-columns:1fr}.account-profile-actions .btn,.account-delete-actions .btn{width:100%}}

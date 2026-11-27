@@ -5,7 +5,7 @@ const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-assert(html.includes('v4.2.4') && html.includes('app.js?v=4.2.4') && html.includes('styles.css?v=4.2.4'));
+assert(html.includes('v4.2.5') && html.includes('app.js?v=4.2.5') && html.includes('styles.css?v=4.2.5'));
 assert(sql.includes('v_max_state_bytes bigint := 8388608'));
 assert(sql.includes('v_state_bytes := octet_length(p_game_state::text)'));
 assert(sql.includes('limite atual: % bytes'));

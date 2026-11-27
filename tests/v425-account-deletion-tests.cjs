@@ -1,0 +1,26 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+const fn = fs.readFileSync(path.join(root, 'supabase/functions/delete-account/index.ts'), 'utf8');
+const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.5.sql'), 'utf8');
+
+assert.match(html, /v4\.2\.5/);
+assert.match(app, /account-delete-open/);
+assert.match(app, /account-delete-form/);
+assert.match(app, /EXCLUIR MINHA CONTA/);
+assert.match(app, /functions\.invoke\('delete-account'/);
+assert.match(app, /auth\.signOut\(\{scope:'local'\}\)/);
+assert.match(fn, /auth\.getUser\(tokenMatch\[1\]\)/);
+assert.match(fn, /signInWithPassword/);
+assert.match(fn, /eq\("owner_id", user\.id\)/);
+assert.match(fn, /aethra_list_my_storage_objects/);
+assert.match(fn, /admin\.storage\.from\(bucket\)\.remove/);
+assert.match(fn, /auth\.admin\.deleteUser\(user\.id, false\)/);
+assert.match(sql, /where auth\.uid\(\) is not null/);
+assert.match(sql, /o\.owner_id = auth\.uid\(\)::text/);
+assert.match(css, /account-profile-actions/);
+console.log('v4.2.5 account deletion tests: passed');

@@ -1,22 +1,31 @@
-# Reino de Aethra — atualização v4.2.4
+# Reino de Aethra — atualização v4.2.5
 
-## Conteúdo
+## Novidade principal
+
+- A opção **Excluir conta** aparece ao lado de **Sair desta conta neste dispositivo**.
+- A confirmação exige e-mail, senha atual e a frase `EXCLUIR MINHA CONTA`.
+- A execução é feita por Edge Function autenticada, com segredo administrativo somente no servidor.
+- A exclusão é bloqueada se ainda existirem campanhas criadas pela conta.
+- Arquivos Storage do usuário são removidos pela Storage API antes da exclusão Auth.
+
+## Conteúdo do pacote
 
 - `index.html`, `app.js`, `styles.css`: aplicação atualizada.
-- `GUIA-DE-ATUALIZACAO-V4.2.4.md`: publicação, validação e reversão.
-- `GUIA-DE-RECURSOS-V4.2.4.md`: funcionamento dos novos recursos.
-- `NOTAS-DE-LANCAMENTO-V4.2.4.md`: resumo das alterações e compatibilidade.
-- `CHECKLIST-PUBLICACAO-V4.2.4.md`: conferência pós-publicação.
-- `tests/`: regressão automatizada, incluindo testes específicos v4.2.4.
-- `supabase-migration-v4.2.1.sql`: migration histórica já utilizada pela v4.2.1; não executar novamente para instalar a v4.2.4.
+- `supabase-migration-v4.2.5.sql`: helper seguro para listar apenas objetos Storage do usuário autenticado.
+- `supabase/functions/delete-account/index.ts`: função administrativa segura de exclusão.
+- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
+- `GUIA-DE-RECURSOS-V4.2.5.md`: comportamento e proteção de dados.
+- `NOTAS-DE-LANCAMENTO-V4.2.5.md`: resumo das mudanças.
+- `CHECKLIST-PUBLICACAO-V4.2.5.md`: validação pós-publicação.
+- `tests/`: testes de regressão e da exclusão de conta.
+- `supabase-migration-v4.2.1.sql`: migration histórica preservada para os testes/consulta; não executar novamente.
 
-## Instalação rápida
+## Instalação resumida
 
-1. Faça backup.
-2. Substitua `index.html`, `app.js` e `styles.css`.
-3. Preserve `config.js`, `assets/` e os dados existentes.
-4. Publique e recarregue a página com `Ctrl + F5`.
+1. Execute `supabase-migration-v4.2.5.sql` no SQL Editor do Supabase Dashboard.
+2. Copie `supabase/functions/delete-account/index.ts` para a raiz do repositório.
+- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
+- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
+5. Publique `index.html`, `app.js` e `styles.css`; preserve `config.js` e `assets/`.
 
-**Não requer SQL.**
-
-O YouTube usa player incorporado oficial. O vídeo precisa permitir incorporação; a reprodução pode exigir ativação de áudio em cada dispositivo.
+**Não é necessário cadastrar `SUPABASE_SERVICE_ROLE_KEY` manualmente:** o runtime das Edge Functions recebe as chaves padrão automaticamente. Não coloque nenhuma chave Secret em arquivos do site ou no GitHub. Veja o guia atualizado para instruções detalhadas de Windows.**

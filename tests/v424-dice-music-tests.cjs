@@ -8,8 +8,8 @@ const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 
 // Release and cache version.
-assert(html.includes('v4.2.4'), 'HTML identifies v4.2.4');
-assert(html.includes('styles.css?v=4.2.4') && html.includes('app.js?v=4.2.4'), 'site assets use v4.2.4 cache keys');
+assert(html.includes('v4.2.5'), 'HTML identifies v4.2.5');
+assert(html.includes('styles.css?v=4.2.5') && html.includes('app.js?v=4.2.5'), 'site assets use v4.2.5 cache keys');
 
 // D20 and universal dice visuals.
 assert(app.includes('function v424DieMarkup(sides,value,extraClass=\'\')'), 'single reusable SVG die renderer exists');
@@ -47,4 +47,4 @@ assert(app.includes('music-youtube-form') && app.includes('music-add-youtube'), 
 assert(app.includes('A reprodução pode exigir que cada participante clique em “Ativar música neste dispositivo”'), 'browser audio activation is explained');
 assert(app.includes("track?.source==='youtube'"), 'sync routine handles embedded video tracks separately from HTML audio');
 assert(sql.includes("'session_note'"), 'public dice roll log reuses existing session_note event; no new event type required');
-console.log('v4.2.4 dice and music: SVG facet dice, public/private animation, reduced-motion, compact playlist, YouTube embed and synchronized audio controls approved.');
+console.log('v4.2.5 dice and music: SVG facet dice, public/private animation, reduced-motion, compact playlist, YouTube embed and synchronized audio controls approved.');
