@@ -508,4 +508,4 @@ export async function play(overlay, config) {
   return {cleanup};
 }
 
-export const version='4.2.7';
+export const version='4.2.8';

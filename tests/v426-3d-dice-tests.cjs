@@ -7,10 +7,10 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const engine = fs.readFileSync(path.join(root, 'assets/js/aethra-dice-3d.js'), 'utf8');
 
-assert(html.includes('v4.2.7'), 'HTML identifies v4.2.7');
-assert(html.includes('app.js?v=4.2.7') && html.includes('styles.css?v=4.2.7'), 'cache keys are updated');
+assert(html.includes('v4.2.8'), 'HTML identifies v4.2.8');
+assert(html.includes('app.js?v=4.2.8') && html.includes('styles.css?v=4.2.8'), 'cache keys are updated');
 assert(fs.existsSync(path.join(root, 'assets/js/aethra-dice-3d.js')), '3D engine module is packaged locally');
-assert(app.includes("import('./assets/js/aethra-dice-3d.js?v=4.2.7')"), 'the 3D engine is loaded lazily on the first roll');
+assert(app.includes("import('./assets/js/aethra-dice-3d.js?v=4.2.8')"), 'the 3D engine is loaded lazily on the first roll');
 assert(app.includes('function showDice(result,player,eventId)'), 'D20 uses the 3D roll pipeline');
 assert(app.includes('function showUniversalDice(result,eventId)'), 'universal dice use the same 3D pipeline');
 assert(app.includes('animation_seed:aethraDiceSeed'), 'public universal rolls include a deterministic animation seed');
@@ -38,4 +38,4 @@ assert(engine.includes('class=\"v426-dice-scene\"') && engine.includes('querySel
 assert(css.includes('.v426-dice-canvas') && css.includes('.v426-dice-scene'), 'the 3D stage fills the dice overlay');
 assert(css.includes('.v426-universal-final') && css.includes('.v426-dice-final'), 'final results have dedicated HUD styles');
 assert(css.includes('.v426-dice-fallback'), 'unsupported WebGL devices receive a readable result fallback');
-console.log('v4.2.7 3D dice: WebGL, polyhedral D4/D6/D8/D10/D12/D20 models, deterministic physics, synchronized public results, private visibility, reduced motion and mobile rendering approved.');
+console.log('v4.2.8 3D dice: WebGL, polyhedral D4/D6/D8/D10/D12/D20 models, deterministic physics, synchronized public results, private visibility, reduced motion and mobile rendering approved.');

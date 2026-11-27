@@ -6,8 +6,8 @@ const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.1.sql'), 'utf8');
 
-assert(html.includes('v4.2.7'), 'HTML version is v4.2.1');
-assert(html.includes('app.js?v=4.2.7') && html.includes('styles.css?v=4.2.7'), 'cache keys updated');
+assert(html.includes('v4.2.8'), 'HTML version is v4.2.1');
+assert(html.includes('app.js?v=4.2.8') && html.includes('styles.css?v=4.2.8'), 'cache keys updated');
 assert(app.includes("createEvent('v41_ready_request',{ready:next})"), 'player readiness sends its dedicated request event');
 assert(app.includes("ev.event_type==='v41_ready_request'&&isMasterController()"), 'master processes readiness request');
 assert(app.includes("createEvent('v41_map_ping_request',payload)"), 'map attention requests use the dedicated event');

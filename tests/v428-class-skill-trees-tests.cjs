@@ -1,0 +1,35 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const start = app.indexOf('const CLASS_SKILL_TREES={');
+const end = app.indexOf('\n  function legacySkillPoints', start);
+assert.ok(start >= 0 && end > start, 'CLASS_SKILL_TREES should be defined');
+const source = app.slice(start, end);
+const classes = ['Guerreiro','Arcano','Patrulheiro','Paladino','Assassino','Clérigo','Druida','Invocador'];
+for (let i=0;i<classes.length;i++) {
+  const marker = `${classes[i]}:{`;
+  const begin = source.indexOf(marker);
+  assert.ok(begin >= 0, `Missing tree ${classes[i]}`);
+  const later = classes.slice(i+1).map(name=>source.indexOf(`${name}:{`,begin+marker.length)).filter(n=>n>=0);
+  const finish = later.length ? Math.min(...later) : source.length;
+  const block = source.slice(begin,finish);
+  const skills = (block.match(/\{id:'/g)||[]).length;
+  assert.equal(skills,5,`${classes[i]} must have exactly 5 learnable skills`);
+  assert.equal((block.match(/unlockLevel:/g)||[]).length,5);
+}
+assert.match(source, /ritual-ressurreicao'[\s\S]{0,100}unlockLevel:28/);
+assert.match(app, /function classSkillRanks/);
+assert.match(app, /function classSkillPointsEarned/);
+assert.match(app, /Math\.min\(15,Math\.floor/);
+assert.match(app, /function classSkillPointsAvailable/);
+assert.match(app, /rank>=3/);
+assert.match(app, /data-skill-id="\$\{skill\.id\}"/);
+assert.match(app, /chooseV4Skill\(btn\.dataset\.skillId\)/);
+assert.match(app, /legacyBonuses/);
+assert.match(app, /legacySpentSkillPoints/);
+assert.match(app, /effect==='heal'[\s\S]{0,500}applyPlayerHealingToState/);
+assert.match(app, /Círculo Restaurador/);
+assert.match(app, /Aprimorar/);
+console.log('v4.2.8 eight class skill trees: 5 skills each, 3 ranks, unlock levels and migration: passed');

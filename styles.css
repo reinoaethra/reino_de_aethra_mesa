@@ -1839,3 +1839,24 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
   .v426-universal-final strong{font-size:29px;}
 }
 @media(prefers-reduced-motion:reduce){.v426-dice-final{animation:none!important;}}
+
+
+/* v4.2.8 — árvores exclusivas, estados de queda e filas compartilhadas */
+.v4-class-skill-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.v4-class-skill-node{min-width:0;padding:14px;border:1px solid rgba(205,170,105,.28);border-radius:13px;background:linear-gradient(145deg,rgba(29,34,42,.96),rgba(13,17,23,.98));display:flex;flex-direction:column;gap:9px}
+.v4-class-skill-node h3{margin:0;font-size:15px;color:#f2dfb8}
+.v4-class-skill-node p{margin:0;color:#c1c9d2;font-size:12px;line-height:1.5;min-height:36px}
+.v4-class-skill-node.locked{opacity:.68;border-style:dashed}
+.v4-skill-pips{display:flex;gap:7px;align-items:center}
+.v4-skill-pips i{display:block;width:18px;height:7px;border-radius:99px;background:#343b45;border:1px solid rgba(230,197,135,.25)}
+.v4-skill-pips i.filled{background:linear-gradient(90deg,#9b7138,#e4c37e);box-shadow:0 0 9px rgba(222,180,99,.25)}
+.v4-class-skill-node small{color:#aab4c0;font-size:11px;line-height:1.4;margin-top:auto}
+.cleric-resurrection-panel{border-color:rgba(213,177,105,.45);background:linear-gradient(135deg,rgba(79,60,34,.25),rgba(24,27,34,.94));margin-top:14px}
+.cleric-resurrection-panel .field{margin:12px 0}
+.marketplace-open-strip{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.trade-request-card{padding:16px;border:1px solid rgba(215,178,108,.36);border-radius:13px;background:linear-gradient(135deg,rgba(73,54,29,.25),rgba(20,24,31,.96));margin:12px 0}
+.trade-request-card h3{margin:10px 0 6px}
+.forge-player-card{padding:14px;border:1px solid rgba(215,178,108,.22);border-radius:12px;background:rgba(15,19,25,.74);display:grid;gap:10px}
+.member-list{min-width:0}
+.notice-danger{border-color:rgba(192,83,76,.42);background:rgba(116,42,38,.16)}
+@media(max-width:700px){.v4-class-skill-grid{grid-template-columns:1fr}.marketplace-open-strip{align-items:stretch}.marketplace-open-strip .row{width:100%}.marketplace-open-strip .row>*{flex:1}}
