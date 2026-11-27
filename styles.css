@@ -1723,3 +1723,30 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-vis
 .world-object-row>.world-object{flex:1 1 auto;min-width:0}
 .world-object-visibility{flex:0 0 76px;border:1px solid rgba(208,174,111,.22);border-radius:9px;background:rgba(0,0,0,.16);color:#cbb58f;font-size:9px;font-weight:700;cursor:pointer;padding:6px}
 .world-object-visibility:hover{border-color:rgba(208,174,111,.58);background:rgba(208,174,111,.08)}
+
+/* v4.2.3 — Rolador Universal de Dados da Central do Mestre. */
+.v423-dice-intro{display:flex;align-items:center;gap:13px;margin:0 0 14px;padding:13px;border:1px solid rgba(205,173,119,.2);border-radius:12px;background:linear-gradient(130deg,rgba(184,139,67,.12),rgba(13,20,31,.35))}
+.v423-dice-glyph{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border:1px solid rgba(218,184,119,.4);border-radius:12px;background:rgba(194,151,82,.13);color:#e7cb91;font-size:28px}
+.v423-dice-intro strong{display:block;color:#f0dfbd;font-family:Cinzel,serif;font-size:13px}
+.v423-dice-intro p{margin:4px 0 0;color:#9eacbd;font-size:10px;line-height:1.5}
+.v423-dice-result{margin-top:16px;padding:15px;border:1px solid rgba(202,167,101,.34);border-radius:13px;background:linear-gradient(145deg,rgba(35,33,27,.42),rgba(9,15,24,.75))}
+.v423-dice-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.v423-dice-result-head h3{margin:8px 0 3px;color:#ead8b3;font-family:Cinzel,serif;font-size:16px}
+.v423-dice-result-head p{margin:0;color:#9caabc;font-size:11px}
+.v423-dice-total{display:grid;place-items:center;flex:0 0 66px;width:66px;height:66px;border:1px solid rgba(224,190,122,.6);border-radius:16px;background:radial-gradient(circle at 35% 25%,rgba(226,197,139,.24),rgba(156,112,50,.12));color:#f4dca7;font-family:Cinzel,serif;font-size:30px;font-weight:800;box-shadow:0 5px 20px rgba(0,0,0,.2)}
+.v423-dice-rolls{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 9px}
+.v423-die-value{display:grid;place-items:center;min-width:39px;height:39px;padding:0 8px;border:1px solid rgba(220,184,115,.35);border-radius:9px;background:rgba(175,131,65,.14);color:#f2d9a5;font-family:Cinzel,serif;font-size:15px;font-weight:700}
+.v423-dice-equation{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:9px 0 12px;border-top:1px solid rgba(255,255,255,.07);color:#b7c2d0;font-size:11px}
+.v423-dice-equation strong{color:#e4c88f;font-family:Cinzel,serif;font-size:13px}
+.v423-dice-equation b{color:#f1d79e;font-size:14px}
+.v423-dice-apply{margin-top:9px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.v423-dice-apply h4,.v423-private-history h4{margin:0 0 5px;color:#e9d5ae;font-family:Cinzel,serif;font-size:12px}
+.v423-dice-apply>p{margin:0 0 12px;color:#91a0b2;font-size:10px;line-height:1.5}
+.v423-dice-apply .btn{margin-top:4px}
+.v423-private-history{margin-top:15px;padding-top:13px;border-top:1px solid rgba(255,255,255,.08)}
+.v423-private-history-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.v423-private-history-row span{display:grid;gap:3px;min-width:0}
+.v423-private-history-row strong{color:#d5dce5;font-size:10px;overflow-wrap:anywhere}
+.v423-private-history-row small{color:#8391a3;font-size:9px}
+.v423-private-history-row>b{color:#e8cb92;font-family:Cinzel,serif;font-size:17px}
+@media(max-width:620px){.v423-dice-result{padding:12px}.v423-dice-total{flex-basis:56px;width:56px;height:56px;font-size:25px}.v423-dice-equation{align-items:flex-start;flex-direction:column;gap:5px}.v423-dice-intro{align-items:flex-start}}

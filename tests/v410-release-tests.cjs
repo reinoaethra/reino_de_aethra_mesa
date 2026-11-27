@@ -9,8 +9,8 @@ async function main() {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-  assert(html.includes('v4.2.2'), 'HTML identifies v4.2.1');
-  assert(html.includes('app.js?v=4.2.2') && html.includes('styles.css?v=4.2.2'), 'application assets use the v4.2.1 cache key');
+  assert(html.includes('v4.2.3'), 'HTML identifies v4.2.1');
+  assert(html.includes('app.js?v=4.2.3') && html.includes('styles.css?v=4.2.3'), 'application assets use the v4.2.1 cache key');
   assert(html.includes('src="config.js"'), 'existing config.js reference remains unchanged');
   assert(app.includes("url.searchParams.set('v','4.2.2')"), 'map background cache key is refreshed for v4.2.1');
 

@@ -1,0 +1,19 @@
+REINO DE AETHRA — ATUALIZACAO v4.2.3
+
+NOVO: ROLADOR UNIVERSAL DE DADOS
+- D4, D6, D8, D10, D12 e D20.
+- De 1 a 20 dados por rolagem.
+- Bonus e penalidades.
+- Resultados publicos ou reservados ao mestre.
+- Rolagens publicas na Linha do Tempo.
+- Historico reservado salvo apenas no navegador do mestre.
+- Aplicacao manual do total como dano ou cura em aventureiros e criaturas ativas.
+
+PUBLICACAO
+Substitua index.html, app.js e styles.css.
+Preserve config.js e toda a pasta assets/.
+
+SUPABASE
+NAO execute SQL para a v4.2.3. Esta versao nao altera o banco de dados.
+
+Consulte GUIA-DE-ATUALIZACAO-V4.2.3.md para instrucoes completas.
