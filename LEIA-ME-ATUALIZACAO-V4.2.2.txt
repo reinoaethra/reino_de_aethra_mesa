@@ -1,0 +1,10 @@
+REINO DE AETHRA v4.2.2 — AJUSTE VISUAL DA BARRA DE VOLUME
+
+1. Faça backup dos arquivos atuais do site.
+2. Substitua index.html, styles.css e app.js pelos arquivos deste pacote.
+3. Preserve config.js, assets/ e demais arquivos próprios da hospedagem.
+4. Publique o site e faça uma recarga forçada (Ctrl+F5).
+5. Confira a barra dourada com cursor circular na conta do mestre em computador.
+6. Confira também o controle do jogador em um celular.
+
+NÃO execute SQL: esta versão não altera o Supabase e não exige migration.

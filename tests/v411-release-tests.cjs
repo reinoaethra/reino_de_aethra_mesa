@@ -9,8 +9,8 @@ async function main() {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-  assert(html.includes('v4.2.1'), 'HTML identifies the release');
-  assert(html.includes('app.js?v=4.2.1') && html.includes('styles.css?v=4.2.1'), 'cache keys are bumped');
+  assert(html.includes('v4.2.2'), 'HTML identifies the release');
+  assert(html.includes('app.js?v=4.2.2') && html.includes('styles.css?v=4.2.2'), 'cache keys are bumped');
   assert(html.includes('src="config.js"'), 'existing config.js is preserved');
   for (const fn of ['v411GameData','undoV411LastAction','scheduleCampaignReconnect','retryCampaignConnection','v411NotificationRows','renderV411ConnectionPanel','renderV411TurnSummary','v411SessionCloseSummary','finishV411Session','v411MarkNotificationsRead']) {
     assert(app.includes(`function ${fn}`) || app.includes(`async function ${fn}`), `${fn} exists`);

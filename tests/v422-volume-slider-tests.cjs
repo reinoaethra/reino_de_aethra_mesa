@@ -1,0 +1,18 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+assert(css.includes('.music-volume-control input[type="range"]::-webkit-slider-runnable-track'), 'Chromium/WebKit track is custom styled');
+assert(css.includes('.music-volume-control input[type="range"]::-webkit-slider-thumb'), 'Chromium/WebKit thumb is custom styled');
+assert(css.includes('.music-volume-control input[type="range"]::-moz-range-track'), 'Firefox track is custom styled');
+assert(css.includes('.music-volume-control input[type="range"]::-moz-range-thumb'), 'Firefox thumb is custom styled');
+assert(css.includes('border-radius:50%'), 'volume thumb is circular');
+assert(css.includes('linear-gradient(90deg,#b98740 0%,#d5ad64 52%,#e4c984 100%)'), 'volume rail uses the gold palette');
+assert(css.includes('flex:0 1 185px') && css.includes('max-width:185px'), 'master desktop volume control is compact');
+assert(css.includes('@media(max-width:620px)') && css.includes('max-width:none'), 'master control remains responsive on small screens');
+assert(html.includes('styles.css?v=4.2.2') && html.includes('app.js?v=4.2.2'), 'asset cache key is bumped');
+assert(app.includes('data-music-global-volume') && app.includes('data-music-local-volume'), 'existing master and player volume controls remain wired');
+console.log('v4.2.2 volume slider: gold custom track, circular thumb, browser variants, compact desktop width and mobile responsiveness approved.');
