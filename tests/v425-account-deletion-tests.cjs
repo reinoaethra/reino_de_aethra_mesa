@@ -8,7 +8,7 @@ const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 const fn = fs.readFileSync(path.join(root, 'supabase/functions/delete-account/index.ts'), 'utf8');
 const sql = fs.readFileSync(path.join(root, 'supabase-migration-v4.2.5.sql'), 'utf8');
 
-assert.match(html, /v4\.2\.5/);
+assert.match(html, /v4\.2\.6/);
 assert.match(app, /account-delete-open/);
 assert.match(app, /account-delete-form/);
 assert.match(app, /EXCLUIR MINHA CONTA/);
@@ -23,4 +23,4 @@ assert.match(fn, /auth\.admin\.deleteUser\(user\.id, false\)/);
 assert.match(sql, /where auth\.uid\(\) is not null/);
 assert.match(sql, /o\.owner_id = auth\.uid\(\)::text/);
 assert.match(css, /account-profile-actions/);
-console.log('v4.2.5 account deletion tests: passed');
+console.log('v4.2.5 account deletion retained in v4.2.6: passed');

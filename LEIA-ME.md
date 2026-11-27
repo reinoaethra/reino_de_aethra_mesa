@@ -1,31 +1,36 @@
-# Reino de Aethra — atualização v4.2.5
+# Reino de Aethra — atualização v4.2.6
 
 ## Novidade principal
 
-- A opção **Excluir conta** aparece ao lado de **Sair desta conta neste dispositivo**.
-- A confirmação exige e-mail, senha atual e a frase `EXCLUIR MINHA CONTA`.
-- A execução é feita por Edge Function autenticada, com segredo administrativo somente no servidor.
-- A exclusão é bloqueada se ainda existirem campanhas criadas pela conta.
-- Arquivos Storage do usuário são removidos pela Storage API antes da exclusão Auth.
+A rolagem de D20 e o Rolador Universal agora usam dados poliédricos tridimensionais, com faces numeradas, material metálico, colisões físicas e orientação final correspondente ao resultado já calculado pelo jogo.
 
-## Conteúdo do pacote
+## Conteúdo específico da v4.2.6
 
-- `index.html`, `app.js`, `styles.css`: aplicação atualizada.
-- `supabase-migration-v4.2.5.sql`: helper seguro para listar apenas objetos Storage do usuário autenticado.
-- `supabase/functions/delete-account/index.ts`: função administrativa segura de exclusão.
-- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
-- `GUIA-DE-RECURSOS-V4.2.5.md`: comportamento e proteção de dados.
-- `NOTAS-DE-LANCAMENTO-V4.2.5.md`: resumo das mudanças.
-- `CHECKLIST-PUBLICACAO-V4.2.5.md`: validação pós-publicação.
-- `tests/`: testes de regressão e da exclusão de conta.
-- `supabase-migration-v4.2.1.sql`: migration histórica preservada para os testes/consulta; não executar novamente.
+- `assets/js/aethra-dice-3d.js`: módulo de modelos, renderização WebGL e física 3D.
+- `preview-dados-3d.html`: laboratório independente para testar dados localmente, sem publicar resultados na campanha.
+- `GUIA-DE-ATUALIZACAO-V4.2.6.md`: instalação passo a passo, requisitos e diagnóstico.
+- `GUIA-DE-RECURSOS-V4.2.6.md`: comportamento do D20 e do Rolador Universal 3D.
+- `NOTAS-DE-LANCAMENTO-V4.2.6.md`: resumo da versão.
+- `CHECKLIST-PUBLICACAO-V4.2.6.md`: conferência pós-publicação.
+- `THIRD-PARTY-NOTICES-V4.2.6.md`: bibliotecas externas e licenças.
+- `tests/`: verificações de regressão e integração.
 
 ## Instalação resumida
 
-1. Execute `supabase-migration-v4.2.5.sql` no SQL Editor do Supabase Dashboard.
-2. Copie `supabase/functions/delete-account/index.ts` para a raiz do repositório.
-- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
-- Publicação da Edge Function pode ser feita diretamente pelo Supabase Dashboard → Edge Functions → Via Editor; não exige Node.js ou terminal.
-5. Publique `index.html`, `app.js` e `styles.css`; preserve `config.js` e `assets/`.
+1. Substitua `index.html`, `app.js` e `styles.css`.
+2. Adicione `assets/js/aethra-dice-3d.js`.
+3. Adicione `preview-dados-3d.html` se desejar usar a página de pré-visualização.
+4. Preserve `config.js` e todas as demais pastas existentes em `assets/`.
+5. Publique no GitHub Pages e faça recarga forçada com `Ctrl + F5`.
 
-**Não é necessário cadastrar `SUPABASE_SERVICE_ROLE_KEY` manualmente:** o runtime das Edge Functions recebe as chaves padrão automaticamente. Não coloque nenhuma chave Secret em arquivos do site ou no GitHub. Veja o guia atualizado para instruções detalhadas de Windows.**
+## Requisitos
+
+- Navegador com WebGL 2.
+- Acesso à internet para carregar Three.js e Rapier do CDN `esm.sh` na primeira rolagem.
+- Não requer Node.js, Supabase CLI, Docker ou migração SQL.
+
+A versão mantém os recursos da v4.2.5, incluindo exclusão de conta. Não execute novamente migrations antigas apenas por causa da v4.2.6. Se ainda não configurou a exclusão de conta da v4.2.5, consulte o guia dessa versão e mantenha a Edge Function existente.
+
+## Página de teste
+
+Depois de publicar, acesse `preview-dados-3d.html` no mesmo domínio do GitHub Pages para testar D4, D6, D8, D10, D12 e D20 sem iniciar uma campanha. Os resultados de demonstração são locais e não são salvos no Supabase.

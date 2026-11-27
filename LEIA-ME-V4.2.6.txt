@@ -1,0 +1,21 @@
+REINO DE AETHRA — ATUALIZAÇÃO v4.2.6
+
+Esta versão adiciona rolagens de dados 3D reais com WebGL e física 3D.
+
+INSTALAÇÃO:
+1. Substitua index.html, app.js e styles.css.
+2. Adicione assets/js/aethra-dice-3d.js e preview-dados-3d.html.
+3. Preserve config.js e todas as demais pastas assets/.
+4. Publique no GitHub Pages e recarregue com Ctrl+F5.
+
+NÃO REQUER:
+- Node.js
+- Supabase CLI
+- Docker
+- SQL novo
+
+A primeira rolagem exige acesso à internet para carregar Three.js e Rapier do CDN esm.sh. É necessário WebGL 2.
+
+Para testar os dados sem iniciar campanha, depois de publicar abra preview-dados-3d.html no mesmo domínio.
+
+Leia GUIA-DE-ATUALIZACAO-V4.2.6.md para o passo a passo, testes e diagnóstico.

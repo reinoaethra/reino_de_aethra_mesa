@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1019">
+  <title>Pré-visualização dos Dados 3D — Reino de Aethra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=4.2.6">
+  <style>
+    body{min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1a2638,#080c13 62%);color:#e8dfcc}
+    .preview-shell{width:min(94vw,760px);margin:7vh auto 30px;padding:clamp(18px,4vw,34px);border:1px solid rgba(216,179,110,.32);border-radius:18px;background:linear-gradient(145deg,rgba(26,37,52,.95),rgba(10,15,23,.96));box-shadow:0 24px 80px rgba(0,0,0,.55)}
+    .preview-kicker{color:#d8b36e;font-size:9px;font-weight:900;letter-spacing:.25em;text-transform:uppercase}
+    .preview-shell h1{margin:9px 0;color:#f3e4c4;font:600 clamp(22px,3.4vw,34px) var(--serif)}
+    .preview-shell>p{max-width:610px;color:#aab7c8;font-size:12px;line-height:1.7}
+    .preview-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:23px}
+    .preview-field{display:grid;gap:7px;min-width:0}
+    .preview-field label{color:#d9c69f;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .preview-field select,.preview-field input{width:100%;min-width:0;min-height:42px;padding:10px 12px;border:1px solid rgba(216,179,110,.27);border-radius:9px;background:#0e1723;color:#f0e5d0;font:600 12px var(--sans,Manrope,sans-serif)}
+    .preview-reason{grid-column:1/-1}
+    .preview-actions{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .preview-note{margin-top:18px;padding:12px 14px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(255,255,255,.03);color:#aab7c8;font-size:10px;line-height:1.7}
+    .preview-error{display:none;margin-top:14px;color:#ffd2c5;font-size:11px;line-height:1.6}
+    @media(max-width:560px){.preview-form{grid-template-columns:1fr 1fr}.preview-reason{grid-column:1/-1}.preview-shell{margin-top:4vh}}
+    @media(max-width:370px){.preview-form{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="preview-shell">
+    <div class="preview-kicker">Reino de Aethra · laboratório visual</div>
+    <h1>Pré-visualização dos Dados 3D</h1>
+    <p>Experimente a nova apresentação tridimensional sem entrar em uma campanha. Os resultados desta página são demonstrações locais e não são publicados nem registrados no diário.</p>
+    <div class="preview-form">
+      <div class="preview-field">
+        <label for="die-type">Tipo de dado</label>
+        <select id="die-type"><option value="4">D4 · tetraedro</option><option value="6" selected>D6 · cubo</option><option value="8">D8 · octaedro</option><option value="10">D10 · trapezoedro</option><option value="12">D12 · dodecaedro</option><option value="20">D20 · icosaedro</option></select>
+      </div>
+      <div class="preview-field">
+        <label for="die-count">Quantidade</label>
+        <input id="die-count" type="number" min="1" max="20" value="2">
+      </div>
+      <div class="preview-field">
+        <label for="die-bonus">Bônus / penalidade</label>
+        <input id="die-bonus" type="number" min="-1000" max="1000" value="0">
+      </div>
+      <div class="preview-field preview-reason">
+        <label for="die-reason">Descrição da rolagem</label>
+        <input id="die-reason" type="text" maxlength="100" value="Rolagem de demonstração">
+      </div>
+    </div>
+    <div class="preview-actions">
+      <button id="roll-preview" class="btn btn-primary">Rolar dados 3D</button>
+      <span id="preview-status" class="panel-subtitle">Escolha os dados e experimente.</span>
+    </div>
+    <div id="preview-error" class="preview-error" role="status"></div>
+    <div class="preview-note">A demonstração usa o mesmo módulo visual da campanha. Requer navegador com WebGL 2 e acesso ao CDN esm.sh para carregar os componentes 3D e a física. Se a animação não carregar, o resultado de demonstração será mostrado em texto.</div>
+  </main>
+  <script type="module">
+    const $=id=>document.getElementById(id);
+    const html=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    function secureDie(sides){const range=0x100000000,limit=range-(range%sides),buffer=new Uint32Array(1);let value;do{crypto.getRandomValues(buffer);value=buffer[0]}while(value>=limit);return value%sides+1}
+    function seed(){const buffer=new Uint32Array(1);crypto.getRandomValues(buffer);return buffer[0]}
+    $('roll-preview').addEventListener('click',async()=>{
+      const button=$('roll-preview'),status=$('preview-status'),error=$('preview-error');
+      const sides=Number($('die-type').value),count=Math.max(1,Math.min(20,Math.floor(Number($('die-count').value)||1))),bonus=Math.max(-1000,Math.min(1000,Math.floor(Number($('die-bonus').value)||0))),reason=$('die-reason').value.trim()||'Rolagem de demonstração';
+      const rolls=Array.from({length:count},()=>secureDie(sides)),sum=rolls.reduce((a,b)=>a+b,0),total=sum+bonus,sign=bonus>0?` + ${bonus}`:bonus<0?` − ${Math.abs(bonus)}`:'';
+      const formula=`${count}d${sides}${sign}`;const seedValue=seed();
+      button.disabled=true;status.textContent='Preparando os dados 3D…';error.style.display='none';
+      const overlay=document.createElement('div');overlay.className='dice-overlay v426-dice-overlay';document.body.append(overlay);
+      const resultHtml=`<div class="v426-universal-final"><span>${html(formula)}</span><strong>${total}</strong><small>${rolls.join(' + ')}${sign} = ${total}</small></div><small>Demonstração local · sem publicação</small>`;
+      try{
+        const module=await import('./assets/js/aethra-dice-3d.js?v=4.2.6');
+        await module.play(overlay,{kicker:`PRÉ-VISUALIZAÇÃO · ${html(formula)}`,title:html(reason),dice:rolls.map(value=>({sides,value})),seed:seedValue,accessibleResult:`${formula}: ${rolls.join(' + ')}${sign} = ${total}`,resultHtml});
+        status.textContent=`Demonstração concluída: ${formula} = ${total}. Feche o palco para lançar novamente.`;
+        const closeButton=overlay.querySelector('.v426-dice-continue');
+        closeButton?.addEventListener('click',()=>{button.disabled=false;status.textContent='Escolha os dados e experimente novamente.';},{once:true});
+        window.setTimeout(()=>{button.disabled=false;},12500);
+      }catch(err){
+        console.error(err);overlay.innerHTML=`<div class="v426-dice-fallback"><span>RESULTADO DA DEMONSTRAÇÃO</span><h2>${html(reason)}</h2><strong>${total}</strong><p>${html(formula)} · ${rolls.join(' + ')}${sign} = ${total}<br>Não foi possível carregar a animação 3D neste navegador ou nesta rede.</p><button class="btn btn-secondary btn-small" type="button">Fechar</button></div>`;overlay.querySelector('button')?.addEventListener('click',()=>{overlay.remove();button.disabled=false;});status.textContent='O resultado foi calculado, mas a animação 3D não carregou.';
+      }finally{button.disabled=false}
+    });
+  </script>
+</body>
+</html>
